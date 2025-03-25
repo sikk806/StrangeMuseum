@@ -1,0 +1,13 @@
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\PlayerDataManager.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\PlayerDataManager.deps.json
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\PlayerDataManager.pdb
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Unity.Services.CloudCode.Apis.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Unity.Services.CloudCode.Core.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Google.Protobuf.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Grpc.Core.Api.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Grpc.Net.Client.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Grpc.Net.Common.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\JsonSubTypes.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\lod_n\AppData\Local\Temp\PlayerDataManager\module-compilation\Newtonsoft.Json.dll

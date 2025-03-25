@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: bb9a6b894eed06b449fcfcd068c967c0
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 204024
+  packageName: Ancient Angel Statue
+  packageVersion: 1.0
+  assetPath: Assets/headlessAngel/materials/URP/originalStone.mat
+  uploadId: 463621

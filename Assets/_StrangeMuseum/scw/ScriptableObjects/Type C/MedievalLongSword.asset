@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8136b62f7b518554f928a3db27207a4e, type: 3}
+  m_Name: MedievalLongSword
+  m_EditorClassIdentifier: 
+  objectName: "\uC911\uC138 \uB871\uC18C\uB4DC"
+  taskDetail: "\uC911\uC138 \uB871\uC18C\uB4DC\uC758 \uB0A0\uC758 \uC0C1\uD0DC\uB97C
+    \uD655\uC778"
+  inspectionTimeRequired: 10
+  spawnDatas:
+  - spawnData:
+    - -23.113
+    - 1.45
+    - 9.43
+    - 0
+    - 90
+    - 90
+  - spawnData:
+    - -28.945
+    - 1.44
+    - -8.022
+    - 0
+    - 180
+    - 90
+  - spawnData:
+    - -39.207
+    - 1.44
+    - 4.829
+    - 0
+    - -90
+    - 90
+  - spawnData:
+    - -37.284
+    - 4.499
+    - 90.648
+    - 0
+    - -180
+    - 90
+  - spawnData:
+    - -38.552
+    - 4.393
+    - 101.442
+    - 0
+    - -90
+    - 90
+  - spawnData:
+    - -34.221
+    - 4.393
+    - 108.991
+    - 0
+    - -180
+    - 90
+  - spawnData:
+    - -36.758
+    - 9.089
+    - 62.023
+    - 0
+    - -180
+    - 90
+  - spawnData:
+    - -22.608
+    - 9.089
+    - 68.193
+    - 0
+    - 90
+    - 90

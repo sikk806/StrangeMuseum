@@ -1,0 +1,15 @@
+fileFormatVersion: 2
+guid: 488b38418d58e354d854d2947c7103c7
+NativeFormatImporter:
+  externalObjects: {}
+  mainObjectFileID: 36300000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201920
+  packageName: British Gangsters Pack - Museum
+  packageVersion: 1.0
+  assetPath: Assets/BristishGangstersPack_Museum/Scenes/Lvl_MUSEUM_PUBLIC/OcclusionCullingData.asset
+  uploadId: 463299

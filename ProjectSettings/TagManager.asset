@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - HandCuff
+  - Bouncer
+  - EnergyDrink
+  - Statue
+  - wall_wood
+  - InspectableObject
+  - Box
+  - ground_pave
+  - wall_brick
+  - metal
+  - Cover
+  - Pen
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Bouncer
+  - Water
+  - UI
+  - Interaction
+  - Statue
+  - 
+  - -------bdw
+  - 
+  - 
+  - 
+  - -------kj
+  - Projectile
+  - TaskList
+  - Hand
+  - Light
+  - -------kjs
+  - 
+  - 
+  - -------scw
+  - Fragment
+  - 
+  - 
+  - -------jjw
+  - Outline
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  m_RenderingLayers:
+  - Default
+  - Layer 1
+  - Layer 2

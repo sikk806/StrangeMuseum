@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8136b62f7b518554f928a3db27207a4e, type: 3}
+  m_Name: Painting
+  m_EditorClassIdentifier: 
+  objectName: "\uADF8\uB9BC"
+  taskDetail: "\uADF8\uB9BC \uC791\uD488\uC5D0 \uC5B4\uB5A0\uD55C \uBB38\uC81C\uAC00
+    \uC788\uB294\uC9C0 \uC810\uAC80"
+  inspectionTimeRequired: 10
+  spawnDatas:
+  - spawnData:
+    - -17.857
+    - 2.43
+    - -9.034
+    - 0
+    - 180
+    - 90
+  - spawnData:
+    - -45.356
+    - 2.134
+    - 41.269
+    - 0
+    - 90
+    - 90
+  - spawnData:
+    - -36.8
+    - 9.684
+    - 114.527
+    - 0
+    - 180
+    - 90
+  - spawnData:
+    - -22.03
+    - 9.684
+    - 104.192
+    - 0
+    - -90
+    - 90
+  - spawnData:
+    - -45.347
+    - 9.743
+    - 41.3
+    - 0
+    - 90
+    - 90
+  - spawnData:
+    - -28.363
+    - 15.541
+    - 29.39
+    - 0
+    - -90
+    - 90

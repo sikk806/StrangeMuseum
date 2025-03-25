@@ -1,0 +1,13 @@
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\bin\Release\net6.0\any\PlayerDataManager.deps.json
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\bin\Release\net6.0\any\PlayerDataManager.dll
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\bin\Release\net6.0\any\PlayerDataManager.pdb
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.csproj.AssemblyReference.cache
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.GeneratedMSBuildEditorConfig.editorconfig
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.AssemblyInfoInputs.cache
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.AssemblyInfo.cs
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.csproj.CoreCompileInputs.cache
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.sourcelink.json
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.dll
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\refint\PlayerDataManager.dll
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\PlayerDataManager.pdb
+D:\Unity\LikeLion\StrangeMuseum\PlayerDataManager\Project\obj\Release\net6.0\any\ref\PlayerDataManager.dll

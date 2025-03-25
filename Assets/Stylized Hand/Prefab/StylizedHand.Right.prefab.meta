@@ -1,0 +1,14 @@
+fileFormatVersion: 2
+guid: e581c0d2799af0e4b8f78838899f2e54
+PrefabImporter:
+  externalObjects: {}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 233893
+  packageName: VR Stylized Hand (Left & Right)
+  packageVersion: 1.0
+  assetPath: Assets/Stylized Hand/Prefab/StylizedHand.Right.prefab
+  uploadId: 528942

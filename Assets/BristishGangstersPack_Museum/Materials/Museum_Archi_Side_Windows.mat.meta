@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: e5b357ea88e24184ab1fa0f0ab66ed06
+timeCreated: 1515599674
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201920
+  packageName: British Gangsters Pack - Museum
+  packageVersion: 1.0
+  assetPath: Assets/BristishGangstersPack_Museum/Materials/Museum_Archi_Side_Windows.mat
+  uploadId: 463299

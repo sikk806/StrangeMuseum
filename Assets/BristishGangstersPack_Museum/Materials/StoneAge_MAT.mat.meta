@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 9b74c68e03da29241b6c1f5351e83f7e
+timeCreated: 1515516940
+licenseType: Store
+NativeFormatImporter:
+  mainObjectFileID: 2100000
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 201920
+  packageName: British Gangsters Pack - Museum
+  packageVersion: 1.0
+  assetPath: Assets/BristishGangstersPack_Museum/Materials/StoneAge_MAT.mat
+  uploadId: 463299

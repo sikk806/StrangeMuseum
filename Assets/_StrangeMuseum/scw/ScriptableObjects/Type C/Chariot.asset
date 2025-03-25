@@ -1,0 +1,61 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8136b62f7b518554f928a3db27207a4e, type: 3}
+  m_Name: Chariot
+  m_EditorClassIdentifier: 
+  objectName: "\uC6B0\uD3B8\uBB3C"
+  taskDetail: "\uC218\uB808 \uC704 \uC6B0\uD3B8\uBB3C \uC18D\uC5D0 \uBB34\uC5C7\uC774
+    \uB4E4\uC5B4\uC788\uB294\uC9C0 \uD655\uC778"
+  inspectionTimeRequired: 10
+  spawnDatas:
+  - spawnData:
+    - 3.577
+    - 0.1
+    - -9.745
+    - 0
+    - -20
+    - 0
+  - spawnData:
+    - 6.313
+    - 0.1
+    - 46.277
+    - 0
+    - 70
+    - 0
+  - spawnData:
+    - -29.03
+    - 10.78
+    - 41.26
+    - 0
+    - 80
+    - 0
+  - spawnData:
+    - -38.755
+    - 7.724
+    - 64.443
+    - 0
+    - -110
+    - 0
+  - spawnData:
+    - -30.74
+    - 3.079
+    - 130.149
+    - 0
+    - 15
+    - 0
+  - spawnData:
+    - 5.341
+    - 7.009
+    - 53.803
+    - 0
+    - 15
+    - 0
