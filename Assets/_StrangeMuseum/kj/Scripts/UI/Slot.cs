@@ -9,8 +9,8 @@ public class SlotData
 {
     public bool IsEmpty; //슬롯 비어있는지 확인
     public GameObject SlotObj;
-    public ItemLayer itemLayer = ItemLayer.None; // 기본값: 자기 자신에게 사용
-    public ItemType itemType = ItemType.None; // 기본값: 자기 자신에게 사용
+    public ItemUseType itemLayer = ItemUseType.None; // 기본값: 자기 자신에게 사용
+    public ItemList itemType = ItemList.None; // 기본값: 자기 자신에게 사용
 }    
 public class Slot : MonoBehaviour
 {

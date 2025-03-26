@@ -19,7 +19,7 @@ public class Define
         Target  // 상대에게 사용하는 아이템
     }
 
-    public enum ItemLayer
+    public enum ItemUseType
     {
         None,
         Self,   // 자기 자신에게 사용하는 아이템
@@ -27,7 +27,7 @@ public class Define
     }
 
 
-    public enum ItemType
+    public enum ItemList
     {
         None,
         HandCuff,

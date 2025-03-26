@@ -14,8 +14,8 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     [SerializeField]
     private int itemLayer;
 
-    public ItemLayer GetItemLayer() => ItemLayer.Target;
-    public ItemType GetItemType() => ItemType.Cover;
+    public ItemUseType GetItemLayer() => ItemUseType.Target;
+    public ItemList GetItemType() => ItemList.Cover;
 
 
     public void Interact(SecurityInteraction bouncer) // 구속구 상호작용
@@ -106,38 +106,6 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
             SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
             SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
         }
-
-        //Debug.Log("CoverActiveClientRpc" + isActive + statueId);
-
-        //GameObject[] statues = GameObject.FindGameObjectsWithTag("Statue");
-
-        //foreach (GameObject statue in statues)
-        //{
-        //    NetworkObject netObj = statue.GetComponent<NetworkObject>();
-
-
-        //    // 🚀 StatueInteraction 컴포넌트가 있는지 확인
-        //    StatueInteraction statueInteraction = statue.GetComponent<StatueInteraction>();
-
-        //    GameObject statueCoverChild = statue.transform.GetChild(4).gameObject;
-
-        //    if (isActive)
-        //    {
-        //        //statueInteraction.CoverInteracted(this, CoverCooltime, itemLayer);
-
-        //        if (SecurityInGameUI.Instance != null)
-        //        {
-        //            SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-        //            SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
-        //        }
-        //    }
-
-        //    Debug.Log("2");
-        //    statueCoverChild.SetActive(isActive);
-        //    return; // 특정 Statue 찾았으므로 함수 종료
-        //}
-
-
 
     }
 

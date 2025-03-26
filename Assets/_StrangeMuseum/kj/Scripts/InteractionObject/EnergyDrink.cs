@@ -8,13 +8,13 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
     private SecurityInteraction bouncerIntercation;
 
-    public ItemLayer GetItemLayer()
+    public ItemUseType GetItemLayer()
     {
-        return ItemLayer.Self; // 자기 자신에게 사용되는 아이템
+        return ItemUseType.Self; // 자기 자신에게 사용되는 아이템
     }
-    public ItemType GetItemType()
+    public ItemList GetItemType()
     {
-        return ItemType.EnergyDrink; // 자기 자신에게 사용되는 아이템
+        return ItemList.EnergyDrink; // 자기 자신에게 사용되는 아이템
     }
 
     public void Interact(SecurityInteraction bouncer) //에너지 드링크 상호작용 

@@ -15,13 +15,13 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
 
 
-    public ItemLayer GetItemLayer()
+    public ItemUseType GetItemLayer()
     {
-        return ItemLayer.Target; // 자기 자신에게 사용되는 아이템
+        return ItemUseType.Target; // 자기 자신에게 사용되는 아이템
     }
-    public ItemType GetItemType()
+    public ItemList GetItemType()
     {
-        return ItemType.HandCuff; // 자기 자신에게 사용되는 아이템
+        return ItemList.HandCuff; // 자기 자신에게 사용되는 아이템
     }
     public void Interact(SecurityInteraction bouncer) //구속구 상호작용 
     {

@@ -41,10 +41,10 @@ public class SecurityInGameUI : NetworkBehaviour
     public int selectedSlot = 0;
 
     [SerializeField]
-    private ItemLayer itemLayer;
+    private ItemUseType itemLayer;
 
     [SerializeField]
-    private ItemType itemType;
+    private ItemList itemType;
 
     PlayerInteraction Interaction;
     SecurityInteraction bouncerInteraction;
@@ -171,7 +171,7 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             if (Input.GetKeyDown((KeyCode)(49 + i))) // KeyCode.Alpha1 == 49
             {
-                OnItemNameUI(Define.ItemType.None); //아이템 이름 지웠다가 다시 업데이트
+                OnItemNameUI(Define.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
                 OnInteractionUI(Define.InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
 
                 OnSlotUpdateUI(i);
@@ -189,21 +189,21 @@ public class SecurityInGameUI : NetworkBehaviour
     {
         if (obj == null)
         {
-            SecurityInGameUI.Instance.OnItemNameUI(ItemType.None); //기본 값 호출 -> 공백
+            SecurityInGameUI.Instance.OnItemNameUI(ItemList.None); //기본 값 호출 -> 공백
             return;
         }
 
         IUsableItem iusableItem = obj.GetComponent<IUsableItem>();
-        ItemType itemType = iusableItem.GetItemType();
+        ItemList itemType = iusableItem.GetItemType();
 
 
         switch (itemType)
         {
-            case ItemType.HandCuff:
-            case ItemType.EnergyDrink:
-            case ItemType.Box:
-            case ItemType.Cover:
-            case ItemType.Pen:
+            case ItemList.HandCuff:
+            case ItemList.EnergyDrink:
+            case ItemList.Box:
+            case ItemList.Cover:
+            case ItemList.Pen:
                 SecurityInGameUI.Instance.OnItemNameUI(itemType);
                 break;
         }
@@ -247,7 +247,7 @@ public class SecurityInGameUI : NetworkBehaviour
     {
         if (SlotData[selectedSlot].IsEmpty)
         {
-            OnItemExplainUI(Define.ItemType.None);
+            OnItemExplainUI(Define.ItemList.None);
             return;
         }
 
@@ -257,7 +257,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
         switch (itemLayer)
         {
-            case ItemLayer.Self: //자기 자신에게 사용하는 아이템을 든 상태 . 박스, 에너지 드링크, 볼펜
+            case ItemUseType.Self: //자기 자신에게 사용하는 아이템을 든 상태 . 박스, 에너지 드링크, 볼펜
 
 
                 if (bouncerInteraction.isInteracted.Value == true) //다른 아이템 바라볼 경우
@@ -265,7 +265,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
                     OnItemNameUI(itemType); //이름 보여주고
                     OnInteractionUI(Define.InteractionType.PickUp); //픽업 ui 보여주고
-                    OnItemExplainUI(Define.ItemType.None);  //해당 아이템은 설명하지 않음. 
+                    OnItemExplainUI(Define.ItemList.None);  //해당 아이템은 설명하지 않음. 
                 }
                 else //그냥 기존 아이템을 상태일 경우
                 {
@@ -274,19 +274,19 @@ public class SecurityInGameUI : NetworkBehaviour
                     itemType = SlotData[selectedSlot].itemType;
                     OnItemExplainUI(itemType); //아이템 설명
 
-                    OnItemNameUI(Define.ItemType.None); //아이템 이름 안보여주고
+                    OnItemNameUI(Define.ItemList.None); //아이템 이름 안보여주고
                 }
 
 
                 break;
-            case ItemLayer.Target: //상대에게 사용하는 아이템을 든 상태 . 피 묻은 천, 구속구
+            case ItemUseType.Target: //상대에게 사용하는 아이템을 든 상태 . 피 묻은 천, 구속구
 
 
                 if (bouncerInteraction.isInteracted.Value == true) //다른 아이템 바라볼 경우
                 {
                     OnItemNameUI(itemType); //이름 보여주고
                     OnInteractionUI(Define.InteractionType.PickUp); //픽업 ui 보여주고
-                    OnItemExplainUI(Define.ItemType.None);  //해당 아이템은 설명하지 않음. 
+                    OnItemExplainUI(Define.ItemList.None);  //해당 아이템은 설명하지 않음. 
                 }
                 else //그냥 기존 아이템을 상태일 경우
                 {
@@ -303,14 +303,14 @@ public class SecurityInGameUI : NetworkBehaviour
 
                     itemType = SlotData[selectedSlot].itemType;
                     OnItemExplainUI(itemType); //아이템 설명
-                    OnItemNameUI(Define.ItemType.None); //아이템 이름 안보여주고
+                    OnItemNameUI(Define.ItemList.None); //아이템 이름 안보여주고
 
                 }
 
                 break;
-            case ItemLayer.None:
+            case ItemUseType.None:
                 OnInteractionUI(Define.InteractionType.None);
-                OnItemExplainUI(Define.ItemType.None);
+                OnItemExplainUI(Define.ItemList.None);
                 break;
 
         }
@@ -384,7 +384,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public TextMeshProUGUI itemObjectName;
 
-    public void OnItemExplainUI(Define.ItemType type = Define.ItemType.None)
+    public void OnItemExplainUI(Define.ItemList type = Define.ItemList.None)
     {
 
         itemType = type; // 아이템 사용 대상 미리 저장
@@ -397,28 +397,28 @@ public class SecurityInGameUI : NetworkBehaviour
 
         switch (type)
         {
-            case ItemType.HandCuff:
+            case ItemList.HandCuff:
                 ItemExplain.text = "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소";
                 break;
-            case ItemType.EnergyDrink:
+            case ItemList.EnergyDrink:
                 ItemExplain.text = "사용 시, 이동속도 증가";
                 break;
-            case ItemType.Box:
+            case ItemList.Box:
                 ItemExplain.text = "사용 시, 조각상의 공격으로 부터 1회 방어";
                 break;
-            case ItemType.Cover:
+            case ItemList.Cover:
                 ItemExplain.text = "조각상에게 사용 시, 조각상의 시야 기능 제한";
                 break;
-            case ItemType.Pen:
+            case ItemList.Pen:
                 ItemExplain.text = "조각상 적중 시, 조각상의 보이스 챗 기능 제한";
                 break;
-            case ItemType.None:
+            case ItemList.None:
                 ItemExplain.text = " ";
                 break;
         }
     }
 
-    public void OnItemNameUI(Define.ItemType type = Define.ItemType.None)
+    public void OnItemNameUI(Define.ItemList type = Define.ItemList.None)
     {
         itemType = type; // 아이템 사용 대상 미리 저장
 
@@ -430,22 +430,22 @@ public class SecurityInGameUI : NetworkBehaviour
         }
         switch (type)
         {
-            case ItemType.HandCuff:
+            case ItemList.HandCuff:
                 itemObjectName.text = "구속구";
                 break;
-            case ItemType.EnergyDrink:
+            case ItemList.EnergyDrink:
                 itemObjectName.text = "에너지 드링크";
                 break;
-            case ItemType.Box:
+            case ItemList.Box:
                 itemObjectName.text = "박스";
                 break;
-            case ItemType.Cover:
+            case ItemList.Cover:
                 itemObjectName.text = "피 묻은 천";
                 break;
-            case ItemType.Pen:
+            case ItemList.Pen:
                 itemObjectName.text = "만년필";
                 break;
-            case ItemType.None:
+            case ItemList.None:
                 itemObjectName.text = " ";
                 break;
         }
@@ -485,7 +485,7 @@ public class SecurityInGameUI : NetworkBehaviour
     {
         if (slotIndex < 0 || slotIndex >= SlotData.Count) return;
 
-        SlotData[slotIndex].itemLayer = ItemLayer.None; // itemLayer 초기화
+        SlotData[slotIndex].itemLayer = ItemUseType.None; // itemLayer 초기화
         Debug.Log($"Slot {slotIndex}의 itemLayer가 제거되었습니다.");
     }
 

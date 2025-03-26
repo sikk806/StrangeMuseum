@@ -6,13 +6,13 @@ using static Define;
 
 public class Box : NetworkBehaviour, IInteractable, IUsableItem
 {
-    public ItemLayer GetItemLayer()
+    public ItemUseType GetItemLayer()
     {
-        return ItemLayer.Self; // 자기 자신에게 사용되는 아이템
+        return ItemUseType.Self; // 자기 자신에게 사용되는 아이템
     }
-    public ItemType GetItemType()
+    public ItemList GetItemType()
     {
-        return ItemType.Box; // 자기 자신에게 사용되는 아이템
+        return ItemList.Box; // 자기 자신에게 사용되는 아이템
     }
 
     public GameObject BoxUI; //구속구 UI

@@ -45,7 +45,7 @@ public class SecurityInteraction : NetworkBehaviour
     [SerializeField]
     Light networkLight;
 
-    private ItemType itemType;
+    private ItemList itemType;
 
     [SerializeField]
     private AudioClip CoverFearSound; // 구속구 공포 효과음
@@ -58,6 +58,24 @@ public class SecurityInteraction : NetworkBehaviour
 
     public NetworkVariable<bool> isEnergyDrinkUsing = new NetworkVariable<bool>
 (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
+
+    public NetworkVariable<bool> isBroken = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+  
+
+    public NetworkVariable<bool> isStatueCollider = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+
+    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    public void SetIsBrokenServerRpc(bool value)
+    {
+        isBroken.Value = value;
+    }
+
+
+    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    public void SetIsStatueColliderServerRpc(bool value)
+    {
+        isStatueCollider.Value = value;
+    }
 
 
     [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
@@ -243,29 +261,6 @@ public class SecurityInteraction : NetworkBehaviour
         }
     }
 
-    /*
-     * [ServerRpc(RequireOwnership = false)]
-    public void RequestNetworkLightOnOffServerRpc(bool serverLight, ServerRpcParams rpcParams = default)
-    {
-        Debug.Log("클라이언트가 서버에게 라이트 on/off 동기화 요청");
-
-        NetworkLightOnOffServerRpc(serverLight);
-    }
-
-    [ServerRpc]
-    public void NetworkLightOnOffServerRpc(bool boolean)
-    {
-        NetworkLightOnOffClientRpc(boolean);
-    }
-
-    [ClientRpc]
-    public void NetworkLightOnOffClientRpc(bool boolean)
-    {
-        networkLight.intensity = boolean ? LightOnIntensity : 0;
-    }
-     */
-
-
 
     private StatueController currentStatue; // 현재 감지된 조각상 저장
 
@@ -375,11 +370,6 @@ public class SecurityInteraction : NetworkBehaviour
     private void ItemSave(GameObject obj = null)
     {
         RayItem = obj;
-    }
-    private void EnemySave(GameObject obj = null)
-    {
-        RayStaute = obj;
-
     }
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1. 에너지 드링크 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -566,22 +556,6 @@ public class SecurityInteraction : NetworkBehaviour
         // audioSource.PlayOneShot(audio);
     }
 
-    // 죽음 관련
-
-    public NetworkVariable<bool> isBroken = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsBrokenServerRpc(bool value)
-    {
-        isBroken.Value = value;
-    }
-
-    public NetworkVariable<bool> isStatueCollider = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsStatueColliderServerRpc(bool value)
-    {
-        isStatueCollider.Value = value;
-    }
-
 
     private void OnTriggerEnter(Collider other)
     {
@@ -634,22 +608,6 @@ public class SecurityInteraction : NetworkBehaviour
                 SecurityDieServerRpc();
             }
 
-        }
-    }
-
-
-    public void OnDestroyUI()
-    {
-
-        if (uiInstance != null)
-        {
-            Debug.Log("경비원 캔버스 삭제");
-            Destroy(uiInstance); // 저장된 복사본만 삭제
-            uiInstance = null;   // 삭제 후 인스턴스를 null로 초기화
-        }
-        else
-        {
-            Debug.LogWarning("삭제할 UI 인스턴스가 없습니다.");
         }
     }
 

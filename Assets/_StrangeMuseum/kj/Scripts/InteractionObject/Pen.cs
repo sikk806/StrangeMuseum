@@ -9,13 +9,13 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
     private SecurityInteraction bouncerIntercation;
 
-    public ItemLayer GetItemLayer()
+    public ItemUseType GetItemLayer()
     {
-        return ItemLayer.Self; 
+        return ItemUseType.Self; 
     }
-    public ItemType GetItemType()
+    public ItemList GetItemType()
     {
-        return ItemType.Pen; // 자기 자신에게 사용되는 아이템
+        return ItemList.Pen; // 자기 자신에게 사용되는 아이템
     }
 
     [SerializeField]

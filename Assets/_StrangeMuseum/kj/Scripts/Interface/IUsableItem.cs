@@ -4,6 +4,6 @@ public interface IUsableItem
 {
     public void UseServerRpc(ulong id);
 
-    Define.ItemLayer GetItemLayer();
-    Define.ItemType GetItemType();
+    Define.ItemUseType GetItemLayer();
+    Define.ItemList GetItemType();
 }
