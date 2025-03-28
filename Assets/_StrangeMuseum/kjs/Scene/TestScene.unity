@@ -940,6 +940,8 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   Bouncer: {fileID: 6042096211448569219, guid: 11a18c83d492da7469fa07b73125f5af, type: 3}
   Statue: {fileID: 536372768802411126, guid: 1192d4577b78fb8438d7f995c98e9eeb, type: 3}
+  SecuritySpawnPoint: []
+  StatueSpawnPoint: []
 --- !u!1 &2012366120
 GameObject:
   m_ObjectHideFlags: 0
