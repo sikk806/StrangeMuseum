@@ -28,13 +28,13 @@ public class StatueAttack : NetworkBehaviour
     void Update()
     {
         if(!IsOwner) return;
-        if(GetComponent<StatueController>().playerState.Value == PlayerState.Freeze) { return; }
+        //if(GetComponent<StatueController>().playerState.Value == PlayerState.Freeze) { return; }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isRush)
         {
             // Move, View Fix
             isRush = true;
-            GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Attack);
+            //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Attack);
             StartCoroutine("Attack");
         }
     }
@@ -62,6 +62,6 @@ public class StatueAttack : NetworkBehaviour
         Destroy(go);
         isRush = false;
 
-        GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
+        //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
     }
 }

@@ -71,7 +71,7 @@ public class StatueInGameUI : NetworkBehaviour
     {
         CoverUI();
 
-        if(statueController.playerState.Value == PlayerState.Freeze)
+        if(statueController.GetPlayerState() == PlayerState.Freeze)
         {
             FreezeTmp.text = "!!! 경비원 손전등 감지 중 !!! ";
         }

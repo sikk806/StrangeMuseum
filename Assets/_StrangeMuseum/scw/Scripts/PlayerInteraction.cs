@@ -30,32 +30,32 @@ public class PlayerInteraction : NetworkBehaviour
     void Update()
     {
         if(!IsOwner) return;
-        if(!playerController.playerCamera) return;
+        //if(!playerController.playerCamera) return;
 
-        RaycastHit hit;
-        if (Physics.Raycast(playerController.playerCamera.position, playerController.playerCamera.forward, out hit, interactionDistance))
-        {
-            if (hit.collider.CompareTag("InspectableObject"))
-            {
-                HandleInspectableObject(hit.collider.gameObject);
+        // RaycastHit hit;
+        // if (Physics.Raycast(playerController.playerCamera.position, playerController.playerCamera.forward, out hit, interactionDistance))
+        // {
+        //     if (hit.collider.CompareTag("InspectableObject"))
+        //     {
+        //         HandleInspectableObject(hit.collider.gameObject);
 
-                SetIsProgressServerRpc(true); // 미션 진행중
+        //         SetIsProgressServerRpc(true); // 미션 진행중
 
-            }
-            else
-            {
+        //     }
+        //     else
+        //     {
 
-                UIManager.Instance.CloseInspectionObjectUI();
+        //         UIManager.Instance.CloseInspectionObjectUI();
 
 
-            }
-        }
-        else
-        {
-            UIManager.Instance.CloseInspectionObjectUI();
+        //     }
+        // }
+        // else
+        // {
+        //     UIManager.Instance.CloseInspectionObjectUI();
 
-            SetIsProgressServerRpc(false); // 미션 진행 X
-        }
+        //     SetIsProgressServerRpc(false); // 미션 진행 X
+        // }
     }
 
     private void HandleInspectableObject(GameObject obj) // 공통 임무를 진행하면서 상호작용하는 오브젝트(ex. 정수기, 장식품 등)와의 기능을 담은 함수

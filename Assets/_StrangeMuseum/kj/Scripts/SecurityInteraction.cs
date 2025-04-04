@@ -60,7 +60,7 @@ public class SecurityInteraction : NetworkBehaviour
 (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
 
     public NetworkVariable<bool> isBroken = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
-  
+
 
     public NetworkVariable<bool> isStatueCollider = new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
 
@@ -142,22 +142,22 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void LightInit()
     {
-        Transform aTransform = securityController.playerCamera.transform.Find("StylizedHand.Left");
+        // Transform aTransform = securityController.playerCamera.transform.Find("StylizedHand.Left");
 
-        if (aTransform != null)
-        {
-            Transform cTransform = aTransform.Find("FlashLight");
+        // if (aTransform != null)
+        // {
+        //     Transform cTransform = aTransform.Find("FlashLight");
 
-            if (cTransform != null)
-            {
-                Flashlight = cTransform.GetComponentInChildren<Light>();
+        //     if (cTransform != null)
+        //     {
+        //         Flashlight = cTransform.GetComponentInChildren<Light>();
 
-                Flashlight.intensity = 0;
-                isLight = false;
-            }
+        //         Flashlight.intensity = 0;
+        //         isLight = false;
+        //     }
+        //}
+
     }
-    
-}
 
 
     private void Update()
@@ -181,7 +181,7 @@ public class SecurityInteraction : NetworkBehaviour
         }
     }
 
-  
+
 
 
     private void BouncerInteracted()
@@ -255,7 +255,7 @@ public class SecurityInteraction : NetworkBehaviour
                 Flashlight.intensity = isLight ? LightOnIntensity : 0;
                 //networkLight.intensity = isLight ? LightOnIntensity : 0;
                 //RequestNetworkLightOnOffServerRpc(isLight);
-                
+
                 Debug.Log("손전등 토글: " + (isLight ? "켜짐" : "꺼짐"));
             }
         }
@@ -276,7 +276,7 @@ public class SecurityInteraction : NetworkBehaviour
 
         Collider[] hitColliders = Physics.OverlapSphere(lightPosition, lightRange, LayerMask.GetMask("Statue"));
 
-        Debug.DrawRay(lightPosition, lightRange *lightDirection, Color.blue, 0.1f);
+        Debug.DrawRay(lightPosition, lightRange * lightDirection, Color.blue, 0.1f);
 
         foreach (Collider col in hitColliders)
         {
@@ -294,25 +294,25 @@ public class SecurityInteraction : NetworkBehaviour
                     if (Physics.Raycast(lightPosition, toStatue, out RaycastHit hit, distanceToStatue, LayerMask.GetMask("Default")))
                     {
                         Debug.Log("벽에 가려짐 - Idle");
-                        col.GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
+                        col.GetComponent<StatueController>().SetPlayerState(PlayerState.Idle);
                     }
                     else
                     {
                         Debug.Log("벽에 가려지지 않음 - Freeze");
-                        col.GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Freeze);
+                        col.GetComponent<StatueController>().SetPlayerState(PlayerState.Freeze);
                     }
-                 
+
                 }
                 else
                 {
                     Debug.Log("Idle (각도 벗어남)");
-                    col.GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
+                    col.GetComponent<StatueController>().SetPlayerState(PlayerState.Idle);
                 }
             }
             else if (col.CompareTag("Statue") && !isLight) // 손전등이 꺼진 상태
             {
                 Debug.Log("손전등 꺼서 Idle");
-                col.GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
+                col.GetComponent<StatueController>().SetPlayerState(PlayerState.Idle);
             }
         }
     }
@@ -405,8 +405,8 @@ public class SecurityInteraction : NetworkBehaviour
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            securityController.MovementSpeed.Value =
-                Mathf.Lerp(securityController.MovementSpeed.Value, maxSpeed, elapsedTime / halfCooldown);
+            securityController.MovementSpeed =
+                Mathf.Lerp(securityController.MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
 
 
 
@@ -419,8 +419,8 @@ public class SecurityInteraction : NetworkBehaviour
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            securityController.MovementSpeed.Value =
-                Mathf.Lerp(securityController.MovementSpeed.Value, securityController.InitWalkingSpeed, elapsedTime / halfCooldown);
+            //securityController.MovementSpeed =
+            //Mathf.Lerp(securityController.MovementSpeed, securityController.InitWalkingSpeed, elapsedTime / halfCooldown);
 
             yield return null;
         }
@@ -457,7 +457,7 @@ public class SecurityInteraction : NetworkBehaviour
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2. 박스 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
     public NetworkVariable<bool> isBoxUsing = new NetworkVariable<bool>
-(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
+    (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
 
 
     public NetworkObjectReference storedBoxRef;
@@ -539,13 +539,13 @@ public class SecurityInteraction : NetworkBehaviour
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3. 손전등 활성화/비활성화
     public void CameraOff()
     {
-        securityController.playerCamera.GetChild(0).gameObject.SetActive(false);
+        //securityController.playerCamera.GetChild(0).gameObject.SetActive(false);
         //securityController.playerCamera.GetChild(1).gameObject.SetActive(true);
     }
 
     public void CameraOn()
     {
-        securityController.playerCamera.GetChild(0).gameObject.SetActive(true);
+        //securityController.playerCamera.GetChild(0).gameObject.SetActive(true);
         //securityController.playerCamera.GetChild(1).gameObject.SetActive(false);
     }
 
@@ -617,10 +617,6 @@ public class SecurityInteraction : NetworkBehaviour
         Debug.Log("경비원이 사망했습니다.");
 
         SetIsBrokenServerRpc(true);
-
-
-
-        VivoxController.Instance.StopAllCoroutines();
 
         Debug.Log("경비원 수 : " + GameManager.Instance.SecurityCount.Value);
         Debug.Log("조각상 수 : " + GameManager.Instance.StatueCount.Value);
