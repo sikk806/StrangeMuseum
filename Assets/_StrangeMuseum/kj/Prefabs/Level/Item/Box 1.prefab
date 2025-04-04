@@ -30,8 +30,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6773915570499476573}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: -0.08019686, y: 0.63273424, z: 0.0064164116, w: 0.7701784}
+  m_LocalPosition: {x: -3.83, y: 2.3191524, z: -0.0000063180923}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -130,7 +130,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   BoxUI: {fileID: 4030549418918185853, guid: 378e578b1a22eb840a9c9d26f532145e, type: 3}
   itemLayer: 0
-  BoxUsedDelay: 2
 --- !u!114 &6523191271552486154
 MonoBehaviour:
   m_ObjectHideFlags: 0

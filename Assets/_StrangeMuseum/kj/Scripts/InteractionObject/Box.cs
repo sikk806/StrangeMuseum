@@ -1,24 +1,24 @@
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static Define;
-
+using static ItemData;
 
 public class Box : NetworkBehaviour, IInteractable, IUsableItem
 {
-    public ItemUseType GetItemLayer()
-    {
-        return ItemUseType.Self; // 자기 자신에게 사용되는 아이템
-    }
-    public ItemList GetItemType()
-    {
-        return ItemList.Box; // 자기 자신에게 사용되는 아이템
-    }
-
     public GameObject BoxUI; //구속구 UI
 
     private SecurityInteraction bouncerIntercation;
 
+
+    public ItemData.ItemList GetItemList()
+    {
+        return ItemData.ItemList.Box;
+    }
+
+    public ItemData.ItemUseType GetItemType()
+    {
+        return ItemData.ItemUseType.Self;
+    }
     [SerializeField]
     int itemLayer;
 
@@ -47,6 +47,8 @@ public class Box : NetworkBehaviour, IInteractable, IUsableItem
 
 
                 SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
+
+                ItemManager.Instance.AddItem(ItemData.ItemList.Box);
 
                 break;
             }
@@ -102,8 +104,7 @@ public class Box : NetworkBehaviour, IInteractable, IUsableItem
                     {
                         if (SecurityInGameUI.Instance != null)
                         {
-                            SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-                            SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
+                            SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
                         }
                     }
 
@@ -119,7 +120,7 @@ public class Box : NetworkBehaviour, IInteractable, IUsableItem
       
         itemLayer = 0;
         bouncerIntercation = null;
-
+       
         NetworkObjectReference objRef = this.gameObject;
         GetComponent<NetworkItem>().DestroyItem(objRef);
     }

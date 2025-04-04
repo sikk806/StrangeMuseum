@@ -6,7 +6,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
-using static Define;
 
 public class StatueInteraction : NetworkBehaviour
 {

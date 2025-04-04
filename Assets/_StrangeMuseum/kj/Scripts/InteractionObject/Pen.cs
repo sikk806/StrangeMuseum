@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
-using static Define;
 
 public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 {
@@ -9,18 +8,19 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
     private SecurityInteraction bouncerIntercation;
 
-    public ItemUseType GetItemLayer()
-    {
-        return ItemUseType.Self; 
-    }
-    public ItemList GetItemType()
-    {
-        return ItemList.Pen; // 자기 자신에게 사용되는 아이템
-    }
-
     [SerializeField]
     int itemLayer;
 
+
+    public ItemData.ItemList GetItemList()
+    {
+        return ItemData.ItemList.Pen;
+    }
+
+    public ItemData.ItemUseType GetItemType()
+    {
+        return ItemData.ItemUseType.Self;
+    }
 
     public void Interact(SecurityInteraction bouncer) //에너지 드링크 상호작용 
     {
@@ -43,10 +43,10 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
                 SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
 
-
                 SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
 
-                this.gameObject.SetActive(false);
+                ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
+
 
                 break;
             }
@@ -80,10 +80,9 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
             return;
 
 
-        SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-        SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
+        SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
 
-      
+
     }
 
     [ServerRpc(RequireOwnership = false)] ////RPC 호출 시 소유 여부에 관계없이 호출 가능.
@@ -91,7 +90,6 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
     {
         itemLayer = 0;
 
-        GetComponent<NetworkItem>().isPickedUp = false;
 
         NetworkObjectReference objRef = this.gameObject;
 

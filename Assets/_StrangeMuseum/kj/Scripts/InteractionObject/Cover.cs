@@ -1,6 +1,5 @@
 using Unity.Netcode;
 using UnityEngine;
-using static Define;
 
 
 public class Cover : NetworkBehaviour, IInteractable, IUsableItem
@@ -14,9 +13,15 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     [SerializeField]
     private int itemLayer;
 
-    public ItemUseType GetItemLayer() => ItemUseType.Target;
-    public ItemList GetItemType() => ItemList.Cover;
+    public ItemData.ItemList GetItemList()
+    {
+        return ItemData.ItemList.Cover;
+    }
 
+    public ItemData.ItemUseType GetItemType()
+    {
+        return ItemData.ItemUseType.Target;
+    }
 
     public void Interact(SecurityInteraction bouncer) // 구속구 상호작용
     {
@@ -45,6 +50,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
                 SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
 
+                ItemManager.Instance.AddItem(ItemData.ItemList.Cover);
                 break;
             }
         }
@@ -103,8 +109,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     {
         if (SecurityInGameUI.Instance != null)
         {
-            SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-            SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
+            SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
         }
 
     }
@@ -120,7 +125,6 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
         bouncerInteraction = null;
 
         CoverActiveClientRpc(false, statueId); // 모든 Statue 비활성화
-
 
         NetworkObjectReference objRef = this.gameObject;
 

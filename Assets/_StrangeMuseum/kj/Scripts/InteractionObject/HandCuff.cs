@@ -1,7 +1,6 @@
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
-using static Define;
 
 public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 {
@@ -14,15 +13,16 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     private SecurityInteraction bouncerIntercation;
 
 
+    public ItemData.ItemList GetItemList()
+    {
+        return ItemData.ItemList.HandCuff;
+    }
 
-    public ItemUseType GetItemLayer()
+    public ItemData.ItemUseType GetItemType()
     {
-        return ItemUseType.Target; // 자기 자신에게 사용되는 아이템
+        return ItemData.ItemUseType.Target;
     }
-    public ItemList GetItemType()
-    {
-        return ItemList.HandCuff; // 자기 자신에게 사용되는 아이템
-    }
+
     public void Interact(SecurityInteraction bouncer) //구속구 상호작용 
     {
        
@@ -46,6 +46,8 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
                 SecurityInGameUI.Instance.SlotData[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
                 SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
+
+                ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
 
                 break;
             }
@@ -134,8 +136,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
             return;
 
         Debug.Log("클라이언트에서 아이템 UI 제거");
-        SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-        SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
+        SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject,itemLayer);
     }
 
 

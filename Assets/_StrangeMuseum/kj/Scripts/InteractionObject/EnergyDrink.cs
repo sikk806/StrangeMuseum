@@ -1,6 +1,5 @@
 using Unity.Netcode;
 using UnityEngine;
-using static Define;
 
 public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 {
@@ -8,14 +7,16 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
     private SecurityInteraction bouncerIntercation;
 
-    public ItemUseType GetItemLayer()
+    public ItemData.ItemList GetItemList()
     {
-        return ItemUseType.Self; // 자기 자신에게 사용되는 아이템
+        return ItemData.ItemList.EnergyDrink;
     }
-    public ItemList GetItemType()
+
+    public ItemData.ItemUseType GetItemType()
     {
-        return ItemList.EnergyDrink; // 자기 자신에게 사용되는 아이템
+        return ItemData.ItemUseType.Self;
     }
+
 
     public void Interact(SecurityInteraction bouncer) //에너지 드링크 상호작용 
     {
@@ -41,7 +42,8 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
                 SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
 
-                this.gameObject.SetActive(false);
+
+                ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);
 
                 break;
             }
@@ -109,8 +111,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         if (NetworkManager.Singleton.LocalClientId != targetClientId)
             return;
 
-        SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-        SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
+        SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
 
 
     }

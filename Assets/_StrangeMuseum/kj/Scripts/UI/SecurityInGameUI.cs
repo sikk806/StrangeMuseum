@@ -2,11 +2,9 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Burst.CompilerServices;
 using Unity.Netcode;
-using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using UnityEngine.UI;
-using static Define;
+using static ItemData;
 
 public class SecurityInGameUI : NetworkBehaviour
 {
@@ -40,12 +38,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public int selectedSlot = 0;
 
-    [SerializeField]
-    private ItemUseType itemLayer;
-
-    [SerializeField]
-    private ItemList itemType;
-
     PlayerInteraction Interaction;
     SecurityInteraction bouncerInteraction;
 
@@ -53,6 +45,8 @@ public class SecurityInGameUI : NetworkBehaviour
 
     [SerializeField]
     TextMeshProUGUI ItemExplain;
+
+    public TextMeshProUGUI itemObjectName;
 
     private void Awake()
     {
@@ -69,8 +63,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
     private void Start()
     {
-      
-
+        //ItemManager.Instance.Initialize();
 
         SlotSet();
 
@@ -107,8 +100,6 @@ public class SecurityInGameUI : NetworkBehaviour
     private void SlotSet()
     {
 
-
-
         for (int i = 0; i < maxSlot; i++)
         {
             GameObject go = Instantiate(SlotPrefab, SlotPrefabParent.transform, false);
@@ -121,44 +112,18 @@ public class SecurityInGameUI : NetworkBehaviour
             go.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString(); //아이템 슬롯 키 ui 표시 . ex 1~5
         }
 
-
     }
 
     private void Update()
     {
+        ItemSlotUpdate();
 
-        if(bouncerInteraction.isInteracted.Value == true)
+        SecurityInteractionUI();
+
+        if(Input.GetKeyDown(KeyCode.I))
         {
-            if (SlotData[selectedSlot].IsEmpty)
-            {
-                if(bouncerInteraction.RayItem != null)
-                {
-                    OnItemUI(bouncerInteraction.RayItem.gameObject);
-                    OnInteractionUI(Define.InteractionType.PickUp);
-
-                }
-
-            }
-            else //비어  있지 않다면
-            {
-                if (bouncerInteraction.RayItem != null)
-                {
-                    OnItemUI(bouncerInteraction.RayItem.gameObject);
-                    OnInteractionUI(Define.InteractionType.PickUp);
-
-                }
-            }
+            Debug.Log("아이템 itemDictionary 에 저장된 현재 갯수" + ItemManager.Instance.inventoryDictionary.Count);
         }
-        else
-        {
-
-            if (SlotData[selectedSlot].IsEmpty) //슬롯이 비어 있을 때
-            {
-                OnInteractionUI(Define.InteractionType.None); //아무것도  안 뜸
-                OnItemUI(null);
-            }
-        }
-
 
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress.Value == false)
         {
@@ -171,8 +136,8 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             if (Input.GetKeyDown((KeyCode)(49 + i))) // KeyCode.Alpha1 == 49
             {
-                OnItemNameUI(Define.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
-                OnInteractionUI(Define.InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
+                OnItemNameUI(ItemList.None); //아이템 이름 지웠다가 다시 업데이트
+                OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
 
                 OnSlotUpdateUI(i);
             }
@@ -182,33 +147,47 @@ public class SecurityInGameUI : NetworkBehaviour
             }
         }
 
-        ItemSlotUpdate();
+    
     }
 
-    private void OnItemUI(GameObject obj = null)
+    private void SecurityInteractionUI()
     {
-        if (obj == null)
+        if (bouncerInteraction.isInteracted.Value == true)
         {
-            SecurityInGameUI.Instance.OnItemNameUI(ItemList.None); //기본 값 호출 -> 공백
-            return;
+            if (SlotData[selectedSlot].IsEmpty)
+            {
+                if (bouncerInteraction.RayItem != null)
+                {
+                    ItemList currentItem = bouncerInteraction.RayItem.GetComponent<IUsableItem>().GetItemList();
+                    OnItemNameUI(currentItem, bouncerInteraction.RayItem.gameObject);
+                    OnInteractionUI(InteractionType.PickUp);
+
+                }
+
+            }
+            else //비어  있지 않다면
+            {
+                if (bouncerInteraction.RayItem != null)
+                {
+                    ItemList currentItem = bouncerInteraction.RayItem.GetComponent<IUsableItem>().GetItemList();
+                    OnItemNameUI(currentItem, bouncerInteraction.RayItem.gameObject);
+
+                    OnInteractionUI(InteractionType.PickUp);
+
+                }
+            }
         }
-
-        IUsableItem iusableItem = obj.GetComponent<IUsableItem>();
-        ItemList itemType = iusableItem.GetItemType();
-
-
-        switch (itemType)
+        else
         {
-            case ItemList.HandCuff:
-            case ItemList.EnergyDrink:
-            case ItemList.Box:
-            case ItemList.Cover:
-            case ItemList.Pen:
-                SecurityInGameUI.Instance.OnItemNameUI(itemType);
-                break;
-        }
 
-    }
+            if (SlotData[selectedSlot].IsEmpty) //슬롯이 비어 있을 때
+            {
+                OnInteractionUI(InteractionType.None); //아무것도  안 뜸
+
+                OnItemNameUI();
+            }
+        }
+    } // 슬롯안에 아이템 여부에 따라 경비원이 아이템을 바라봤을 때
 
     public void AddItemToSlot(GameObject item, int slotIndex)
     {
@@ -218,10 +197,19 @@ public class SecurityInGameUI : NetworkBehaviour
 
         if (usableItem != null)
         {
-            SlotData[slotIndex].itemLayer = usableItem.GetItemLayer(); // 아이템 사용 대상 미리 저장
-                                                                       //어떤 아이템인지 확인   
-            SlotData[slotIndex].itemType = usableItem.GetItemType(); // 아이템 사용 대상 미리 저장
+            ItemData.ItemList itemList = usableItem.GetItemList(); // 아이템의 종류 확인
+            ItemData.ItemUseType itemType = usableItem.GetItemType(); // 아이템의 종류 확인
 
+           // ItemManager.Instance.AddItem(itemList);
+
+
+            if (ItemManager.Instance.itemDictionary.ContainsKey(itemList))
+            {
+                
+                // 해당 아이템이 ItemManager에 존재하는지 확인하고, 아이템 정보를 가져옵니다.
+                SlotData[slotIndex].itemUseType = itemType; // itemLayer에 해당 아이템 사용 타입 저장
+                SlotData[slotIndex].itemList = itemList; // 아이템 사용 대상 미리 저장
+            }
         }
 
         SlotData[selectedSlot].SlotObj.GetComponent<Slot>().SlotDefalutImage(); // 이전 슬롯 초기화
@@ -243,76 +231,78 @@ public class SecurityInGameUI : NetworkBehaviour
 
     }
 
+    ItemData.ItemUseType itemType;
+    ItemData.ItemList itemList;
+
     private void ItemSlotUpdate()
     {
+        if (bouncerInteraction.isInteracted.Value == true && SlotData[selectedSlot].IsEmpty == false)
+        {
+            OnItemExplainUI(ItemData.ItemList.None);
+            return; //아이템 바라본 상태에서, 슬롯이 비어있지 않을 때 바라본 아이템을 우선으로
+        }
         if (SlotData[selectedSlot].IsEmpty)
         {
-            OnItemExplainUI(Define.ItemList.None);
+            OnItemExplainUI(ItemData.ItemList.None);
             return;
         }
 
         //Self 타입인지 Target 타입인지 아이템 사용 방식 가져옴
-        itemLayer = SlotData[selectedSlot].itemLayer;
-        //itemType =  SlotData[selectedSlot].itemType;
+        itemType = SlotData[selectedSlot].itemUseType;
+        itemList =  SlotData[selectedSlot].itemList;
 
-        switch (itemLayer)
+        switch (itemType)
         {
+            case ItemUseType.None:
+                OnInteractionUI(InteractionType.None);
+                OnItemExplainUI(ItemList.None);
+                break;
+
             case ItemUseType.Self: //자기 자신에게 사용하는 아이템을 든 상태 . 박스, 에너지 드링크, 볼펜
 
 
                 if (bouncerInteraction.isInteracted.Value == true) //다른 아이템 바라볼 경우
                 {
-
-                    OnItemNameUI(itemType); //이름 보여주고
-                    OnInteractionUI(Define.InteractionType.PickUp); //픽업 ui 보여주고
-                    OnItemExplainUI(Define.ItemList.None);  //해당 아이템은 설명하지 않음. 
+                    OnItemNameUI(itemList); //이름 보여주고
+                    OnInteractionUI(InteractionType.PickUp); //픽업 ui 보여주고
+                    OnItemExplainUI(ItemList.None);  //해당 아이템은 설명하지 않음. 
                 }
                 else //그냥 기존 아이템을 상태일 경우
                 {
-                    OnInteractionUI(Define.InteractionType.Self); //사용법 ui 보여주고
+                    OnInteractionUI(InteractionType.Self); //사용법 ui 보여주고
 
-                    itemType = SlotData[selectedSlot].itemType;
-                    OnItemExplainUI(itemType); //아이템 설명
+                    OnItemExplainUI(itemList); //아이템 설명
 
-                    OnItemNameUI(Define.ItemList.None); //아이템 이름 안보여주고
+                    OnItemNameUI(ItemList.None); //아이템 이름 안보여주고
                 }
 
 
                 break;
             case ItemUseType.Target: //상대에게 사용하는 아이템을 든 상태 . 피 묻은 천, 구속구
 
-
                 if (bouncerInteraction.isInteracted.Value == true) //다른 아이템 바라볼 경우
                 {
-                    OnItemNameUI(itemType); //이름 보여주고
-                    OnInteractionUI(Define.InteractionType.PickUp); //픽업 ui 보여주고
-                    OnItemExplainUI(Define.ItemList.None);  //해당 아이템은 설명하지 않음. 
+                    OnItemNameUI(itemList); //이름 보여주고
+                    OnInteractionUI(InteractionType.PickUp); //픽업 ui 보여주고
+                    OnItemExplainUI(ItemList.None);  //해당 아이템은 설명하지 않음. 
                 }
                 else //그냥 기존 아이템을 상태일 경우
                 {
                     if (bouncerInteraction.IsStatue.Value)
                     {
-                        Debug.Log("조각상 바라봄");
-                        OnInteractionUI(Define.InteractionType.Target); //사용법 ui 보여주고
+                        OnInteractionUI(InteractionType.Target); //사용법 ui 보여주고
                     }
                     else
                     {
-                        Debug.Log("조각상 바라보지 않음");
-                        OnInteractionUI(Define.InteractionType.None); //사용법 ui 보여주고
+                        OnInteractionUI(InteractionType.None); //사용법 ui 보여주고
                     }
 
-                    itemType = SlotData[selectedSlot].itemType;
-                    OnItemExplainUI(itemType); //아이템 설명
-                    OnItemNameUI(Define.ItemList.None); //아이템 이름 안보여주고
+                    OnItemExplainUI(itemList); //아이템 설명
+                    OnItemNameUI(ItemList.None); //아이템 이름 안보여주고
 
                 }
 
                 break;
-            case ItemUseType.None:
-                OnInteractionUI(Define.InteractionType.None);
-                OnItemExplainUI(Define.ItemList.None);
-                break;
-
         }
 
 
@@ -322,7 +312,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public void UsingItem() //아이템 사용 부분.
     {
-
         if (SlotData[selectedSlot].IsEmpty)
         {
             return;
@@ -346,11 +335,11 @@ public class SecurityInGameUI : NetworkBehaviour
         }
     }
 
-    public void OnInteractionUI(Define.InteractionType type = Define.InteractionType.None)
+
+    public void OnInteractionUI(InteractionType type = InteractionType.None)
     {
 
-
-        if (type == Define.InteractionType.None || Interaction.isMissionProgress.Value == true)
+        if (type == InteractionType.None || Interaction.isMissionProgress.Value == true)
         {
             InteractionUI.gameObject.SetActive(false);
             return;
@@ -372,6 +361,7 @@ public class SecurityInGameUI : NetworkBehaviour
                     text.text = ": Self to Using";
                     break;
                 case InteractionType.Target:
+
                     uiImage.sprite = UsingIcon; // 아이템 줍기 아이콘
                     text.text = ": Target to Using";
                     break;
@@ -382,79 +372,92 @@ public class SecurityInGameUI : NetworkBehaviour
 
     }
 
-    public TextMeshProUGUI itemObjectName;
-
-    public void OnItemExplainUI(Define.ItemList type = Define.ItemList.None)
+    public void OnItemExplainUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
     {
-
-        itemType = type; // 아이템 사용 대상 미리 저장
-
         if (Interaction.isMissionProgress.Value == true)
         {
             ItemExplain.text = " ";
             return;
         }
 
-        switch (type)
+
+        if (ItemManager.Instance.itemDictionary.TryGetValue(itemKey, out var value))
         {
-            case ItemList.HandCuff:
-                ItemExplain.text = "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소";
-                break;
-            case ItemList.EnergyDrink:
-                ItemExplain.text = "사용 시, 이동속도 증가";
-                break;
-            case ItemList.Box:
-                ItemExplain.text = "사용 시, 조각상의 공격으로 부터 1회 방어";
-                break;
-            case ItemList.Cover:
-                ItemExplain.text = "조각상에게 사용 시, 조각상의 시야 기능 제한";
-                break;
-            case ItemList.Pen:
-                ItemExplain.text = "조각상 적중 시, 조각상의 보이스 챗 기능 제한";
-                break;
-            case ItemList.None:
-                ItemExplain.text = " ";
-                break;
+            // itemKey에 맞는 설명을 switch 문을 사용하여 설정
+            switch (itemKey)
+            {
+                case ItemData.ItemList.HandCuff:
+                    ItemExplain.text = value.itemExplain;
+                    break;
+                case ItemData.ItemList.EnergyDrink:
+                    ItemExplain.text = value.itemExplain;
+                    break;
+                case ItemData.ItemList.Box:
+                    ItemExplain.text = value.itemExplain;
+                    break;
+                case ItemData.ItemList.Cover:
+                    ItemExplain.text = value.itemExplain;
+                    break;
+                case ItemData.ItemList.Pen:
+                    ItemExplain.text = value.itemExplain;
+                    break;
+                case ItemData.ItemList.None:
+                    ItemExplain.text = " ";
+                    break;
+            }
+        }
+        else
+        {
+            // 아이템이 딕셔너리에 없는 경우
+            ItemExplain.text = " ";
         }
     }
 
-    public void OnItemNameUI(Define.ItemList type = Define.ItemList.None)
+    public void OnItemNameUI(ItemData.ItemList itemKey = ItemData.ItemList.None, GameObject obj = null)
     {
-        itemType = type; // 아이템 사용 대상 미리 저장
-
 
         if (Interaction.isMissionProgress.Value == true)
         {
             itemObjectName.text = " ";
             return;
         }
-        switch (type)
+
+        if(ItemManager.Instance.itemDictionary.TryGetValue(itemKey,out var value))
         {
-            case ItemList.HandCuff:
-                itemObjectName.text = "구속구";
-                break;
-            case ItemList.EnergyDrink:
-                itemObjectName.text = "에너지 드링크";
-                break;
-            case ItemList.Box:
-                itemObjectName.text = "박스";
-                break;
-            case ItemList.Cover:
-                itemObjectName.text = "피 묻은 천";
-                break;
-            case ItemList.Pen:
-                itemObjectName.text = "만년필";
-                break;
-            case ItemList.None:
-                itemObjectName.text = " ";
-                break;
+            switch (itemKey)
+            {
+                case ItemList.HandCuff:
+                    itemObjectName.text = value.itemName;
+                    break;
+                case ItemList.EnergyDrink:
+                    itemObjectName.text = value.itemName;
+                    break;
+                case ItemList.Box:
+                    itemObjectName.text = value.itemName;
+                    break;
+                case ItemList.Cover:
+                    itemObjectName.text = value.itemName;
+                    break;
+                case ItemList.Pen:
+                    itemObjectName.text = value.itemName;
+                    break;
+                case ItemList.None:
+                    itemObjectName.text = " ";
+                    break;
+            }
         }
+        else
+        {
+            itemObjectName.text = " ";
+        }
+      
     }
 
 
 
-    public void OnDestroyItemUI(int slotIndex)
+    public void OnDestroyItemUI(GameObject item, int slotIndex)
     {
+
 
         Transform slotTransform = SlotData[slotIndex].SlotObj.transform;
 
@@ -467,6 +470,12 @@ public class SecurityInGameUI : NetworkBehaviour
             // 자식 객체가 이미 삭제되었는지 확인
             if (itemUITransform != null && itemUITransform.gameObject != null)
             {
+                IUsableItem usableItem = item.GetComponent<IUsableItem>();
+
+                ItemData.ItemList itemList = usableItem.GetItemList(); // 아이템의 종류 확인
+
+                ItemManager.Instance.RemoveItem(itemList);
+
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
 
                 SlotData[slotIndex].IsEmpty = true; // 빈 슬롯 됨
@@ -481,12 +490,4 @@ public class SecurityInGameUI : NetworkBehaviour
             Debug.Log($"Slot {slotIndex}에 충분한 자식이 존재하지 않습니다.");
         }
     }
-    public void RemoveItemLayer(int slotIndex)
-    {
-        if (slotIndex < 0 || slotIndex >= SlotData.Count) return;
-
-        SlotData[slotIndex].itemLayer = ItemUseType.None; // itemLayer 초기화
-        Debug.Log($"Slot {slotIndex}의 itemLayer가 제거되었습니다.");
-    }
-
 }

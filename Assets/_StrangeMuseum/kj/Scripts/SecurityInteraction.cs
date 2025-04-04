@@ -8,7 +8,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UIElements;
-using static Define;
 
 
 public class SecurityInteraction : NetworkBehaviour
@@ -44,8 +43,6 @@ public class SecurityInteraction : NetworkBehaviour
 
     [SerializeField]
     Light networkLight;
-
-    private ItemList itemType;
 
     [SerializeField]
     private AudioClip CoverFearSound; // 구속구 공포 효과음
@@ -200,7 +197,7 @@ public class SecurityInteraction : NetworkBehaviour
 
             interactableItem.Interact(this);
             SetIsInteractedServerRpc(false);
-            SecurityInGameUI.Instance.OnInteractionUI(Define.InteractionType.None);
+            SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None);
 
             SoundManager.Instance.PlaySfx(pickUpSound);
         }
