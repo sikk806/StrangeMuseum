@@ -1,5 +1,67 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3406591856953673797
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2775942816666918726}
+  m_Layer: 0
+  m_Name: RemovableObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2775942816666918726
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3406591856953673797}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000016391277, y: 0.000000044703484, z: 0.000004336238, w: 1}
+  m_LocalPosition: {x: -129.3407, y: 27.556877, z: 1.4074113}
+  m_LocalScale: {x: 2.6938732, y: 2.6938756, z: 2.6938756}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1222782566324722514}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &7213278233584582476
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5668352511117820078}
+  m_Layer: 0
+  m_Name: StaticObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5668352511117820078
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7213278233584582476}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0.00000016391277, y: 0.000000044703484, z: 0.000004336238, w: 1}
+  m_LocalPosition: {x: -129.3407, y: 27.556877, z: 1.4074113}
+  m_LocalScale: {x: 2.6938732, y: 2.6938756, z: 2.6938756}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1222782566324722514}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8732766988627749766
 GameObject:
   m_ObjectHideFlags: 0
@@ -113,6 +175,12 @@ PrefabInstance:
     m_AddedGameObjects:
     - targetCorrespondingSourceObject: {fileID: 400000, guid: 7cf529ba77cee3c4c9dd223e7c560120, type: 3}
       insertIndex: -1
+      addedObject: {fileID: 5668352511117820078}
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: 7cf529ba77cee3c4c9dd223e7c560120, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2775942816666918726}
+    - targetCorrespondingSourceObject: {fileID: 400000, guid: 7cf529ba77cee3c4c9dd223e7c560120, type: 3}
+      insertIndex: -1
       addedObject: {fileID: 5162044520219098904}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 7cf529ba77cee3c4c9dd223e7c560120, type: 3}
@@ -195,6 +263,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: 8952ba3e057cc094381d9c74c811cdb8, type: 2}
+  audioClip: {fileID: 0}
 --- !u!1001 &4527941260838076789
 PrefabInstance:
   m_ObjectHideFlags: 0

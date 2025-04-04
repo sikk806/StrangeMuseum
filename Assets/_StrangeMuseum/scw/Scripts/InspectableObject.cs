@@ -77,67 +77,27 @@ public class InspectableObject : NetworkBehaviour
     {
         //if (Random.Range(0, 1f) > 0.0f) return; // 확률 삽입
 
+        SetActiveForSelectedChildren(playerId);
+
         switch (inspectableObjectData.objectName)
         {
-            case "디플로도쿠스 화석":
-                SetActiveForSelectedChildren(playerId, 2, 0);
-                break;
-            case "대왕 딱정벌레":
-                SetActiveForSelectedChildren(playerId, 0, -1);
-                break;
             case "모아이 석상":
-                SetActiveForSelectedChildren(playerId, 2, -1);
                 direction = targetPos - transform.position;
                 direction.y = 0f;
                 transform.rotation = Quaternion.LookRotation(direction);
                 break;
-            case "소녀 미라":
-                SetActiveForSelectedChildren(playerId, 1, 0);
-                break;
-            case "이집트 석관":
-                SetActiveForSelectedChildren(playerId, 1, 0);
-                break;
-            case "미라":
-                SetActiveForSelectedChildren(playerId, 2, 1);
-                break;
-            case "동양풍 거울":
-                SetActiveForSelectedChildren(playerId, 6, -1);
-                break;
-            case "흉상":
-                SetActiveForSelectedChildren(playerId, 6, -1);
-                break;
             case "???":
-                SetActiveForSelectedChildren(playerId, 1, -1);
                 transform.GetChild(0).GetChild(1).GetComponent<Renderer>().material.EnableKeyword("_EMISSION");
                 break;
-            case "안내판":
-                SetActiveForSelectedChildren(playerId, 0, -1);
-                break;
             case "우편물":
-                SetActiveForSelectedChildren(playerId, 1, 0);
-                direction = targetPos - this.transform.GetChild(1).GetChild(0).transform.position;
+                direction = targetPos - this.transform.GetChild(2).GetChild(0).transform.position;
                 direction.y = 0f;
-                this.transform.GetChild(1).GetChild(0).transform.rotation = Quaternion.LookRotation(direction);
-                break;
-            case "맨홀":
-                SetActiveForSelectedChildren(playerId, 0, -1);
-                break;
-            case "중세 롱소드":
-                SetActiveForSelectedChildren(playerId, 0, -1);
-                break;
-            case "그림":
-                SetActiveForSelectedChildren(playerId, 2, 1);
-                break;
-            case "쓰레기통":
-                SetActiveForSelectedChildren(playerId, 2, 0);
-                break;
-            case "정수기":
-                SetActiveForSelectedChildren(playerId, 3, -1);
+                this.transform.GetChild(2).GetChild(0).transform.rotation = Quaternion.LookRotation(direction);
                 break;
         }
     }
 
-    private void SetActiveForSelectedChildren(ulong playerId, int trueIndex, int falseIndex) // 입력한 정수번째의 자식 오브젝트를 켜거나 끄는 함수
+    private void SetActiveForSelectedChildren(ulong playerId) // 입력한 정수번째의 자식 오브젝트를 켜거나 끄는 함수
     {
         UIManager.Instance.BlackOutEffect(playerId); // 블랙아웃 이펙트
 
@@ -146,8 +106,8 @@ public class InspectableObject : NetworkBehaviour
             StartCoroutine(PlayHorrorSound(1f, playerId));
         }
 
-        if (trueIndex != -1) this.transform.GetChild(trueIndex).gameObject.SetActive(true);
-        if (falseIndex != -1) this.transform.GetChild(falseIndex).gameObject.SetActive(false);
+        this.transform.GetChild(1).gameObject.SetActive(false);
+        this.transform.GetChild(2).gameObject.SetActive(true);
     }
 
     private IEnumerator PlayHorrorSound(float delay, ulong playerId)
