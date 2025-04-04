@@ -3,7 +3,8 @@ using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerRespawnManager : NetworkBehaviour
+/*
+public class PlayerRespawnManager
 {
     [SerializeField] NetworkObject statuePrefab;
 
@@ -84,3 +85,4 @@ public class PlayerRespawnManager : NetworkBehaviour
         playerObj.SpawnAsPlayerObject(ownerClientId);
     }
 }   
+*/

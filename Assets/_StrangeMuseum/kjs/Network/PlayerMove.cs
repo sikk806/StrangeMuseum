@@ -3,6 +3,11 @@ using Mirror;
 
 public class PlayerMove : NetworkBehaviour
 {
+    private void Start()
+    {
+        transform.position = Vector3.zero;
+    }
+
     private void Update()
     {
         if(isLocalPlayer)

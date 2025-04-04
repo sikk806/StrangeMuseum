@@ -89,7 +89,7 @@ public class StatueInteraction : NetworkBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            statueController.MovementSpeed.Value = Mathf.Lerp(statueController.MovementSpeed.Value, minMoveSpeed, elapsedTime / handCuffCooltime); //
+            statueController.MovementSpeed = Mathf.Lerp(statueController.MovementSpeed, minMoveSpeed, elapsedTime / handCuffCooltime); //
             statueAttack.RushSpeed.Value = Mathf.Lerp(statueAttack.RushSpeed.Value, minRushSpeed, elapsedTime / handCuffCooltime); //1.5
 
             yield return null;
@@ -103,7 +103,7 @@ public class StatueInteraction : NetworkBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            statueController.MovementSpeed.Value = Mathf.Lerp(minMoveSpeed, statueController.InitMovementSpeed, elapsedTime / handCuffCooltime);
+            //statueController.MovementSpeed = Mathf.Lerp(minMoveSpeed, statueController.InitMovementSpeed, elapsedTime / handCuffCooltime);
             statueAttack.RushSpeed.Value = Mathf.Lerp(minRushSpeed, statueAttack.InitRushSpeed, elapsedTime / handCuffCooltime);
 
             yield return null;
