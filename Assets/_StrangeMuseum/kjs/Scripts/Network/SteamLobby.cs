@@ -5,6 +5,7 @@ using Steamworks;
 public class SteamLobby : MonoBehaviour
 {
     public static SteamLobby Instance;
+    public ulong CurrentLobbyID;
 
     private NetworkManager networkManager;
 
