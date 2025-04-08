@@ -19,7 +19,7 @@ public class ItemData
         None, Self, Target
     }
 
-    public enum ItemList //아이템 목록
+    public enum ItemList //아이템 목록 - 경비원 
     {
         None, HandCuff, EnergyDrink, Box, Cover, Pen
     }

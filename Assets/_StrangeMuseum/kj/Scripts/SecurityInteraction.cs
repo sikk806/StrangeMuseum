@@ -9,6 +9,9 @@ using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UIElements;
 
+//PlayerController - SecurityInteraction - SecurityItemController 
+
+//네트워크 관련 아이템 변수들은 각 아이템 스크립트에서 관리 -> 시도 해보기
 
 public class SecurityInteraction : NetworkBehaviour
 {
@@ -128,32 +131,11 @@ public class SecurityInteraction : NetworkBehaviour
 
         securityController = GetComponent<SecurityController>();
 
-        LightInit();
 
         if (IsOwner)  // 내가 소유한 클라이언트라면
         {
             networkLight.intensity = 0;
         }
-    }
-
-
-    private void LightInit()
-    {
-        // Transform aTransform = securityController.playerCamera.transform.Find("StylizedHand.Left");
-
-        // if (aTransform != null)
-        // {
-        //     Transform cTransform = aTransform.Find("FlashLight");
-
-        //     if (cTransform != null)
-        //     {
-        //         Flashlight = cTransform.GetComponentInChildren<Light>();
-
-        //         Flashlight.intensity = 0;
-        //         isLight = false;
-        //     }
-        //}
-
     }
 
 

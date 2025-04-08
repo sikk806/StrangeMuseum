@@ -453,8 +453,6 @@ public class SecurityInGameUI : NetworkBehaviour
       
     }
 
-
-
     public void OnDestroyItemUI(GameObject item, int slotIndex)
     {
 
