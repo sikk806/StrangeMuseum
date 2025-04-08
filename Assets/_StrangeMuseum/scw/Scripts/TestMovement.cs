@@ -22,7 +22,6 @@ public class TestMovement : MonoBehaviour
     private float moveX = 0, moveZ = 0;
     private float mouseX = 0, mouseY = 0;
     private float pitch = 0, yaw = 0;
-    private bool voiceOn = true;
 
     private string voiceChannelName;
     private Vector3 moveVector;
@@ -48,7 +47,6 @@ public class TestMovement : MonoBehaviour
         transform.Rotate(Vector3.zero);
 
         playerCamera = Camera.main.transform;
-        playerCamera.GetChild(0).gameObject.SetActive(true);
         skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
 
         Cursor.lockState = CursorLockMode.Locked; // scw Ãß°¡
