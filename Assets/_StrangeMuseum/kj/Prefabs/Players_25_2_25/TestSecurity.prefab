@@ -618,9 +618,9 @@ GameObject:
   - component: {fileID: 1464467580131560704}
   - component: {fileID: 5513580793875675497}
   - component: {fileID: -5139576709211526103}
-  - component: {fileID: 2870416664137284941}
+  - component: {fileID: 2134833983344411397}
   m_Layer: 3
-  m_Name: Security (1)
+  m_Name: TestSecurity
   m_TagString: Bouncer
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -679,7 +679,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2291498698
+  GlobalObjectIdHash: 1625040937
   InScenePlacedSourceGlobalObjectIdHash: 2291498698
   DeferredDespawnTick: 0
   Ownership: 1
@@ -859,7 +859,7 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   isMissionProgress:
     m_InternalValue: 0
---- !u!114 &2870416664137284941
+--- !u!114 &2134833983344411397
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -868,14 +868,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 6042096211448569219}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Script: {fileID: 11500000, guid: 2c6af55a80bbf514c854917a99a2e5a0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 0
-  _assetId: 3542583113
-  serverOnly: 0
-  visibility: 0
-  hasSpawned: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  MovementSpeed: 5
+  JumpForce: 3
+  Gravity: 9.8
+  MouseSensitivity: 2
+  SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
+  CharacterMesh: {fileID: 0}
 --- !u!1 &7148736106507618845
 GameObject:
   m_ObjectHideFlags: 0

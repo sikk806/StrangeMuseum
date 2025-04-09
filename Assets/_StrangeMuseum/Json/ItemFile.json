@@ -3,10 +3,6 @@
     "itemName": "구속구",
     "itemExplain": "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소"
   },
-  "EnergyDrink": {
-    "itemName": "에너지 드링크",
-    "itemExplain": "사용 시, 이동속도 증가"
-  },
   "Box": {
     "itemName": "박스",
     "itemExplain": "사용 시, 조각상의 공격으로 부터 1회 방어"

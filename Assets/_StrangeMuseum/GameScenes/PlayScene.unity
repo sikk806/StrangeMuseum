@@ -66761,6 +66761,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 787568726660631735, guid: 2faae918844cd234e8d53284ae2ab0bd, type: 3}
+      propertyPath: Bouncer
+      value: 
+      objectReference: {fileID: 6042096211448569219, guid: 4498b11b8407c3c4a9981da127b9e220, type: 3}
+    - target: {fileID: 787568726660631735, guid: 2faae918844cd234e8d53284ae2ab0bd, type: 3}
       propertyPath: StatueSpawnPoint.Array.size
       value: 6
       objectReference: {fileID: 0}
