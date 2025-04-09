@@ -1,0 +1,154 @@
+using Mirror;
+using Mirror.Examples.Common;
+using System.Threading;
+using Unity.Android.Gradle.Manifest;
+using UnityEngine;
+using UnityEngine.Playables;
+
+public class TestMoveController : NetworkBehaviour
+{
+    [Header("MovementSetting")]
+    public float MovementSpeed = 5f;// default : 5f
+    public float InitWalkingSpeed = 5f;// default : 5f
+    public float JumpForce = 3f;
+    public float Gravity = 9.8f;
+
+    public void SetPlayerState(PlayerState state) { playerState = state; }
+    public PlayerState GetPlayerState() { return playerState; }
+
+    public Transform GetPlayerCamera() { return playerCamera; }
+
+    // 이 부분은 플레이어가 스폰 됐을 때 사용할 것으로 예상. 필요 없다면 과감히 지울 것.
+    // public static Action<SecurityController> OnPlayerSpawn;
+    // public static Action<SecurityController> OnPlayerDespawn;
+
+    // private Zone
+    private float moveX = 0, moveZ = 0; // 이동 변수 (X : AD | Z : WS)
+
+    private Vector3 moveVector;
+
+    private Animator animator;
+    private CharacterController characterController;
+    //private PlayerInteraction playerInteraction; // 임무 오브젝트와 상호작용 기능 추가 > 합칠것
+
+    // 상속을 위한 변수들
+    private PlayerState playerState;
+    private Transform playerCamera;
+
+    [Header("\nCameraSetting")]
+    public float MouseSensitivity = 2f;
+    public Vector3 SecurityCameraPosition = new Vector3(0, 1.36f, 0.15f);
+
+    public GameObject CharacterMesh; // 본인 캐릭터 메쉬는 안보이도록 조정 : SecurityController
+
+    // private Zone
+    private float mouseX = 0, mouseY = 0;
+    private float pitch = 0, yaw = 0;
+
+    void Awake()
+    {
+        animator = GetComponent<Animator>();
+        characterController = GetComponent<CharacterController>();
+
+        InitWalkingSpeed = MovementSpeed;
+        // PlayerInteraction 합쳐야 함.
+    }
+
+    void Start()
+    {
+        playerState = PlayerState.Idle;
+        transform.Rotate(Vector3.zero);
+
+        // Player 카메라 가져오기.
+        playerCamera = Camera.main.transform;
+        playerCamera.GetChild(0).gameObject.SetActive(true);
+
+        Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        PlayerMovement();
+
+        MouseMove();
+    }
+
+    void PlayerMovement()
+    {
+        // 카메라는 경비원과 석상이 다르기 때문에 자식 클래스에서 진행
+        // Move (키보드)
+        moveX = Input.GetAxis("Horizontal");
+        moveZ = Input.GetAxis("Vertical");
+
+        if (playerState != PlayerState.Jump)
+        {
+            if (moveX < 0.1f && moveZ < 0.1f && moveX > -0.1f && moveZ > -0.1f)
+            {
+                playerState = PlayerState.Idle;
+            }
+            else
+            {
+                playerState = PlayerState.Run;
+            }
+        }
+
+        if (animator)
+        {
+            animator.SetFloat("ForwardSpeed", moveX);
+            animator.SetFloat("RightSpeed", moveZ);
+        }
+
+        Vector3 move = transform.right * moveX + transform.forward * moveZ;
+        moveVector.x = move.x * MovementSpeed;
+        moveVector.z = move.z * MovementSpeed;
+
+        // Jump 가능 여부는 Layer / Tag 등으로 구분할 예정
+        if (!characterController.isGrounded)
+        {
+            moveVector.y -= Gravity * Time.deltaTime;
+        }
+        else
+        {
+            // Jump에서 착지하는 순간 if문으로 들어가게 됨. > Idle 상태로 바꿈. (isGrounded 와 Jump state의 다른 점은 이전에 점프를 했는지 아닌지를 알 수 있음)
+            if (playerState == PlayerState.Jump)
+            {
+                playerState = PlayerState.Idle;
+                if (animator) SetAnimTrigger("Idle");
+            }
+            // Jump 는 Idle 상태일 때만 가능하도록
+            else if (playerState == PlayerState.Idle || playerState == PlayerState.Run)
+            {
+                if (Input.GetKeyDown(KeyCode.Space))
+                {
+                    moveVector.y = Mathf.Sqrt(JumpForce * Gravity);
+
+                    playerState = PlayerState.Jump;
+                    if (animator) SetAnimTrigger("Jump");
+                }
+            }
+        }
+        characterController.Move(moveVector * Time.deltaTime);
+    }
+
+    void MouseMove()
+    {
+        mouseX = Input.GetAxis("Mouse X") * MouseSensitivity;
+        mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
+
+        transform.Rotate(Vector3.up * mouseX);
+        playerCamera.Rotate(Vector3.up * mouseX);
+
+        yaw += mouseX;
+        pitch -= mouseY;
+        pitch = Mathf.Clamp(pitch, -30f, 30f);
+
+        playerCamera.localRotation = Quaternion.Euler(pitch, yaw, 0f);
+        playerCamera.position = transform.position + transform.rotation * SecurityCameraPosition;
+    }
+
+    public void SetAnimTrigger(string Value)
+    {
+        animator.SetTrigger(Value);
+    }
+}

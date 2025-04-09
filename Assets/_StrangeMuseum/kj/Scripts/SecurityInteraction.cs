@@ -23,7 +23,7 @@ public class SecurityInteraction : NetworkBehaviour
 
     private IUsableItem inusableItem; // 상호작용할 수 있는 아이템 저장
 
-    private SecurityController securityController;
+    private TestMoveController testMoveController;
 
     [SerializeField]
     private AudioClip pickUpSound; // 구속구 공포 효과음
@@ -40,7 +40,7 @@ public class SecurityInteraction : NetworkBehaviour
 
     public GameObject DashVisualEffect; // 이동속도가 빨라졌을 때 이펙트 -JS-
 
-    private Transform playerCamera;
+
 
     Light Flashlight; //손전등 자식에 있는 Light컴포넌트
 
@@ -97,18 +97,16 @@ public class SecurityInteraction : NetworkBehaviour
         isEnergyDrinkUsing.Value = value;
     }
 
+
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
 
-
-        if (IsOwner)
+        if (IsOwner)  // 내가 소유한 클라이언트라면
         {
             uiInstance = Instantiate(InGameUIPrefab);
-            Debug.Log("OnDie += HandleDie 등록");
         }
     }
-
     public override void OnNetworkDespawn()
     {
         base.OnNetworkDespawn();
@@ -116,7 +114,7 @@ public class SecurityInteraction : NetworkBehaviour
         if (IsOwner)
         {
             Destroy(uiInstance);
-            Debug.Log("OnDie -= HandleDie 해제");
+
         }
 
     }
@@ -124,20 +122,42 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void Start()
     {
+       
         if (IsOwner == false)
         {
             return;
         }
 
-        securityController = GetComponent<SecurityController>();
+        testMoveController = GetComponent<TestMoveController>();
 
+        //LightInit(); //창우님이 처리
 
         if (IsOwner)  // 내가 소유한 클라이언트라면
         {
             networkLight.intensity = 0;
+
+            uiInstance = Instantiate(InGameUIPrefab);
+            Debug.Log("OnDie += HandleDie 등록");
         }
     }
+    //private void LightInit() //창우님이 처리
+    //{
+    //    Transform aTransform = securityController.playerCamera.transform.Find("StylizedHand.Left");
 
+    //    if (aTransform != null)
+    //    {
+    //        Transform cTransform = aTransform.Find("FlashLight");
+
+    //        if (cTransform != null)
+    //        {
+    //            Flashlight = cTransform.GetComponentInChildren<Light>();
+
+    //            Flashlight.intensity = 0;
+    //            isLight = false;
+    //        }
+    //    }
+
+    //}
 
     private void Update()
     {
@@ -147,7 +167,7 @@ public class SecurityInteraction : NetworkBehaviour
         }
         LightOnOff();
 
-        LightItemRay();
+//LightItemRay(); //창우님이 처리
 
         BouncerInteractionRay();
 
@@ -384,8 +404,8 @@ public class SecurityInteraction : NetworkBehaviour
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            securityController.MovementSpeed =
-                Mathf.Lerp(securityController.MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
+            testMoveController.MovementSpeed =
+                Mathf.Lerp(testMoveController.MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
 
 
 
@@ -398,8 +418,8 @@ public class SecurityInteraction : NetworkBehaviour
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            //securityController.MovementSpeed =
-            //Mathf.Lerp(securityController.MovementSpeed, securityController.InitWalkingSpeed, elapsedTime / halfCooldown);
+            testMoveController.MovementSpeed =
+            Mathf.Lerp(testMoveController.MovementSpeed, testMoveController.InitWalkingSpeed, elapsedTime / halfCooldown);
 
             yield return null;
         }
@@ -408,29 +428,6 @@ public class SecurityInteraction : NetworkBehaviour
         energyDrink.ResetEnergyDrinkServerRpc(NetworkManager.Singleton.LocalClientId);
 
         SetIsInEnergyDrinkServerRpc(false);
-    }
-
-    // 이속 버프 잠시 보류
-
-    public void EnergyDrinkRushEffect(float cooltime)
-    {
-        StartCoroutine(RushEffectOn(cooltime));
-    }
-    private IEnumerator RushEffectOn(float cooltime)
-    {
-
-        float elapsedTime = 0f;
-        playerCamera = Camera.main.transform;
-
-        GameObject go = Instantiate(DashVisualEffect);
-        while (elapsedTime < cooltime)
-        {
-            elapsedTime += Time.deltaTime;
-            go.transform.position = playerCamera.transform.position + playerCamera.transform.forward;
-            go.transform.LookAt(playerCamera);
-            yield return null;
-        }
-        Destroy(go);
     }
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2. 박스 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -560,7 +557,7 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void NotifyClientBoxRemoved()
     {
-        Debug.Log($"ClientRpc 실행됨 | IsOwner: {IsOwner}, OwnerClientId: {OwnerClientId}, LocalClientId: {NetworkManager.Singleton.LocalClientId}");
+     
 
         if (isBoxUsing.Value == true)
         {

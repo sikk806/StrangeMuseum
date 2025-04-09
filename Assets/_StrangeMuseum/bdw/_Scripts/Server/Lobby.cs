@@ -67,7 +67,7 @@ namespace Bdw
             {
                 playButton.gameObject.SetActive(true);
                 //임시 테스트로 2, 추후에는 방 만들 떄의 최디 인원으로 변경
-                if (curLobby.Players.Count > 1)
+                if (curLobby.Players.Count > 0)
                 {
                     playButton.interactable = true;
                 }

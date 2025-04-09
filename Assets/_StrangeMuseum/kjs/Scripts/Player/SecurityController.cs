@@ -19,7 +19,7 @@ public class SecurityController : PlayerController
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     protected override void Start()
     {
-        if(!isLocalPlayer) return;
+        if(!isOwned) return;
 
         base.Start();
 
@@ -32,7 +32,7 @@ public class SecurityController : PlayerController
     protected override void Update()
     {
         // For Network Play
-        if (!isLocalPlayer) return;
+        if (!isOwned) return;
 
         base.Update();
 

@@ -14,7 +14,6 @@ GameObject:
   - component: {fileID: 2376435771032651080}
   - component: {fileID: 6431683662933697746}
   - component: {fileID: 8631921669097682752}
-  - component: {fileID: 2758483084370137150}
   - component: {fileID: 6676646949130073717}
   - component: {fileID: 2946418131496519850}
   - component: {fileID: -5376136803579337594}
@@ -181,30 +180,6 @@ MonoBehaviour:
   InitRushSpeed: 0
   RushDuration: 0.2
   DashVisualEffect: {fileID: 8514267958666413135, guid: 4c8b45890ead24d428e312e60163efa7, type: 3}
---- !u!114 &2758483084370137150
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 536372768802411126}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c610038aa8069e44db7483e61565d398, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  MovementSpeed:
-    m_InternalValue: 5
-  InitMovementSpeed: 0
-  JumpForce: 3
-  Gravity: 9.8
-  RushSpeed: 0
-  initRushSpeed: 0
-  MouseSensitivity: 2
-  StatueCameraPosition: {x: 0, y: 1.9, z: -0.75}
-  playerState:
-    m_InternalValue: 0
 --- !u!114 &6676646949130073717
 MonoBehaviour:
   m_ObjectHideFlags: 0
