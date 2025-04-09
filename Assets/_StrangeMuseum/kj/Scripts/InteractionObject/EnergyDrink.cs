@@ -18,10 +18,9 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     }
 
 
-    public void Interact(SecurityInteraction bouncer) //에너지 드링크 상호작용 
+    public void Interact() //에너지 드링크 상호작용 
     {
 
-        bouncerIntercation = bouncer.GetComponent<SecurityInteraction>();
 
         for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
         {
@@ -59,6 +58,16 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     [SerializeField]
     int itemLayer;
 
+    public NetworkVariable<bool> isEnergyDrinkUsing = new NetworkVariable<bool>
+(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
+
+
+    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    public void SetIsInEnergyDrinkServerRpc(bool value)
+    {
+        isEnergyDrinkUsing.Value = value;
+    }
+
     [ServerRpc(RequireOwnership = false)]
     public void UseServerRpc(ulong ClientId)
     {
@@ -74,13 +83,8 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
         Debug.Log($"서버에서 에너지 드링크 사용 처리 - ClientId: {ClientId}");
 
-        // Bouncer(보안요원) 캐릭터의 속도 증가 효과 적용
-
-        // 현재 게임에 존재하는 모든 SecurityInteraction(Bouncer) 객체 찾기
         var allSecurityInteractions = FindObjectsOfType<SecurityInteraction>();
 
-
-            // 해당 ClientId를 소유한 Bouncer 찾기
         SecurityInteraction targetBouncer = null;
         foreach (var security in allSecurityInteractions)
         {
@@ -92,9 +96,18 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
             }
         }
 
-        if (targetBouncer != null && targetBouncer.isEnergyDrinkUsing.Value == false)
+        if (targetBouncer != null && isEnergyDrinkUsing.Value == false)
         {
-            targetBouncer.EnergyDrinkInteracted(this, EnergyDrinkCooltime, MaxSpeed, itemLayer);
+            if (isEnergyDrinkUsing.Value == true)
+            {
+                Debug.Log("에너지 드링크 기능 적용중");
+                return;
+            }
+
+
+            SetIsInEnergyDrinkServerRpc(true);
+
+            targetBouncer.EnergyDrinkFunction(this,EnergyDrinkCooltime, MaxSpeed);
 
             EnergyDrinkInteractedClientRpc(ClientId);
         }
@@ -119,6 +132,8 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     [ServerRpc(RequireOwnership = false)] ////RPC 호출 시 소유 여부에 관계없이 호출 가능.
     public void ResetEnergyDrinkServerRpc(ulong clientId)
     {
+        SetIsInEnergyDrinkServerRpc(false);
+
         itemLayer = 0;
         bouncerIntercation = null;
 

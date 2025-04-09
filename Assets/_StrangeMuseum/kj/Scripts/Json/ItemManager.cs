@@ -76,7 +76,6 @@ public class ItemManager : MonoBehaviour
     {
         filePath = Application.dataPath + "/_StrangeMuseum/Json/ItemFile.json";
 
-
         itemDictionary = new Dictionary<ItemData.ItemList, ItemData>
             {
                  { ItemData.ItemList.HandCuff, new ItemData("구속구", "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소") },
@@ -85,6 +84,7 @@ public class ItemManager : MonoBehaviour
                  { ItemData.ItemList.Cover, new ItemData("피 묻은 천", "조각상에게 사용 시, 조각상의 시야 기능 제한") },
                  { ItemData.ItemList.Pen, new ItemData("만년필", "조각상 적중 시, 조각상의 보이스 챗 기능 제한") }
             };
+
         SaveItemData();
 
 

@@ -23,12 +23,10 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
         return ItemData.ItemUseType.Target;
     }
 
-    public void Interact(SecurityInteraction bouncer) // 구속구 상호작용
+    public void Interact() // 구속구 상호작용
     {
         this.gameObject.tag = "Untagged";
         this.gameObject.layer = 0; //Defalut
-
-        bouncerInteraction = bouncer.GetComponent<SecurityInteraction>();
 
         for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
         {

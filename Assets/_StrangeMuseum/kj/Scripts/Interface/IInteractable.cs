@@ -2,6 +2,6 @@ using UnityEngine;
 
 public interface IInteractable
 {
-   public void Interact(SecurityInteraction bouncerInteraction);
+   public void Interact();
 
 }

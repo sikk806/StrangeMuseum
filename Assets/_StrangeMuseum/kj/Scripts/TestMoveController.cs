@@ -69,6 +69,7 @@ public class TestMoveController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+    
         PlayerMovement();
 
         MouseMove();

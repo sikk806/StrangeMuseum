@@ -22,10 +22,8 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
         return ItemData.ItemUseType.Self;
     }
 
-    public void Interact(SecurityInteraction bouncer) //에너지 드링크 상호작용 
+    public void Interact() //에너지 드링크 상호작용 
     {
-
-        bouncerIntercation = bouncer.GetComponent<SecurityInteraction>();
 
         for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
         {
