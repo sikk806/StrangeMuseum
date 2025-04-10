@@ -9,6 +9,39 @@ public class FlashLight : MonoBehaviour
 
     private Vector3 velocity = Vector3.zero;
 
+
+    public Transform flickerTarget;         // 껐다 켰다 할 자식 오브젝트
+    public float minFlickerInterval = 0.1f; // 최소 간격
+    public float maxFlickerInterval = 0.5f; // 최대 간격
+    public bool flickerEnabled = true;      // flicker on/off toggle
+
+    private float timer;
+    private float nextFlickerTime;
+
+    void Start()
+    {
+        ScheduleNextFlicker();
+    }
+
+    void Update()
+    {
+        if (!flickerEnabled || flickerTarget == null) return;
+
+        timer += Time.deltaTime;
+        if (timer >= nextFlickerTime)
+        {
+            // 토글 on/off
+            flickerTarget.gameObject.SetActive(!flickerTarget.gameObject.activeSelf);
+            timer = 0f;
+            ScheduleNextFlicker();
+        }
+    }
+
+    void ScheduleNextFlicker()
+    {
+        nextFlickerTime = Random.Range(minFlickerInterval, maxFlickerInterval);
+    }
+
     void LateUpdate()
     {
         // 위치 따라가기 (부드럽게)
@@ -20,7 +53,7 @@ public class FlashLight : MonoBehaviour
         transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, rotationSmoothSpeed * Time.deltaTime);
 
         // 조명 흔들림 효과
-        Vector3 randomShake = Random.insideUnitSphere * 0.01f;
-        transform.rotation *= Quaternion.Euler(randomShake);
+        //Vector3 randomShake = Random.insideUnitSphere * 0.01f;
+        //transform.rotation *= Quaternion.Euler(randomShake);
     }
 }
