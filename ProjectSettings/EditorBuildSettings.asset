@@ -23,5 +23,11 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/_StrangeMuseum/kjs/Scene/SteamNetworkTestScene.unity
     guid: 98c1430e1337c8a41ba4e854f80ab36f
+  - enabled: 1
+    path: Assets/_StrangeMuseum/kjs/Scene/Lobby.unity
+    guid: a127f5a0e7c391146b77f7a4ded4d3fa
+  - enabled: 1
+    path: Assets/_StrangeMuseum/kjs/Scene/NetworkTest.unity
+    guid: 043a1f868df23234c8fdf57403f9e215
   m_configObjects: {}
   m_UseUCBPForAssetBundles: 0

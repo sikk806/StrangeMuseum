@@ -1,5 +1,6 @@
 using System;
 using Steamworks;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,13 +11,29 @@ public class PlayerListItem : MonoBehaviour
     public int ConnectionID;
     public ulong PlayerSteamID;
 
-    public Text PlayerNameText;
+    public TMP_Text PlayerNameText;
     public RawImage PlayerIcon;
+    public TMP_Text PlayerReadyText;
+    public bool Ready;
 
     // private Zone
     private bool AvatarReceived;
 
     protected Callback<AvatarImageLoaded_t> ImageLoaded;
+
+    public void ChangeReadyStatus()
+    {
+        if(Ready)
+        {
+            PlayerReadyText.text = "준비";
+            PlayerReadyText.color = Color.green;
+        }
+        else
+        {
+            PlayerReadyText.text = "대기중..";
+            PlayerReadyText.color = Color.gray;
+        }
+    }
 
     private void Start()
     {
@@ -29,11 +46,16 @@ public class PlayerListItem : MonoBehaviour
         {
             PlayerIcon.texture = GetSteamImageAsTexture(callback.m_iImage);
         }
+        else
+        {
+            return;
+        }
     }
 
     public void SetPlayerValues()
     {
         PlayerNameText.text = PlayerName;
+        ChangeReadyStatus();
         if(!AvatarReceived) { GetPlayerIcon(); }
     }
 
@@ -41,7 +63,15 @@ public class PlayerListItem : MonoBehaviour
     void GetPlayerIcon()
     {
         int ImageID = SteamFriends.GetLargeFriendAvatar((CSteamID)PlayerSteamID);
-        if(ImageID == -1) return;
+        if(ImageID == -1)
+        {
+            Debug.Log("No ImageId");
+            return;
+        }
+
+        Debug.Log("Check The ImageId");
+
+        PlayerIcon.texture = GetSteamImageAsTexture(ImageID);
     }
 
     private Texture2D GetSteamImageAsTexture(int iImage)
