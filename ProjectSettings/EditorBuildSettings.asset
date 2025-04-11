@@ -5,13 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/_StrangeMuseum/GameScenes/MainScene.unity
     guid: 2f1abd0ba19d90a4f8843e1455a67ec0
-  - enabled: 1
+  - enabled: 0
     path: Assets/_StrangeMuseum/GameScenes/Lobby.unity
     guid: 26623ed2cd3f10f4c8c5a778a054d991
-  - enabled: 1
+  - enabled: 0
     path: Assets/_StrangeMuseum/GameScenes/PlayScene.unity
     guid: 37bfd036050e0aa4f954eee88d2bf9bb
   - enabled: 0

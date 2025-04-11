@@ -18,20 +18,20 @@ public class TestMoveController : NetworkBehaviour
 
     public Transform GetPlayerCamera() { return playerCamera; }
 
-    // ÀÌ ºÎºÐÀº ÇÃ·¹ÀÌ¾î°¡ ½ºÆù µÆÀ» ¶§ »ç¿ëÇÒ °ÍÀ¸·Î ¿¹»ó. ÇÊ¿ä ¾ø´Ù¸é °ú°¨È÷ Áö¿ï °Í.
+    // ï¿½ï¿½ ï¿½Îºï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾î°¡ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½. ï¿½Ê¿ï¿½ ï¿½ï¿½ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½.
     // public static Action<SecurityController> OnPlayerSpawn;
     // public static Action<SecurityController> OnPlayerDespawn;
 
     // private Zone
-    private float moveX = 0, moveZ = 0; // ÀÌµ¿ º¯¼ö (X : AD | Z : WS)
+    private float moveX = 0, moveZ = 0; // ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ (X : AD | Z : WS)
 
     private Vector3 moveVector;
 
     private Animator animator;
     private CharacterController characterController;
-    //private PlayerInteraction playerInteraction; // ÀÓ¹« ¿ÀºêÁ§Æ®¿Í »óÈ£ÀÛ¿ë ±â´É Ãß°¡ > ÇÕÄ¥°Í
+    //private PlayerInteraction playerInteraction; // ï¿½Ó¹ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½È£ï¿½Û¿ï¿½ ï¿½ï¿½ï¿½ ï¿½ß°ï¿½ > ï¿½ï¿½Ä¥ï¿½ï¿½
 
-    // »ó¼ÓÀ» À§ÇÑ º¯¼öµé
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     private PlayerState playerState;
     private Transform playerCamera;
 
@@ -39,7 +39,7 @@ public class TestMoveController : NetworkBehaviour
     public float MouseSensitivity = 2f;
     public Vector3 SecurityCameraPosition = new Vector3(0, 1.36f, 0.15f);
 
-    public GameObject CharacterMesh; // º»ÀÎ Ä³¸¯ÅÍ ¸Þ½¬´Â ¾Èº¸ÀÌµµ·Ï Á¶Á¤ : SecurityController
+    public GameObject CharacterMesh; // ï¿½ï¿½ï¿½ï¿½ Ä³ï¿½ï¿½ï¿½ï¿½ ï¿½Þ½ï¿½ï¿½ï¿½ ï¿½Èºï¿½ï¿½Ìµï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ : SecurityController
 
     // private Zone
     private float mouseX = 0, mouseY = 0;
@@ -51,7 +51,7 @@ public class TestMoveController : NetworkBehaviour
         characterController = GetComponent<CharacterController>();
 
         InitWalkingSpeed = MovementSpeed;
-        // PlayerInteraction ÇÕÃÄ¾ß ÇÔ.
+        // PlayerInteraction ï¿½ï¿½ï¿½Ä¾ï¿½ ï¿½ï¿½.
     }
 
     void Start()
@@ -59,11 +59,11 @@ public class TestMoveController : NetworkBehaviour
         playerState = PlayerState.Idle;
         transform.Rotate(Vector3.zero);
 
-        // Player Ä«¸Þ¶ó °¡Á®¿À±â.
+        // Player Ä«ï¿½Þ¶ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½.
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
 
-        Cursor.lockState = CursorLockMode.Locked; // Ä¿¼­ ¼û±â±â
+        Cursor.lockState = CursorLockMode.Locked; // Ä¿ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½
     }
 
     // Update is called once per frame
@@ -77,8 +77,8 @@ public class TestMoveController : NetworkBehaviour
 
     void PlayerMovement()
     {
-        // Ä«¸Þ¶ó´Â °æºñ¿ø°ú ¼®»óÀÌ ´Ù¸£±â ¶§¹®¿¡ ÀÚ½Ä Å¬·¡½º¿¡¼­ ÁøÇà
-        // Move (Å°º¸µå)
+        // Ä«ï¿½Þ¶ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù¸ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ú½ï¿½ Å¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+        // Move (Å°ï¿½ï¿½ï¿½ï¿½)
         moveX = Input.GetAxis("Horizontal");
         moveZ = Input.GetAxis("Vertical");
 
@@ -104,20 +104,20 @@ public class TestMoveController : NetworkBehaviour
         moveVector.x = move.x * MovementSpeed;
         moveVector.z = move.z * MovementSpeed;
 
-        // Jump °¡´É ¿©ºÎ´Â Layer / Tag µîÀ¸·Î ±¸ºÐÇÒ ¿¹Á¤
+        // Jump ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Î´ï¿½ Layer / Tag ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
         if (!characterController.isGrounded)
         {
             moveVector.y -= Gravity * Time.deltaTime;
         }
         else
         {
-            // Jump¿¡¼­ ÂøÁöÇÏ´Â ¼ø°£ if¹®À¸·Î µé¾î°¡°Ô µÊ. > Idle »óÅÂ·Î ¹Ù²Þ. (isGrounded ¿Í Jump stateÀÇ ´Ù¸¥ Á¡Àº ÀÌÀü¿¡ Á¡ÇÁ¸¦ Çß´ÂÁö ¾Æ´ÑÁö¸¦ ¾Ë ¼ö ÀÖÀ½)
+            // Jumpï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½ ï¿½ï¿½ï¿½ï¿½ ifï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½î°¡ï¿½ï¿½ ï¿½ï¿½. > Idle ï¿½ï¿½ï¿½Â·ï¿½ ï¿½Ù²ï¿½. (isGrounded ï¿½ï¿½ Jump stateï¿½ï¿½ ï¿½Ù¸ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ß´ï¿½ï¿½ï¿½ ï¿½Æ´ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½)
             if (playerState == PlayerState.Jump)
             {
                 playerState = PlayerState.Idle;
                 if (animator) SetAnimTrigger("Idle");
             }
-            // Jump ´Â Idle »óÅÂÀÏ ¶§¸¸ °¡´ÉÇÏµµ·Ï
+            // Jump ï¿½ï¿½ Idle ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ïµï¿½ï¿½ï¿½
             else if (playerState == PlayerState.Idle || playerState == PlayerState.Run)
             {
                 if (Input.GetKeyDown(KeyCode.Space))
