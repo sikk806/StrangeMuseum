@@ -121,7 +121,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         if (box.TryGetComponent(out NetworkObject networkObject))
         {
             BoxServerRpc(networkObject); //박스 객체 저장
-            securityDie.BoxFunction(networkObject);
+            securityDie.BoxSet(networkObject);
         }
 
     }

@@ -12,17 +12,20 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
     private SecurityInteraction bouncerIntercation;
 
+    public NetworkVariable<bool> isHandCuffUsing = new NetworkVariable<bool>
+(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
 
-    public ItemData.ItemList GetItemList()
+    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    public void SetIsHandCuffServerRpc(bool value)
     {
-        return ItemData.ItemList.HandCuff;
+        isHandCuffUsing.Value = value;
     }
 
-    public ItemData.ItemUseType GetItemType()
-    {
-        return ItemData.ItemUseType.Target;
-    }
 
+    public ItemData.ItemList GetItemList() { return ItemData.ItemList.HandCuff; }
+   
+    public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Target; }
+    
     public void Interact() //구속구 상호작용 
     {
 
@@ -103,7 +106,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
                     {
                         Debug.Log("조각상 CoverInteracted 호출 ");
 
-                        if(bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().isHandCuffUsing.Value == false)
+                        if(isHandCuffUsing.Value == false)
                         {
                             bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(this, minMoveSpeed, minRushSpeed, handCuffCooltime, ClientId);
                             bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().PlayFearSound(HandCuffFearSound);
