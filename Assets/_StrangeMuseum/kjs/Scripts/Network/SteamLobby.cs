@@ -5,6 +5,7 @@ using Steamworks;
 public class SteamLobby : MonoBehaviour
 {
     public static SteamLobby Instance;
+    public GameObject HostButton;
     public ulong CurrentLobbyID;
 
     private NetworkManager networkManager;
@@ -29,7 +30,7 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-
+        HostButton.SetActive(false);
         SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, networkManager.maxConnections);
     }
 
@@ -53,6 +54,7 @@ public class SteamLobby : MonoBehaviour
 
     private void OnLobbyEntered(LobbyEnter_t callback)
     {
+        CurrentLobbyID = callback.m_ulSteamIDLobby;
         if(NetworkServer.active) return;
 
         string hostAddress = SteamMatchmaking.GetLobbyData(new CSteamID(callback.m_ulSteamIDLobby), HostAddressKey);
