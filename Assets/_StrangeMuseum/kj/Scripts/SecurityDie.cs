@@ -25,11 +25,9 @@ public class SecurityDie : NetworkBehaviour
         isStatueCollider.Value = value;
     }
 
-    NetworkObjectReference box;
-
     [SerializeField]
     GameObject currentBox;
-    public void BoxFunction(NetworkObjectReference box)
+    public void BoxSet(NetworkObjectReference box)
     {
         if (!IsOwner) { return; }
 

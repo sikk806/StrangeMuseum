@@ -3,6 +3,7 @@ using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.UIElements;
 
 public class StatueInGameUI : NetworkBehaviour
 {
@@ -83,14 +84,25 @@ public class StatueInGameUI : NetworkBehaviour
 
     }
 
+    [SerializeField]
+    GameObject currentCover;
 
+    public void CoverSet(NetworkObjectReference cover)
+    {
+        if (!IsOwner) { return; }
+
+        if (cover.TryGet(out NetworkObject networkObject))
+        {
+            currentCover = cover;
+        }
+    }
     [SerializeField]
     private float CoverCooltime;
 
 
     public void CoverUI()
     {
-        if (statueInteraction.isCoverUsing.Value == false)
+        if (currentCover.GetComponent<Cover>().isCoverUsing.Value == false)
         {
             //Debug.Log("천 씌우지 않음");
             return;
@@ -102,7 +114,7 @@ public class StatueInGameUI : NetworkBehaviour
        
 
         StartCoroutine(CoverFunc(CoverCooltime));
-        statueInteraction.SetIsCoverServerRpc(false); //한번 실행 하고 바로 FALSE. 
+        currentCover.GetComponent<Cover>().SetIsCoverServerRpc(false); //한번 실행 하고 바로 FALSE. 
     }
 
     [SerializeField]
@@ -121,7 +133,7 @@ public class StatueInGameUI : NetworkBehaviour
         DecreaseAlpha();
         statueInteraction.CoverOnOffServerRpc(false);
         isCoverUI = false;
-        statueInteraction.CoverGameObject.GetComponent<Cover>().ResetInteractServerRpc(NetworkManager.Singleton.LocalClientId);
+        currentCover.GetComponent<Cover>().CoverGameObject.GetComponent<Cover>().ResetInteractServerRpc(NetworkManager.Singleton.LocalClientId);
   
     }
 
@@ -140,7 +152,9 @@ public class StatueInGameUI : NetworkBehaviour
 
     private IEnumerator ChangeAlpha(float targetAlpha)
     {
-        Image img = transform.GetChild(1).GetComponent<Image>();
+        UnityEngine.UI.Image img = transform.GetChild(1).GetComponent<UnityEngine.UI.Image>();
+
+
         if (img == null)
         {
             Debug.Log("자식 못 찾음");

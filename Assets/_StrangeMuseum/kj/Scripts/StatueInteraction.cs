@@ -9,15 +9,7 @@ using UnityEngine.UI;
 
 public class StatueInteraction : NetworkBehaviour
 {
-    public NetworkVariable<bool> isHandCuffUsing = new NetworkVariable<bool>
-(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsHandCuffServerRpc(bool value)
-    {
-        isHandCuffUsing.Value = value;
-    }
-
+ 
 
     private StatueController statueController;
     private StatueAttack statueAttack;
@@ -65,7 +57,7 @@ public class StatueInteraction : NetworkBehaviour
         if (IsServer == false) { return; }
         if (IsClient == false) { return; }
 
-        if (isHandCuffUsing.Value == true)
+        if (handcuff.isHandCuffUsing.Value == true)
         {
             Debug.Log("구속구 기능 진행중임. 아직 사용불가");
             return;
@@ -79,9 +71,7 @@ public class StatueInteraction : NetworkBehaviour
 
     private IEnumerator HandStuffFunc(HandCuff handcuff, float minMoveSpeed, float minRushSpeed, float handCuffCooltime)
     {
-        SetIsHandCuffServerRpc(true);
-
-       
+        handcuff.SetIsHandCuffServerRpc(true);
 
         //감소 시간 - handCuffCooltime / 2 = 1.5초
         float elapsedTime = 0f;
@@ -113,7 +103,7 @@ public class StatueInteraction : NetworkBehaviour
 
         handcuff.ResetInteractServerRpc(NetworkManager.Singleton.LocalClientId);
 
-        SetIsHandCuffServerRpc(false);
+        handcuff.SetIsHandCuffServerRpc(false);
     }
 
     
@@ -123,28 +113,6 @@ public class StatueInteraction : NetworkBehaviour
         // audioSource.PlayOneShot(audio);
     }
 
-
-    // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  2. 피 묻은천 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
-
-    public NetworkVariable<bool> isCoverUsing = new NetworkVariable<bool>
-(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsCoverServerRpc(bool value)
-    {
-        isCoverUsing.Value = value;
-     
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void CoverServerRpc(NetworkObjectReference coverRef)
-    {
-        if (coverRef.TryGet(out NetworkObject networkObject))
-        {
-            CoverGameObject = networkObject.gameObject;
-            CoverClientRpc(coverRef); // 서버에서 클라이언트로 전달
-        }
-    }
     [ServerRpc(RequireOwnership = false)]
     public void CoverOnOffServerRpc(bool value)
     {
@@ -158,34 +126,6 @@ public class StatueInteraction : NetworkBehaviour
     {
         transform.GetChild(4).gameObject.SetActive(value);
     }
-
-    public void CoverInteracted(bool value, GameObject cover)
-    {
-        Debug.Log("CoverInteracted 메서드 진입");
-
-        SetIsCoverServerRpc(value);
-        
-
-        if (cover.TryGetComponent(out NetworkObject networkObject))
-        {
-            CoverServerRpc(networkObject);
-            
-        }
-    }
-
-    [ClientRpc]
-    public void CoverClientRpc(NetworkObjectReference boxRef)
-    {
-        if (!boxRef.TryGet(out NetworkObject networkObject))
-        {
-            Debug.LogError("Failed to get NetworkObject from boxRef on client.");
-            return;
-        }
-
-        CoverGameObject = networkObject.gameObject;
-    }
-
-    public GameObject CoverGameObject;
 
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  3. 던지는 볼펜  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
