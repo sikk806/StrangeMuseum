@@ -7,6 +7,21 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     //1. 조각상 이동속도 일정시간 동안 낮추기 
     //2. 
 
+    [SerializeField]
+    float handCuffCooltime;
+
+    [SerializeField]
+    float minMoveSpeed;
+
+    [SerializeField]
+    float minRushSpeed;
+
+    [SerializeField]
+    int itemLayer;
+
+
+    [SerializeField]
+    private AudioClip HandCuffFearSound; // 구속구 공포 효과음
 
     public GameObject HandcuffUI; //구속구 UI
 
@@ -25,13 +40,16 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.HandCuff; }
    
     public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Target; }
-    
+
+    Slot slot;
+
     public void Interact() //구속구 상호작용 
     {
+        Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
+        for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (SecurityInGameUI.Instance.SlotData[i].IsEmpty)
+            if (slots.slotDataList[i].IsEmpty)
             {
                 NetworkObjectReference objRef = this.gameObject;
 
@@ -39,14 +57,15 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
                 itemLayer = i;
 
-                Instantiate(HandcuffUI, SecurityInGameUI.Instance.SlotData[i].SlotObj.transform, false);
-
-                SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
+                Instantiate(HandcuffUI, slots.slotDataList[i].SlotObj.transform, false);
 
 
-                SecurityInGameUI.Instance.SlotData[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
+                slots.AddItem(this.gameObject, i);
+
+
+                slots.slotDataList[i].IsEmpty = false;
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
 
@@ -55,22 +74,6 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
         }
        
     }
-
-    [SerializeField]
-    float handCuffCooltime;
-
-    [SerializeField]
-    float minMoveSpeed;
-
-    [SerializeField]
-    float minRushSpeed;
-
-    [SerializeField]
-    int itemLayer;
-
-
-    [SerializeField]
-    private AudioClip HandCuffFearSound; // 구속구 공포 효과음
 
 
     [ServerRpc(RequireOwnership = false)]

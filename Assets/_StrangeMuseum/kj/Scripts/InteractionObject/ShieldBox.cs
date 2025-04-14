@@ -11,6 +11,15 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     private SecurityInteraction bouncerIntercation;
     private SecurityDie securityDie;
 
+    [SerializeField]
+    private float boxInvincibilityTime = 2.0f; //박스 사용 후 무적 시간
+
+    public NetworkVariable<bool> isBoxUsing = new NetworkVariable<bool>
+ (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
+
+
+    public NetworkObjectReference storedBoxRef;
+
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.Box;  }
 
     public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Self; }
@@ -19,13 +28,25 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     [SerializeField]
     int itemLayer;
 
+
+    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    public void SetIsBoxServerRpc(bool value)
+    {
+        isBoxUsing.Value = value;
+    }
+
+   
+    Slots slots;
+
     public void Interact()
     {
         // if (!IsOwner) return; 
 
-        for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
+        Slots slots = SecurityInGameUI.Instance.SlotManager;
+
+        for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (SecurityInGameUI.Instance.SlotData[i].IsEmpty)
+            if (slots.slotDataList[i].IsEmpty)
             {
                 NetworkObjectReference objRef = this.gameObject;
 
@@ -33,14 +54,14 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
                 itemLayer = i;
 
-                Instantiate(BoxUI, SecurityInGameUI.Instance.SlotData[i].SlotObj.transform, false);
+                Instantiate(BoxUI, slots.slotDataList[i].SlotObj.transform, false);
 
-                SecurityInGameUI.Instance.SlotData[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
+                slots.AddItem(this.gameObject, i);
 
 
-                SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
+                slots.slotDataList[i].IsEmpty = false;
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.Box);
 
@@ -158,20 +179,6 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     {
         yield return new WaitForSeconds(boxInvincibilityTime);
         SetIsBoxServerRpc(false);
-    }
-    [SerializeField]
-    private float boxInvincibilityTime = 2.0f; //박스 사용 후 무적 시간
-
-    public NetworkVariable<bool> isBoxUsing = new NetworkVariable<bool>
- (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-
-    public NetworkObjectReference storedBoxRef;
-
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsBoxServerRpc(bool value)
-    {
-        isBoxUsing.Value = value;
     }
 
 

@@ -17,14 +17,16 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         return ItemData.ItemUseType.Self;
     }
 
+    Slot slot;
 
     public void Interact() //에너지 드링크 상호작용 
     {
 
+        Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
+        for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (SecurityInGameUI.Instance.SlotData[i].IsEmpty)
+            if (slots.slotDataList[i].IsEmpty)
             {
                 NetworkObjectReference objRef = this.gameObject;
 
@@ -32,14 +34,16 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
                 itemLayer = i;
 
-                Instantiate(EnergyDrinkUI, SecurityInGameUI.Instance.SlotData[i].SlotObj.transform, false);
-
-                SecurityInGameUI.Instance.SlotData[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
-
-                SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
+                Instantiate(EnergyDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
 
 
-                SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
+
+                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+
+                slots.AddItem(this.gameObject, i);
+
+
+                slots.slotDataList[i].IsEmpty = false;
 
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);

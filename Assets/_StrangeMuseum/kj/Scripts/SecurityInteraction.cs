@@ -23,7 +23,7 @@ public class SecurityInteraction : NetworkBehaviour
 
     private IUsableItem inusableItem; // 상호작용할 수 있는 아이템 저장
 
-    private TestMoveController testMoveController;
+    private TestMoveController testMoveController; //임시
 
     [SerializeField]
     private AudioClip pickUpSound; // 구속구 공포 효과음
@@ -69,9 +69,6 @@ public class SecurityInteraction : NetworkBehaviour
         isInteracted.Value = value;
     }
 
-
-
-
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
@@ -104,7 +101,6 @@ public class SecurityInteraction : NetworkBehaviour
 
         testMoveController = GetComponent<TestMoveController>();
 
-
         if (IsOwner)  // 내가 소유한 클라이언트라면
         {
             networkLight.intensity = 0;
@@ -126,9 +122,6 @@ public class SecurityInteraction : NetworkBehaviour
         BouncerInteracted();
 
     }
-
-
-
 
     private void BouncerInteracted()
     {
@@ -190,12 +183,10 @@ public class SecurityInteraction : NetworkBehaviour
         }
 
     }
-
     private void ItemSave(GameObject obj = null)
     {
         RayItem = obj;
     }
-
 
     #region 손전등 Light 여부에 따른 조각상 행동 제한
     //private void LightItemRay()
@@ -248,7 +239,6 @@ public class SecurityInteraction : NetworkBehaviour
     //    }
     //}
     #endregion
-
 
     [ServerRpc(RequireOwnership = false)]
     public void RayStatueServerRpc(NetworkObjectReference coverRef)

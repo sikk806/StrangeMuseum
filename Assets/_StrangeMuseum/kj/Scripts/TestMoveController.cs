@@ -1,6 +1,6 @@
-using Mirror;
-using Mirror.Examples.Common;
 using System.Threading;
+using Unity.Android.Gradle.Manifest;
+using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Playables;
 
@@ -55,6 +55,9 @@ public class TestMoveController : NetworkBehaviour
 
     void Start()
     {
+
+        if (IsOwner == false) { return; }
+
         playerState = PlayerState.Idle;
         transform.Rotate(Vector3.zero);
 
@@ -68,7 +71,9 @@ public class TestMoveController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-    
+        if(IsOwner == false) { return; }
+
+
         PlayerMovement();
 
         MouseMove();

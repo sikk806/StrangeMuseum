@@ -273,12 +273,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  HandcuffUI: {fileID: 4030549418918185853, guid: 1ae5f8d6b893958468d8b17d808c31d8, type: 3}
   handCuffCooltime: 3
   minMoveSpeed: 2
   minRushSpeed: 2
   itemLayer: 0
   HandCuffFearSound: {fileID: 8300000, guid: f0712188f30a0834495871a6816dbae9, type: 3}
+  HandcuffUI: {fileID: 4030549418918185853, guid: 1ae5f8d6b893958468d8b17d808c31d8, type: 3}
+  isHandCuffUsing:
+    m_InternalValue: 0
+  slot: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
 --- !u!114 &6785700043405978403
 MonoBehaviour:
   m_ObjectHideFlags: 0

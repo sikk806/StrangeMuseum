@@ -12,6 +12,7 @@ public class NetworkItem : NetworkBehaviour
         if (isPickedUp) return;
 
         isPickedUp = true;
+
         PickUpItemClientRpc(objRef);
     }
 
