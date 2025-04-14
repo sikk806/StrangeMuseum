@@ -4,7 +4,7 @@ using UnityEngine.SceneManagement;
 
 public class PlayerMove : NetworkBehaviour
 {
-    public float Speed = 0.1f;
+    public float Speed = 0.01f;
     public GameObject PlayerModel;
 
     private void Start()
@@ -31,7 +31,7 @@ public class PlayerMove : NetworkBehaviour
 
     public void SetPosition()
     {
-        transform.position = new Vector3(Random.Range(-10, 10), 1f, Random.Range(-5, 5));
+        transform.position = new Vector3(0, 0, 0);
     }
 
     public void Movement()
