@@ -8,7 +8,7 @@ public class SteamLobby : MonoBehaviour
     public GameObject HostButton;
     public ulong CurrentLobbyID;
 
-    private NetworkManager networkManager;
+    private SMNetworkManager networkManager;
 
     protected Callback<LobbyCreated_t> lobbyCreated;
     protected Callback<GameLobbyJoinRequested_t> gameLobbyJoinRequested;
@@ -18,7 +18,7 @@ public class SteamLobby : MonoBehaviour
 
     private void Start()
     {
-        networkManager = GetComponent<NetworkManager>();
+        networkManager = GetComponent<SMNetworkManager>();
         if(!Instance) { Instance = this; }
 
         if(!SteamManager.Initialized) return;
@@ -39,6 +39,7 @@ public class SteamLobby : MonoBehaviour
         // Check able to create Lobby. If Not show the hostButton Again
         if(callback.m_eResult != EResult.k_EResultOK)
         {
+            HostButton.SetActive(true);
             return;
         }
 

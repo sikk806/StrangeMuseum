@@ -830,7 +830,7 @@ GameObject:
   - component: {fileID: 1826124552}
   - component: {fileID: 1826124553}
   m_Layer: 0
-  m_Name: NetworkManagerSteam
+  m_Name: NetworkManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -916,7 +916,7 @@ MonoBehaviour:
   offlineSceneLoadDelay: 0
   transport: {fileID: 1826124550}
   networkAddress: localhost
-  maxConnections: 100
+  maxConnections: 6
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}

@@ -1,7 +1,6 @@
 using Mirror;
 using Mirror.Examples.Common;
 using System.Threading;
-using Unity.Android.Gradle.Manifest;
 using UnityEngine;
 using UnityEngine.Playables;
 
