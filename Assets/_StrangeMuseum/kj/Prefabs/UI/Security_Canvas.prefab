@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 8849381200719942944}
   - component: {fileID: 3312529103653644918}
   - component: {fileID: 5993926730849152074}
+  - component: {fileID: 6091544262588832097}
   m_Layer: 5
-  m_Name: Slot_Panel
+  m_Name: Slots
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,6 +103,21 @@ MonoBehaviour:
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
+--- !u!114 &6091544262588832097
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 15648695639838303}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8466c2188024354a9986069f4588962, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  SlotPrefab: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
+  maxSlot: 5
+  slotDataList: []
 --- !u!1 &850410041009757550
 GameObject:
   m_ObjectHideFlags: 0
@@ -598,18 +614,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  SlotData: []
-  maxSlot: 5
-  SlotPrefab: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
-  SlotPrefabParent: {fileID: 15648695639838303}
   InteractionUI: {fileID: 3445287738157476327}
+  SlotParent: {fileID: 15648695639838303}
   UsingIcon: {fileID: 21300000, guid: 69da02ec34c73624b91727759ad616df, type: 3}
   PickUpIcon: {fileID: 21300000, guid: bffdf8cbd8232a14c9e2eb0ebe93c6c4, type: 3}
-  selectedSlot: 0
-  itemLayer: 0
-  itemType: 0
   ItemExplain: {fileID: 4067047682217312011}
   itemObjectName: {fileID: 4682709728201847624}
+  SlotManager: {fileID: 6091544262588832097}
+  SlotData: []
+  selectedSlot: 0
 --- !u!1 &7191501076111529439
 GameObject:
   m_ObjectHideFlags: 0

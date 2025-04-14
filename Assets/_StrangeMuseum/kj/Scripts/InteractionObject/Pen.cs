@@ -11,6 +11,7 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
     [SerializeField]
     int itemLayer;
 
+    Slot slot;
 
     public ItemData.ItemList GetItemList()
     {
@@ -24,10 +25,11 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
     public void Interact() //에너지 드링크 상호작용 
     {
+        Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
+        for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (SecurityInGameUI.Instance.SlotData[i].IsEmpty)
+            if (slots.slotDataList[i].IsEmpty)
             {
                 NetworkObjectReference objRef = this.gameObject;
 
@@ -35,13 +37,13 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
                 itemLayer = i;
 
-                Instantiate(PenDrinkUI, SecurityInGameUI.Instance.SlotData[i].SlotObj.transform, false);
+                Instantiate(PenDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
 
-                SecurityInGameUI.Instance.SlotData[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
+                slots.AddItem(this.gameObject, i);
 
-                SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
+                slots.slotDataList[i].IsEmpty = false;
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
 

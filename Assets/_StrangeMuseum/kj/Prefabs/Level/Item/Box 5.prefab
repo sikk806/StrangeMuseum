@@ -152,8 +152,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   BoxUI: {fileID: 4030549418918185853, guid: 378e578b1a22eb840a9c9d26f532145e, type: 3}
+  boxInvincibilityTime: 2
+  isBoxUsing:
+    m_InternalValue: 0
   itemLayer: 0
-  BoxUsedDelay: 2
+  slot: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
 --- !u!114 &217356399811419659
 MonoBehaviour:
   m_ObjectHideFlags: 0

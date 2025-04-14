@@ -391,6 +391,10 @@ MonoBehaviour:
   CoverUI: {fileID: 8795116587346773864, guid: 3edf8a2ba6425b9468ee0e2db067eba0, type: 3}
   CoverCooltime: 3
   itemLayer: 0
+  isCoverUsing:
+    m_InternalValue: 0
+  CoverGameObject: {fileID: 0}
+  slot: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
 --- !u!64 &3542726733822222168
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -217,9 +217,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
   EnergyDrinkUI: {fileID: 4030549418918185853, guid: 1ebaaded63d517848a704217886a5204, type: 3}
+  slot: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
   EnergyDrinkCooltime: 3
   MaxSpeed: 10
   itemLayer: 0
+  isEnergyDrinkUsing:
+    m_InternalValue: 0
 --- !u!114 &4203683101542091748
 MonoBehaviour:
   m_ObjectHideFlags: 0

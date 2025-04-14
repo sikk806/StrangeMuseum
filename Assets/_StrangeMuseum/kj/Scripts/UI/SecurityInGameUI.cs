@@ -18,35 +18,25 @@ public class SecurityInGameUI : NetworkBehaviour
         }
     }
 
-    public List<SlotData> SlotData = new List<SlotData>();
-    public int maxSlot = 5;
 
-    public GameObject SlotPrefab;
-    public GameObject SlotPrefabParent;
+    [Header("UI References")]
+    [SerializeField] private GameObject InteractionUI;
+    [SerializeField] private Sprite UsingIcon;
+    [SerializeField] private Sprite PickUpIcon;
+    [SerializeField] private TextMeshProUGUI ItemExplain;
+    public TextMeshProUGUI itemObjectName;
+
+    [Header("Slot Management")]
+    public Slots SlotManager;
 
 
-
-    [SerializeField]
-    GameObject InteractionUI;
-
-    [SerializeField]
-    Sprite UsingIcon;
-
-    [SerializeField]
-    Sprite PickUpIcon;
     private IUsableItem usableItem;
 
-    public int selectedSlot = 0;
+    ItemData.ItemUseType itemType;
+    ItemData.ItemList itemList;
 
     PlayerInteraction Interaction;
     SecurityInteraction bouncerInteraction;
-
-
-
-    [SerializeField]
-    TextMeshProUGUI ItemExplain;
-
-    public TextMeshProUGUI itemObjectName;
 
     private void Awake()
     {
@@ -59,19 +49,13 @@ public class SecurityInGameUI : NetworkBehaviour
             Destroy(gameObject);
 
         }
+
     }
 
     private void Start()
     {
-        //ItemManager.Instance.Initialize();
-
-        SlotSet();
-
+      
         InteractionUI.SetActive(false);
-
-
-       // Interaction = GameObject.FindGameObjectWithTag("Bouncer").GetComponent<PlayerInteraction>();
-
 
         ulong localClientId = NetworkManager.Singleton.LocalClientId;
 
@@ -94,33 +78,18 @@ public class SecurityInGameUI : NetworkBehaviour
             }
         }
 
-      
-    }
-
-    private void SlotSet()
-    {
-
-        for (int i = 0; i < maxSlot; i++)
-        {
-            GameObject go = Instantiate(SlotPrefab, SlotPrefabParent.transform, false);
-            go.name = "Slot_" + i;
-            SlotData slot = new SlotData();
-            slot.IsEmpty = true;
-            slot.SlotObj = go;
-            SlotData.Add(slot);
-
-            go.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString(); //아이템 슬롯 키 ui 표시 . ex 1~5
-        }
+        SlotManager.SlotSet(); //슬롯들 초기화
 
     }
 
     private void Update()
     {
-        ItemSlotUpdate();
-
         SecurityInteractionUI();
 
-        if(Input.GetKeyDown(KeyCode.I))
+        ItemSlotUpdate();
+
+
+        if (Input.GetKeyDown(KeyCode.I))
         {
             Debug.Log("아이템 itemDictionary 에 저장된 현재 갯수" + ItemManager.Instance.inventoryDictionary.Count);
         }
@@ -128,33 +97,33 @@ public class SecurityInGameUI : NetworkBehaviour
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress.Value == false)
         {
             Debug.Log("경비원이 아이템을 사용했을 때 경비원의 id : " + NetworkManager.Singleton.LocalClientId);
-            UsingItem();
+            SlotManager.UseSelectedItem();
         }
 
         // 숫자 키(1~4)로 아이템 선택
-        for (int i = 0; i < SlotData.Count; i++)
+
+        for (int i = 0; i < SlotManager.slotDataList.Count; i++)
         {
             if (Input.GetKeyDown((KeyCode)(49 + i))) // KeyCode.Alpha1 == 49
             {
                 OnItemNameUI(ItemList.None); //아이템 이름 지웠다가 다시 업데이트
                 OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
 
-                OnSlotUpdateUI(i);
+                SlotManager.SelectSlot(i);
             }
             else
             {
-                SlotData[selectedSlot].SlotObj.GetComponent<Slot>().SlotSelectImage();
+                SlotManager.slotDataList[SlotManager.SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
             }
         }
 
-    
     }
 
     private void SecurityInteractionUI()
     {
         if (bouncerInteraction.isInteracted.Value == true)
         {
-            if (SlotData[selectedSlot].IsEmpty)
+            if (SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty)
             {
                 if (bouncerInteraction.RayItem != null)
                 {
@@ -178,9 +147,8 @@ public class SecurityInGameUI : NetworkBehaviour
             }
         }
         else
-        {
-
-            if (SlotData[selectedSlot].IsEmpty) //슬롯이 비어 있을 때
+        {       
+            if (SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty) //슬롯이 비어 있을 때
             {
                 OnInteractionUI(InteractionType.None); //아무것도  안 뜸
 
@@ -189,67 +157,24 @@ public class SecurityInGameUI : NetworkBehaviour
         }
     } // 슬롯안에 아이템 여부에 따라 경비원이 아이템을 바라봤을 때
 
-    public void AddItemToSlot(GameObject item, int slotIndex)
-    {
-        if (slotIndex < 0 || slotIndex >= SlotData.Count) return;
-
-        IUsableItem usableItem = item.GetComponent<IUsableItem>();
-
-        if (usableItem != null)
-        {
-            ItemData.ItemList itemList = usableItem.GetItemList(); // 아이템의 종류 확인
-            ItemData.ItemUseType itemType = usableItem.GetItemType(); // 아이템의 종류 확인
-
-           // ItemManager.Instance.AddItem(itemList);
-
-
-            if (ItemManager.Instance.itemDictionary.ContainsKey(itemList))
-            {
-                
-                // 해당 아이템이 ItemManager에 존재하는지 확인하고, 아이템 정보를 가져옵니다.
-                SlotData[slotIndex].itemUseType = itemType; // itemLayer에 해당 아이템 사용 타입 저장
-                SlotData[slotIndex].itemList = itemList; // 아이템 사용 대상 미리 저장
-            }
-        }
-
-        SlotData[selectedSlot].SlotObj.GetComponent<Slot>().SlotDefalutImage(); // 이전 슬롯 초기화
-        //현재 슬롯을 아이템 추가된 슬롯으로 변경
-        selectedSlot = slotIndex;
-        OnSlotUpdateUI(selectedSlot); // UI 업데이트
-    }
-
-    private void OnSlotUpdateUI(int slotIndex) // 선택된 슬롯 or 선택하지 않는 슬롯 ui 업데이트 
-    {
-
-        if (selectedSlot != -1)
-        {
-            SlotData[selectedSlot].SlotObj.GetComponent<Slot>().SlotDefalutImage(); // 이전 슬롯 초기화
-        }
-
-        selectedSlot = slotIndex;
-        SlotData[selectedSlot].SlotObj.GetComponent<Slot>().SlotSelectImage(); // 새로운 슬롯 강조
-
-    }
-
-    ItemData.ItemUseType itemType;
-    ItemData.ItemList itemList;
 
     private void ItemSlotUpdate()
     {
-        if (bouncerInteraction.isInteracted.Value == true && SlotData[selectedSlot].IsEmpty == false)
+        if (bouncerInteraction.isInteracted.Value == true && 
+            SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false)
         {
             OnItemExplainUI(ItemData.ItemList.None);
             return; //아이템 바라본 상태에서, 슬롯이 비어있지 않을 때 바라본 아이템을 우선으로
         }
-        if (SlotData[selectedSlot].IsEmpty)
+        if (SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty)
         {
             OnItemExplainUI(ItemData.ItemList.None);
             return;
         }
 
         //Self 타입인지 Target 타입인지 아이템 사용 방식 가져옴
-        itemType = SlotData[selectedSlot].itemUseType;
-        itemList =  SlotData[selectedSlot].itemList;
+        itemType = SlotManager.slotDataList[SlotManager.SelectedIndex].itemUseType;
+        itemList = SlotManager.slotDataList[SlotManager.SelectedIndex].itemList;
 
         switch (itemType)
         {
@@ -307,34 +232,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
 
     }
-
-
-
-    public void UsingItem() //아이템 사용 부분.
-    {
-        if (SlotData[selectedSlot].IsEmpty)
-        {
-            return;
-        }
-
-        Slot slotComponent = SlotData[selectedSlot].SlotObj.GetComponent<Slot>();
-
-        if (slotComponent.AssignedItem != null && slotComponent.AssignedItem.Length > 0)
-        {
-            usableItem = slotComponent.AssignedItem[selectedSlot].GetComponent<IUsableItem>();
-
-            if (usableItem != null)
-            {
-                usableItem.UseServerRpc(NetworkManager.Singleton.LocalClientId); //아이템 기능 메서드 호출 부분
-
-                if (slotComponent.AssignedItem.Length == 0)
-                {
-                    SlotData[selectedSlot].IsEmpty = true;
-                }
-            }
-        }
-    }
-
 
     public void OnInteractionUI(InteractionType type = InteractionType.None)
     {
@@ -456,8 +353,7 @@ public class SecurityInGameUI : NetworkBehaviour
     public void OnDestroyItemUI(GameObject item, int slotIndex)
     {
 
-
-        Transform slotTransform = SlotData[slotIndex].SlotObj.transform;
+        Transform slotTransform = SlotManager.slotDataList[slotIndex].SlotObj.transform;
 
         // 자식이 존재하는지 확인
         if (slotTransform.childCount > 1)  // 자식이 2개 이상일 때만 1번 인덱스를 사용할 수 있음
@@ -476,7 +372,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
 
-                SlotData[slotIndex].IsEmpty = true; // 빈 슬롯 됨
+                SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
             }
             else
             {

@@ -7,10 +7,6 @@
     "itemName": "에너지 드링크",
     "itemExplain": "사용 시, 이동속도 증가"
   },
-  "Box": {
-    "itemName": "박스",
-    "itemExplain": "사용 시, 조각상의 공격으로 부터 1회 방어"
-  },
   "Cover": {
     "itemName": "피 묻은 천",
     "itemExplain": "조각상에게 사용 시, 조각상의 시야 기능 제한"
