@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using static ItemData;
+using UnityEngine.UIElements;
 
 public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 {
@@ -35,17 +37,22 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
                 GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
 
-                itemLayer = i;
-
-                Instantiate(PenDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
-
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                slots.AddItem(this.gameObject, i);
+                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Pen) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+                {
+                    Instantiate(PenDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
 
-                slots.slotDataList[i].IsEmpty = false;
+                    itemLayer = i;
+
+                    slots.AddItem(this.gameObject, itemLayer);
+                }
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
+
+
+                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Pen);
+
 
 
                 break;

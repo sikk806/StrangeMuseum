@@ -48,24 +48,30 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
+                //네트워크 관련
                 NetworkObjectReference objRef = this.gameObject;
 
                 GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
 
-                itemLayer = i;
-
-                Instantiate(BoxUI, slots.slotDataList[i].SlotObj.transform, false);
-
+                //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                slots.AddItem(this.gameObject, i);
 
+                //UI 표시
+                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+                {
+                    Instantiate(BoxUI, slots.slotDataList[i].SlotObj.transform, false);
 
-                slots.slotDataList[i].IsEmpty = false;
+                    itemLayer = i;
 
+                    slots.AddItem(this.gameObject, itemLayer);
+                }
+
+                //ItemData에 Add하는 부분
                 ItemManager.Instance.AddItem(ItemData.ItemList.Box);
+                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Box);
 
-                break;
+                break; 
             }
         }
     }

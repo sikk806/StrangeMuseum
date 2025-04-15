@@ -1,6 +1,8 @@
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using static ItemData;
+using UnityEngine.UIElements;
 
 public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 {
@@ -55,20 +57,20 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
                 GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
 
-                itemLayer = i;
-
-                Instantiate(HandcuffUI, slots.slotDataList[i].SlotObj.transform, false);
-
-
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                slots.AddItem(this.gameObject, i);
+                //UI 표시
+                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.HandCuff) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+                {
+                    Instantiate(HandcuffUI, slots.slotDataList[i].SlotObj.transform, false);
 
+                    itemLayer = i;
 
-                slots.slotDataList[i].IsEmpty = false;
+                    slots.AddItem(this.gameObject, itemLayer);
+                }
 
-                ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
-
+                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.HandCuff);
+              
                 break;
             }
         }

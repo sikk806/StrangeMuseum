@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
 {
@@ -14,17 +15,46 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public List<SlotData> slotDataList = new List<SlotData>();
 
-    private List<Slot> slotList = new List<Slot>();
+    public List<Slot> slotList = new List<Slot>();
 
     public int SelectedIndex { get;  set; } = 0;
 
-    public void SlotSet()
+    private void Update()
     {
-        for(int i = 0; i < maxSlot; i ++)
+
+        for (int i = 0; i < slotDataList.Count; i++)
+        {
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i)) // KeyCode.Alpha1 == 49
+            {
+                SecurityInGameUI.Instance.OnItemNameUI(ItemData.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
+                SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
+
+
+                SelectSlot(i);
+
+            }
+            else
+            {
+                slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
+            }
+        }
+
+        if (SelectedIndex == 0 && Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            if (slotDataList.Count > 1 && !slotDataList[1].IsEmpty)
+            {
+                SwapFirstTwo();
+                Debug.Log("2번 슬롯의 아이템이 1번 슬롯으로 이동했습니다.");
+            }
+        }
+    }
+
+    public void SlotSet() //SecurityInGameUI.cs에서 Start문에서 호출
+    {
+        for (int i = 0; i < maxSlot; i ++)
         {
             GameObject slotPrefab = Instantiate(SlotPrefab, this.transform, false);
             slotPrefab.name = "Slot_" + i;
-
 
             SlotData data = new SlotData
             {
@@ -35,16 +65,19 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
             slotDataList.Add(data);
 
             Slot slot = slotPrefab.GetComponent<Slot>();
-            slot.Data = data;
+            slot.SlotData = data;
+
+            slotList.Add(slot);
 
             slotPrefab.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString();
-        }
 
+
+        }
         SelectSlot(0); //처음엔 0번
     }
     public void AddItem(GameObject item, int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex >= slotDataList.Count) return;
+        if (slotIndex < 0 || slotIndex > slotDataList.Count) return;
 
         IUsableItem usableItem = item.GetComponent<IUsableItem>();
 
@@ -70,13 +103,15 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public void SelectSlot(int index)
     {
-        if (index < 0 || index >= slotList.Count) return;
+        slotList[SelectedIndex].GetComponent<Slot>().SlotDefalutImage();
 
-        slotList[SelectedIndex].SlotDefalutImage();
+        //slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotDefalutImage();
 
         SelectedIndex = index;
 
-        slotList[SelectedIndex].SlotSelectImage();
+        slotList[SelectedIndex].GetComponent<Slot>().SlotSelectImage();
+
+       // slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
     }
 
 
@@ -108,11 +143,25 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
     public void SwapFirstTwo()
     {
         if (slotDataList.Count < 2) return;
-        var a = slotDataList[0];
-        var b = slotDataList[1];
-        (a.itemList, b.itemList) = (b.itemList, a.itemList);
-        (a.itemUseType, b.itemUseType) = (b.itemUseType, a.itemUseType);
-        (a.IsEmpty, b.IsEmpty) = (b.IsEmpty, a.IsEmpty);
+
+        SlotData firstSlotData = slotDataList[0];
+        SlotData secondSlotData = slotDataList[1];
+
+        //1. 데이터 교체
+        (firstSlotData.itemList, secondSlotData.itemList) = (secondSlotData.itemList, firstSlotData.itemList);
+        (firstSlotData.itemUseType, secondSlotData.itemUseType) = (secondSlotData.itemUseType, firstSlotData.itemUseType);
+        (firstSlotData.IsEmpty, secondSlotData.IsEmpty) = (secondSlotData.IsEmpty, firstSlotData.IsEmpty);
+
+        //2. 이미지 교체
+        Transform firstTransform = firstSlotData.SlotObj.transform.GetChild(1);
+        Transform secondTransform = secondSlotData.SlotObj.transform.GetChild(1);
+
+        Image firstSprite = firstTransform.GetComponent<Image>();
+        Image secondSprite = secondTransform.GetComponent<Image>();
+
+        Sprite tempSprite = firstSprite.sprite;
+        firstSprite.sprite = secondSprite.sprite;
+        secondSprite.sprite = tempSprite;
     }
 
 }

@@ -1,5 +1,7 @@
 using Unity.Netcode;
 using UnityEngine;
+using static ItemData;
+using UnityEngine.UIElements;
 
 
 public class Cover : NetworkBehaviour, IInteractable, IUsableItem
@@ -68,19 +70,21 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
                 NetworkObjectReference objRef = this.gameObject;
 
                 GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득 요청
-                itemLayer = i;
-
-                Instantiate(CoverUI, slots.slotDataList[i].SlotObj.transform, false);
-
 
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-                slots.AddItem(this.gameObject, i);
+                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Cover) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+                {
+                    Instantiate(CoverUI, slots.slotDataList[i].SlotObj.transform, false);
 
+                    itemLayer = i;
 
-                slots.slotDataList[i].IsEmpty = false;
+                    slots.AddItem(this.gameObject, itemLayer);
+                }            
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.Cover);
+
+                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Cover);
                 break;
             }
         }

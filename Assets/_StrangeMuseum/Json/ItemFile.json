@@ -1,18 +1,27 @@
 {
   "HandCuff": {
     "itemName": "구속구",
-    "itemExplain": "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소"
+    "itemExplain": "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소",
+    "itmeCount": 0
   },
   "EnergyDrink": {
     "itemName": "에너지 드링크",
-    "itemExplain": "사용 시, 이동속도 증가"
+    "itemExplain": "사용 시, 이동속도 증가",
+    "itmeCount": 0
+  },
+  "Box": {
+    "itemName": "박스",
+    "itemExplain": "사용 시, 조각상의 공격으로 부터 1회 방어",
+    "itmeCount": 0
   },
   "Cover": {
     "itemName": "피 묻은 천",
-    "itemExplain": "조각상에게 사용 시, 조각상의 시야 기능 제한"
+    "itemExplain": "조각상에게 사용 시, 조각상의 시야 기능 제한",
+    "itmeCount": 0
   },
   "Pen": {
     "itemName": "만년필",
-    "itemExplain": "조각상 적중 시, 조각상의 보이스 챗 기능 제한"
+    "itemExplain": "조각상 적중 시, 조각상의 보이스 챗 기능 제한",
+    "itmeCount": 0
   }
 }

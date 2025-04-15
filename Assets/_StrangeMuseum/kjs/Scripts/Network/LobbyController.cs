@@ -49,7 +49,7 @@ public class LobbyController : MonoBehaviour
 
     public void ReadyPlayer()
     {
-        LocalPlayerLobbyController.ChangeReady();
+        LocalPlayerLobbyController.ChangeReady();   
     }
 
     public void UpdateButton()

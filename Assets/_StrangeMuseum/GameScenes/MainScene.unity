@@ -3043,6 +3043,7 @@ MonoBehaviour:
   ItemData:
     itemName: 
     itemExplain: 
+    itmeCount: 0
 --- !u!4 &830605258
 Transform:
   m_ObjectHideFlags: 0

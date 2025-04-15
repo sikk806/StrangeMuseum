@@ -91,7 +91,18 @@ public class SecurityInGameUI : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.I))
         {
-            Debug.Log("아이템 itemDictionary 에 저장된 현재 갯수" + ItemManager.Instance.inventoryDictionary.Count);
+            if(ItemManager.Instance.inventoryDictionary.Count > 0)
+            {
+                foreach (var item in ItemManager.Instance.inventoryDictionary)
+                {
+                    int itemCount = item.Value;
+                    ItemData.ItemList items = item.Key;
+
+                    Debug.Log("아이템 : " + items + " 갯수 : " + itemCount);
+
+                }
+            }
+         
         }
 
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress.Value == false)
@@ -99,24 +110,6 @@ public class SecurityInGameUI : NetworkBehaviour
             Debug.Log("경비원이 아이템을 사용했을 때 경비원의 id : " + NetworkManager.Singleton.LocalClientId);
             SlotManager.UseSelectedItem();
         }
-
-        // 숫자 키(1~4)로 아이템 선택
-
-        for (int i = 0; i < SlotManager.slotDataList.Count; i++)
-        {
-            if (Input.GetKeyDown((KeyCode)(49 + i))) // KeyCode.Alpha1 == 49
-            {
-                OnItemNameUI(ItemList.None); //아이템 이름 지웠다가 다시 업데이트
-                OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
-
-                SlotManager.SelectSlot(i);
-            }
-            else
-            {
-                SlotManager.slotDataList[SlotManager.SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
-            }
-        }
-
     }
 
     private void SecurityInteractionUI()
@@ -251,16 +244,16 @@ public class SecurityInGameUI : NetworkBehaviour
             {
                 case InteractionType.PickUp:
                     uiImage.sprite = PickUpIcon; // 아이템 줍기 아이콘
-                    text.text = ": Pick Up";
+                    text.text = " 줍기";
                     break;
                 case InteractionType.Self:
                     uiImage.sprite = UsingIcon; // 아이템 줍기 아이콘
-                    text.text = ": Self to Using";
+                    text.text = ": 자신에게 사용";
                     break;
                 case InteractionType.Target:
 
                     uiImage.sprite = UsingIcon; // 아이템 줍기 아이콘
-                    text.text = ": Target to Using";
+                    text.text = ": 대상에게 사용";
                     break;
             }
         }
@@ -355,33 +348,44 @@ public class SecurityInGameUI : NetworkBehaviour
 
         Transform slotTransform = SlotManager.slotDataList[slotIndex].SlotObj.transform;
 
-        // 자식이 존재하는지 확인
-        if (slotTransform.childCount > 1)  // 자식이 2개 이상일 때만 1번 인덱스를 사용할 수 있음
+        Transform itemUITransform = slotTransform.GetChild(2);
+
+        // 자식 객체가 이미 삭제되었는지 확인
+        if (itemUITransform != null && itemUITransform.gameObject != null)
         {
+            IUsableItem usableItem = item.GetComponent<IUsableItem>();
 
-            Transform itemUITransform = slotTransform.GetChild(1);
+            ItemData.ItemList itemList = usableItem.GetItemList(); // 아이템의 종류 확인
 
-            // 자식 객체가 이미 삭제되었는지 확인
-            if (itemUITransform != null && itemUITransform.gameObject != null)
+            if (InventoryCheck(itemList))
             {
-                IUsableItem usableItem = item.GetComponent<IUsableItem>();
-
-                ItemData.ItemList itemList = usableItem.GetItemList(); // 아이템의 종류 확인
-
                 ItemManager.Instance.RemoveItem(itemList);
 
-                Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
+                if (InventoryCheck(itemList) == false) //해당 아이템이 하나도 존재하지 않으면
+                {
+                    Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
 
-                SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
+                    SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
+                    SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;
+                    SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
+             
+                }
+
+              
+                SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>().SlotItemCount(itemList);
             }
             else
             {
-                Debug.Log($"Slot {slotIndex}의 자식이 이미 삭제되었습니다.");
+                Debug.LogWarning($"딕셔너리에 {itemList} 키가 존재하지 않습니다.");
             }
         }
-        else
-        {
-            Debug.Log($"Slot {slotIndex}에 충분한 자식이 존재하지 않습니다.");
-        }
+    
+
+    }
+
+
+    private bool InventoryCheck(ItemData.ItemList itemList)
+    {
+        return ItemManager.Instance.inventoryDictionary.ContainsKey(itemList);
     }
 }

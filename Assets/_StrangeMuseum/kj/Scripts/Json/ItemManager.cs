@@ -26,13 +26,15 @@ public class ItemData
 
     public string itemName; //아이템 이름
     public string itemExplain; //아이템 기능 설명
-
+    public int itmeCount; //아이템 개수
 
     public ItemData(string itemName,string itemExplain)
     {
         this.itemName = itemName;
         this.itemExplain = itemExplain;
     }
+
+
 }
 
 
@@ -87,7 +89,7 @@ public class ItemManager : MonoBehaviour
 
         SaveItemData();
 
-
+        inventoryDictionary.Clear(); //인벤토리 초기화
 
     }
 
@@ -110,17 +112,16 @@ public class ItemManager : MonoBehaviour
 
     public void AddItem(ItemData.ItemList item)
     {
-        if (!inventoryDictionary.ContainsKey(item))
+        if (!inventoryDictionary.ContainsKey(item)) 
         {
-            inventoryDictionary.Add(item, 1); // 아이템 추가
+            inventoryDictionary.Add(item, 1);
+        }
+        else //아이템 중복 처리
+        {
+            inventoryDictionary[item]++;
+        }
 
-            SaveItemData(); // 변경 사항을 파일에 저장
-            Debug.Log($"아이템 {item}이 추가되었습니다.");
-        }
-        else
-        {
-            Debug.Log($"아이템 {item}은 이미 존재합니다.");
-        }
+        SaveItemData();
     }
 
 
@@ -128,13 +129,22 @@ public class ItemManager : MonoBehaviour
     {
         if (inventoryDictionary.ContainsKey(item))
         {
-            itemDictionary.Remove(item); // 아이템 삭제
-            SaveItemData(); // 변경 사항을 파일에 저장
-            Debug.Log($"아이템 {item}이 삭제되었습니다.");
-        }
-        else
-        {
-            Debug.Log($"아이템 {item}이 존재하지 않아 삭제할 수 없습니다.");
+            inventoryDictionary[item]--;
+
+            Debug.Log($"{item} 1개 소모");
+
+            if (inventoryDictionary[item] <= 0)
+            {
+                inventoryDictionary.Remove(item);
+                itemDictionary.Remove(item); // 이 부분도 제거
+                Debug.Log($"아이템 {item}이 모두 소모되어 삭제되었습니다.");
+            }
+            else
+            {
+                Debug.Log($"아이템 {item}의 남은 개수: {inventoryDictionary[item]}");
+            }
+
+            SaveItemData(); 
         }
     }
 }
