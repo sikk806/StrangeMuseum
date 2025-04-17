@@ -92,9 +92,11 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     }
 
 
-   
+    public void ItemView(ulong clientId)
+    {
 
-
+    }
+ 
     [ServerRpc(RequireOwnership = false)]
     public void UseServerRpc(ulong clientId)
     {

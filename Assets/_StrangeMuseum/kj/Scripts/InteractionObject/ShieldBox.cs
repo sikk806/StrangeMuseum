@@ -35,12 +35,14 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         isBoxUsing.Value = value;
     }
 
-   
     Slots slots;
+
+    [SerializeField]
+    bool isInteract = false;
 
     public void Interact()
     {
-        // if (!IsOwner) return; 
+        if(isInteract) { return;  } //이미 해당 아이템을 상호작용 하였는데, 좌클릭을 할 경우 습득하는 경우가 있으므로 방지.
 
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
@@ -48,26 +50,26 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                //네트워크 관련
-                NetworkObjectReference objRef = this.gameObject;
-
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
+                isInteract = true;
 
                 //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
-
                 //UI 표시
                 if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
                 {
+                    SecurityInGameUI.Instance.isItemFirstView = true;
+
                     Instantiate(BoxUI, slots.slotDataList[i].SlotObj.transform, false);
 
                     itemLayer = i;
 
                     slots.AddItem(this.gameObject, itemLayer);
+
                 }
 
                 //ItemData에 Add하는 부분
+
                 ItemManager.Instance.AddItem(ItemData.ItemList.Box);
                 slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Box);
 
@@ -77,6 +79,23 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     }
 
 
+    public void ItemView(ulong clientId)
+    {
+        if (NetworkManager.Singleton.ConnectedClients.ContainsKey(clientId))
+        {
+            NetworkObject playerNetObj = NetworkManager.Singleton.ConnectedClients[clientId].PlayerObject;
+            if (playerNetObj != null)
+            {
+                if (SecurityInGameUI.Instance != null)
+                {
+                    SecurityInGameUI.Instance.OnItemViewUI(this.gameObject);
+                }
+
+            }
+        }
+    }
+
+ 
     [ServerRpc(RequireOwnership = false)]
     public void UseServerRpc(ulong clientId)
     {

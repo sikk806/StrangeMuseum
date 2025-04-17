@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.IO;
 using Unity.Netcode;
+using Unity.Services.CloudSave.Models;
 using UnityEngine;
 
 
@@ -147,4 +148,5 @@ public class ItemManager : MonoBehaviour
             SaveItemData(); 
         }
     }
+
 }

@@ -53,6 +53,11 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         }
     }
 
+    public void ItemView(ulong clientId)
+    {
+
+    }
+  
     [SerializeField]
     float EnergyDrinkCooltime;
 

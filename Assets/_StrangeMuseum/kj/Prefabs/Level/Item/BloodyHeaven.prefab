@@ -394,7 +394,6 @@ MonoBehaviour:
   isCoverUsing:
     m_InternalValue: 0
   CoverGameObject: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
-  slot: {fileID: 0}
 --- !u!64 &3542726733822222168
 MeshCollider:
   m_ObjectHideFlags: 0

@@ -11,11 +11,11 @@ GameObject:
   - component: {fileID: 1259527681387728570}
   - component: {fileID: 2093555858317045051}
   - component: {fileID: 8810819695572314863}
-  - component: {fileID: 4918076991122817450}
   - component: {fileID: 1757203659968131050}
   - component: {fileID: 43132559333487408}
   - component: {fileID: 217356399811419659}
   - component: {fileID: 4633036676533650919}
+  - component: {fileID: 2643075968545601027}
   m_Layer: 6
   m_Name: Box 5
   m_TagString: Box
@@ -91,28 +91,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!64 &4918076991122817450
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4460425605253287126}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 1
-  m_ProvidesContacts: 0
-  m_Enabled: 1
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 9134147065433376913, guid: e45be126a51afea479542063f06866f0, type: 3}
 --- !u!114 &1757203659968131050
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -156,7 +134,7 @@ MonoBehaviour:
   isBoxUsing:
     m_InternalValue: 0
   itemLayer: 0
-  slot: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
+  isInteract: 0
 --- !u!114 &217356399811419659
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -192,3 +170,18 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1.584789, y: 0.54487056, z: 0.54487056}
   m_Center: {x: -0.00000032782555, y: 0, z: 0}
+--- !u!114 &2643075968545601027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4460425605253287126}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d64a611284ab2ee44a9b4dc73269ccff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  RotateSpeed: 3
+  IsItemView: 0
+  ItemHeight: 0.5

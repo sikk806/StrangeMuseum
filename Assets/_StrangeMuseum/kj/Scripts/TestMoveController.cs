@@ -4,16 +4,27 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.Playables;
 
+public enum TestPlayerState
+{
+    Idle,
+    Run,
+    Jump,
+    Die,
+    Attack,
+    Freeze,
+    ItemView,
+}
+
 public class TestMoveController : NetworkBehaviour
 {
     [Header("MovementSetting")]
     public float MovementSpeed = 5f;// default : 5f
     public float InitWalkingSpeed = 5f;// default : 5f
-    public float JumpForce = 3f;
+    public float JumpForce = 3f ;
     public float Gravity = 9.8f;
 
-    public void SetPlayerState(PlayerState state) { playerState = state; }
-    public PlayerState GetPlayerState() { return playerState; }
+    public void SetPlayerState(TestPlayerState state) { playerState = state; }
+    public TestPlayerState GetPlayerState() { return playerState; }
 
     public Transform GetPlayerCamera() { return playerCamera; }
 
@@ -31,7 +42,7 @@ public class TestMoveController : NetworkBehaviour
     //private PlayerInteraction playerInteraction; // �ӹ� ������Ʈ�� ��ȣ�ۿ� ��� �߰� > ��ĥ��
 
     // ����� ���� ������
-    private PlayerState playerState;
+    public TestPlayerState playerState;
     private Transform playerCamera;
 
     [Header("\nCameraSetting")]
@@ -58,7 +69,7 @@ public class TestMoveController : NetworkBehaviour
 
         if (IsOwner == false) { return; }
 
-        playerState = PlayerState.Idle;
+        playerState = TestPlayerState.Idle;
         transform.Rotate(Vector3.zero);
 
         // Player ī�޶� ��������.
@@ -73,12 +84,38 @@ public class TestMoveController : NetworkBehaviour
     {
         if(IsOwner == false) { return; }
 
+        Debug.Log("현재 상태" + playerState);
+
+        // Freeze 상태일 때 이동 입력이 들어오면 Idle로 전환
+
+        if (SecurityInGameUI.Instance.isItemFirstView == true) { return; }
+
+        if (playerState == TestPlayerState.Freeze )
+        {
+
+            float h = Input.GetAxisRaw("Horizontal");
+            float v = Input.GetAxisRaw("Vertical");
+
+            if (IsMoveInputDetected())
+            {
+                Debug.Log("행동 정지 후 해제");
+                SetPlayerState(TestPlayerState.Idle);
+                return;
+            }
+
+            // Freeze 상태에서는 이동/ 마우스 회전 안 함
+            return;
+        }
 
         PlayerMovement();
 
         MouseMove();
     }
 
+    private bool IsMoveInputDetected()
+    {
+        return Mathf.Abs(Input.GetAxisRaw("Horizontal")) >= 0.1f || Mathf.Abs(Input.GetAxisRaw("Vertical")) >= 0.1f;
+    }
     void PlayerMovement()
     {
         // ī�޶�� ������ ������ �ٸ��� ������ �ڽ� Ŭ�������� ����
@@ -86,15 +123,15 @@ public class TestMoveController : NetworkBehaviour
         moveX = Input.GetAxis("Horizontal");
         moveZ = Input.GetAxis("Vertical");
 
-        if (playerState != PlayerState.Jump)
+        if (playerState != TestPlayerState.Jump)
         {
             if (moveX < 0.1f && moveZ < 0.1f && moveX > -0.1f && moveZ > -0.1f)
             {
-                playerState = PlayerState.Idle;
+                playerState = TestPlayerState.Idle;
             }
             else
             {
-                playerState = PlayerState.Run;
+                playerState = TestPlayerState.Run;
             }
         }
 
@@ -116,19 +153,19 @@ public class TestMoveController : NetworkBehaviour
         else
         {
             // Jump���� �����ϴ� ���� if������ ���� ��. > Idle ���·� �ٲ�. (isGrounded �� Jump state�� �ٸ� ���� ������ ������ �ߴ��� �ƴ����� �� �� ����)
-            if (playerState == PlayerState.Jump)
+            if (playerState == TestPlayerState.Jump)
             {
-                playerState = PlayerState.Idle;
+                playerState = TestPlayerState.Idle;
                 if (animator) SetAnimTrigger("Idle");
             }
             // Jump �� Idle ������ ���� �����ϵ���
-            else if (playerState == PlayerState.Idle || playerState == PlayerState.Run)
+            else if (playerState == TestPlayerState.Idle || playerState == TestPlayerState.Run)
             {
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     moveVector.y = Mathf.Sqrt(JumpForce * Gravity);
 
-                    playerState = PlayerState.Jump;
+                    playerState = TestPlayerState.Jump;
                     if (animator) SetAnimTrigger("Jump");
                 }
             }

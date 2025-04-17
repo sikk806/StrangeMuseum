@@ -77,6 +77,10 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
        
     }
 
+    public void ItemView(ulong clientId)
+    {
+
+    }
 
     [ServerRpc(RequireOwnership = false)]
     public void UseServerRpc(ulong id)

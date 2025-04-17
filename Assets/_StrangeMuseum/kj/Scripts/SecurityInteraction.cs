@@ -132,18 +132,22 @@ public class SecurityInteraction : NetworkBehaviour
 
         if (Input.GetMouseButtonDown(0) && isInteracted.Value == true && interactableItem != null)
         {
-            if (RayItem.gameObject.tag == "Cover")
-            {
-                PlayFearSound(CoverFearSound);
-            }
+            RayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
 
             interactableItem.Interact();
 
+            inusableItem.ItemView(NetworkManager.Singleton.LocalClientId);
 
             SetIsInteractedServerRpc(false);
+
             SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None);
 
             SoundManager.Instance.PlaySfx(pickUpSound);
+
+            if (RayItem.gameObject.tag == "Cover")
+            {
+                PlayFearSound(CoverFearSound);
+            }    
         }
     }
     private void BouncerInteractionRay() //상호작용 여부
@@ -157,7 +161,9 @@ public class SecurityInteraction : NetworkBehaviour
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
                 || hit.collider.CompareTag("Pen"))
             {
+               
                 interactableItem = hit.collider.GetComponent<IInteractable>();
+                inusableItem = hit.collider.GetComponent<IUsableItem>();
 
                 bool isInteractedNow = interactableItem != null;
                 SetIsInteractedServerRpc(isInteractedNow);

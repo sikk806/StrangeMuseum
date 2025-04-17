@@ -54,12 +54,6 @@ public class GameManager : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SettingManager.Instance.gameObject.SetActive(
-                !SettingManager.Instance.gameObject.activeSelf);
-        }
-
         if (IsServer && !IsAllConnected.Value && PlayerStat.Value.Count == 4)
         {
             Debug.Log("모두 접속!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
@@ -68,6 +62,14 @@ public class GameManager : NetworkBehaviour
 
         Debug.Log("SecurityCount: " + SecurityCount.Value);
         Debug.Log("StatueCount: " + StatueCount.Value);
+
+        if(SecurityInGameUI.Instance.isItemExplainView == true) { return;} //아이템 설명 UI 표시되면 옵션창 못 염
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SettingManager.Instance.gameObject.SetActive(
+                !SettingManager.Instance.gameObject.activeSelf);
+        }
+
     }
 
     [ServerRpc]
