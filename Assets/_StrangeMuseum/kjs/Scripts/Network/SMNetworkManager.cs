@@ -12,13 +12,24 @@ public class SMNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if(SceneManager.GetActiveScene().name == "Lobby")
+        if (SceneManager.GetActiveScene().name == "NetworkTest")
         {
-            PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
+             PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
+             GamePlayerInstance.transform.position = Vector3.zero;
 
             GamePlayerInstance.ConnectionID = conn.connectionId;
             GamePlayerInstance.PlayerIdNumber = GamePlayers.Count + 1;
-            GamePlayerInstance.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.Instance.CurrentLobbyID, GamePlayers.Count);
+            //GamePlayerInstance.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.Instance.CurrentLobbyID, GamePlayers.Count);
+            if (SteamManager.Initialized && SteamLobby.Instance != null)
+            {
+                GamePlayerInstance.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(
+                    (CSteamID)SteamLobby.Instance.CurrentLobbyID, GamePlayers.Count);
+            }
+            else
+            {
+                Debug.Log("Steam not initialized or SteamLobby missing. Assigning dummy SteamID.");
+                GamePlayerInstance.PlayerSteamId = 0; // fallback or dummy ID
+            }
 
             NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
         }
