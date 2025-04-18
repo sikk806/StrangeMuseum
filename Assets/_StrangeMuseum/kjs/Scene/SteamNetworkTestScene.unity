@@ -1148,7 +1148,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1826124545}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
   m_Name: 
@@ -1185,7 +1185,7 @@ MonoBehaviour:
   editorAutoStart: 0
   sendRate: 60
   offlineScene: Assets/_StrangeMuseum/kjs/Scene/SteamNetworkTestScene.unity
-  onlineScene: Assets/_StrangeMuseum/kjs/Scene/NetworkTest.unity
+  onlineScene: Assets/_StrangeMuseum/kjs/Scene/Lobby.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 1826124550}
   networkAddress: localhost

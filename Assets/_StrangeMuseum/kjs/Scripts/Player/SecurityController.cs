@@ -56,13 +56,13 @@ public class SecurityController : PlayerController
         mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
 
         transform.Rotate(Vector3.up * mouseX);
-        //playerCamera.Rotate(Vector3.up * mouseX);
+        playerCamera.Rotate(Vector3.up * mouseX);
 
         yaw += mouseX;
         pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, -30f, 30f);
 
-        //playerCamera.localRotation = Quaternion.Euler(pitch, yaw, 0f);
-        //playerCamera.position = transform.position + transform.rotation * SecurityCameraPosition;
+        playerCamera.localRotation = Quaternion.Euler(pitch, yaw, 0f);
+        playerCamera.position = transform.position + transform.rotation * SecurityCameraPosition;
     }
 }

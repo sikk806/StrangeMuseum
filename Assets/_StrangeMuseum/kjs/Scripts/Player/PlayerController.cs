@@ -134,6 +134,7 @@ public class PlayerController : NetworkBehaviour
         // Player 카메라 가져오기.
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
+
     }
 
     public void SetAnimTrigger(string Value)
