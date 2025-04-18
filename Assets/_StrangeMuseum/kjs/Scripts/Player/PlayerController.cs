@@ -1,6 +1,7 @@
 using System;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 
 public enum PlayerState
@@ -24,7 +25,7 @@ public class PlayerController : NetworkBehaviour
 
     public void SetPlayerState(PlayerState state) { playerState = state; }
     public PlayerState GetPlayerState() { return playerState; }
-    
+
     public Transform GetPlayerCamera() { return playerCamera; }
 
     // 이 부분은 플레이어가 스폰 됐을 때 사용할 것으로 예상. 필요 없다면 과감히 지울 것.
@@ -46,6 +47,7 @@ public class PlayerController : NetworkBehaviour
 
     protected virtual void Awake()
     {
+        SceneManager.sceneLoaded += SettingCamera;
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         // PlayerInteraction 합쳐야 함.
@@ -61,7 +63,7 @@ public class PlayerController : NetworkBehaviour
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
 
-        Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
+        //Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
     }
 
     // Update is called once per frame
@@ -125,6 +127,13 @@ public class PlayerController : NetworkBehaviour
             }
         }
         characterController.Move(moveVector * Time.deltaTime);
+    }
+
+    private void SettingCamera(Scene scene, LoadSceneMode mode)
+    {
+        // Player 카메라 가져오기.
+        playerCamera = Camera.main.transform;
+        playerCamera.GetChild(0).gameObject.SetActive(true);
     }
 
     public void SetAnimTrigger(string Value)
