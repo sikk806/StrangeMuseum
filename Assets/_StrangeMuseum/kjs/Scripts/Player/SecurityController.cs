@@ -1,6 +1,7 @@
-using Mirror.BouncyCastle.Bcpg;
+using Mirror;
 using UnityEngine;
 
+[RequireComponent(typeof(NetworkAnimator))]
 public class SecurityController : PlayerController
 {
     // public Zone
@@ -32,7 +33,7 @@ public class SecurityController : PlayerController
     protected override void Update()
     {
         // For Network Play
-        if (!isOwned) return;
+        if (!isLocalPlayer) return;
 
         base.Update();
 

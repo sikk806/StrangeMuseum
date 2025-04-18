@@ -13,6 +13,7 @@ public enum PlayerState
     Freeze
 }
 
+[RequireComponent(typeof(NetworkAnimator))]
 public class PlayerController : NetworkBehaviour
 {
     //public Zone
