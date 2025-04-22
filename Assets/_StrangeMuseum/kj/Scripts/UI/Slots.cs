@@ -53,23 +53,22 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
     {
         for (int i = 0; i < maxSlot; i ++)
         {
-            GameObject slotPrefab = Instantiate(SlotPrefab, this.transform, false);
-            slotPrefab.name = "Slot_" + i;
+            Transform slotParentChild = this.transform.GetChild(i);
 
             SlotData data = new SlotData
             {
                 IsEmpty = true,
-                SlotObj = slotPrefab
+                SlotObj = slotParentChild.gameObject
             };
 
             slotDataList.Add(data);
 
-            Slot slot = slotPrefab.GetComponent<Slot>();
+            Slot slot = slotParentChild.gameObject.GetComponent<Slot>();
             slot.SlotData = data;
 
             slotList.Add(slot);
 
-            slotPrefab.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString();
+            slotParentChild.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString();
 
 
         }
