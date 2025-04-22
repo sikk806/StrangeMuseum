@@ -28,7 +28,7 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
             {
                 SecurityInGameUI.Instance.OnItemExplainUI(ItemData.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
                 SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
-
+                SecurityInGameUI.Instance.OnItemNameUI(ItemData.ItemList.None);
 
                 SelectSlot(i);
 
@@ -77,8 +77,6 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
     }
     public void AddItem(GameObject item, int slotIndex)
     {
-        if (slotIndex < 0 || slotIndex > slotDataList.Count) return;
-
         IUsableItem usableItem = item.GetComponent<IUsableItem>();
 
         if (usableItem != null)
@@ -133,8 +131,7 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
         if (usableItem != null)
         {
             usableItem.UseServerRpc(NetworkManager.Singleton.LocalClientId); //아이템 기능 메서드 호출 부분
-            
-            slotDataList[SelectedIndex].IsEmpty = true;
+          
 
         }
       

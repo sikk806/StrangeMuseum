@@ -25,14 +25,15 @@ public class ItemData
         None, HandCuff, EnergyDrink, Box, Cover, Pen
     }
 
-    public string itemName; //아이템 이름
-    public string itemExplain; //아이템 기능 설명
-    public int itmeCount; //아이템 개수
+    public string ItemName; //아이템 이름
+    public string ItemExplain; //아이템 기능 설명
+    public int ItemMaxCount; //아이템 개수
 
-    public ItemData(string itemName,string itemExplain)
+    public ItemData(string itemName,string itemExplain , int itemCount)
     {
-        this.itemName = itemName;
-        this.itemExplain = itemExplain;
+        this.ItemName = itemName;
+        this.ItemExplain = itemExplain;
+        this.ItemMaxCount = itemCount;
     }
 
 
@@ -81,11 +82,11 @@ public class ItemManager : MonoBehaviour
 
         itemDictionary = new Dictionary<ItemData.ItemList, ItemData>
             {
-                 { ItemData.ItemList.HandCuff, new ItemData("구속구", "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소") },
-                 { ItemData.ItemList.EnergyDrink, new ItemData("에너지 드링크", "사용 시, 이동속도 증가") },
-                 { ItemData.ItemList.Box, new ItemData("박스", "사용 시, 조각상의 공격으로 부터 1회 방어") },
-                 { ItemData.ItemList.Cover, new ItemData("피 묻은 천", "조각상에게 사용 시, 조각상의 시야 기능 제한") },
-                 { ItemData.ItemList.Pen, new ItemData("만년필", "조각상 적중 시, 조각상의 보이스 챗 기능 제한") }
+                 { ItemData.ItemList.HandCuff, new ItemData("구속구", "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소",2) },
+                 { ItemData.ItemList.EnergyDrink, new ItemData("에너지 드링크", "사용 시, 이동속도 증가",3) },
+                 { ItemData.ItemList.Box, new ItemData("박스", "사용 시, 조각상의 공격으로 부터 1회 방어",2) },
+                 { ItemData.ItemList.Cover, new ItemData("피 묻은 천", "조각상에게 사용 시, 조각상의 시야 기능 제한",2) },
+                 { ItemData.ItemList.Pen, new ItemData("만년필", "조각상 적중 시, 조각상의 보이스 챗 기능 제한",4) }
             };
 
         SaveItemData();
@@ -119,7 +120,19 @@ public class ItemManager : MonoBehaviour
         }
         else //아이템 중복 처리
         {
-            inventoryDictionary[item]++;
+            int currentCount = inventoryDictionary[item];
+            int maxCount = itemDictionary[item].ItemMaxCount;
+
+            if (currentCount < maxCount)
+            {
+                inventoryDictionary[item]++;
+                Debug.Log($"{item}을(를) 인벤토리에 추가했습니다. (현재 수량: {inventoryDictionary[item]})");
+            }
+            else
+            {
+                Debug.Log($"{item}의 최대 보유 수량({maxCount})에 도달했습니다. 더 이상 추가할 수 없습니다.");
+                return;
+            }
         }
 
         SaveItemData();
@@ -147,6 +160,17 @@ public class ItemManager : MonoBehaviour
 
             SaveItemData(); 
         }
+    }
+
+    public bool CountCurrentItem(ItemData.ItemList item)
+    {
+        if (inventoryDictionary[item] == itemDictionary[item].ItemMaxCount)
+        {
+            return true;
+        }
+
+        return false;
+      
     }
 
 }

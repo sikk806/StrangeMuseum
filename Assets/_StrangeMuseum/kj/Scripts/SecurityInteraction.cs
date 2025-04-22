@@ -21,7 +21,7 @@ public class SecurityInteraction : NetworkBehaviour
 
     private IInteractable interactableItem; // 상호작용할 수 있는 아이템 저장
 
-    private IUsableItem inusableItem; // 상호작용할 수 있는 아이템 저장
+    private IUsableItem iusableItem; // 상호작용할 수 있는 아이템 저장
 
     private TestMoveController testMoveController; //임시
 
@@ -46,9 +46,9 @@ public class SecurityInteraction : NetworkBehaviour
     [SerializeField]
     private AudioClip CoverFearSound; // 구속구 공포 효과음
 
-    public GameObject RayItem; //바라본 아이템 저장 
+    public GameObject SaveRayItem; //바라본 아이템 저장 
 
-    public GameObject RayStaute; //바라본 조각상 저장
+    public GameObject SaveRayStaute; //바라본 조각상 저장
 
     public NetworkVariable<bool> IsStatue = new NetworkVariable<bool>
         (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
@@ -125,18 +125,13 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void BouncerInteracted()
     {
-        if (interactableItem == null)
-        {
-            return;
-        }
+        if (interactableItem == null) { return; }      
 
         if (Input.GetMouseButtonDown(0) && isInteracted.Value == true && interactableItem != null)
         {
-            RayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
+            SaveRayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
 
             interactableItem.Interact();
-
-            inusableItem.ItemView(NetworkManager.Singleton.LocalClientId);
 
             SetIsInteractedServerRpc(false);
 
@@ -144,7 +139,7 @@ public class SecurityInteraction : NetworkBehaviour
 
             SoundManager.Instance.PlaySfx(pickUpSound);
 
-            if (RayItem.gameObject.tag == "Cover")
+            if (SaveRayItem.gameObject.tag == "Cover")
             {
                 PlayFearSound(CoverFearSound);
             }    
@@ -161,13 +156,24 @@ public class SecurityInteraction : NetworkBehaviour
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
                 || hit.collider.CompareTag("Pen"))
             {
-               
                 interactableItem = hit.collider.GetComponent<IInteractable>();
-                inusableItem = hit.collider.GetComponent<IUsableItem>();
+                iusableItem = hit.collider.GetComponent<IUsableItem>();
+
+                ItemData.ItemList rayItem = iusableItem.GetItemList();
+
+                if(ItemManager.Instance.inventoryDictionary.ContainsKey(rayItem))
+                {
+                    if (ItemManager.Instance.CountCurrentItem(rayItem))
+                    {
+                        Debug.LogWarning($"해당 {rayItem}은 소지 개수를 초과 했으므로 상호작용 불가능");
+                        return;
+                    }
+                }
+
 
                 bool isInteractedNow = interactableItem != null;
+
                 SetIsInteractedServerRpc(isInteractedNow);
-                // SetInteractedServerRpc(isInteractedNow);
                 ItemSave(hit.collider.gameObject);
             }
             if (hit.collider.CompareTag("Statue"))
@@ -191,7 +197,7 @@ public class SecurityInteraction : NetworkBehaviour
     }
     private void ItemSave(GameObject obj = null)
     {
-        RayItem = obj;
+        SaveRayItem = obj;
     }
 
     #region 손전등 Light 여부에 따른 조각상 행동 제한
@@ -251,7 +257,7 @@ public class SecurityInteraction : NetworkBehaviour
     {
         if (coverRef.TryGet(out NetworkObject networkObject))
         {
-            RayStaute = networkObject.gameObject;
+            SaveRayStaute = networkObject.gameObject;
             RayStatueClientRpc(coverRef); // 서버에서 클라이언트로 전달
         }
     }
@@ -264,7 +270,7 @@ public class SecurityInteraction : NetworkBehaviour
             return;
         }
 
-        RayStaute = networkObject.gameObject;
+        SaveRayStaute = networkObject.gameObject;
     }
 
     public void StatueInterated(bool value, GameObject statue)
