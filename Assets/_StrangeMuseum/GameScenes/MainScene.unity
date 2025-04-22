@@ -3041,9 +3041,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ItemData:
-    itemName: 
-    itemExplain: 
-    itmeCount: 0
+    ItemName: 
+    ItemExplain: 
+    ItemMaxCount: 0
 --- !u!4 &830605258
 Transform:
   m_ObjectHideFlags: 0

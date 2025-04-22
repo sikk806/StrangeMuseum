@@ -115,10 +115,10 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
                 if (bouncerInteraction.IsStatue.Value)
                 {
                     Debug.Log("조각상 확인");
-                    if (bouncerInteraction.RayStaute != null)
+                    if (bouncerInteraction.SaveRayStaute != null)
                     {                   
                         // 🚀 ClientRpc 호출
-                        CoverActiveClientRpc(true, bouncerInteraction.RayStaute.GetComponent<NetworkObject>().NetworkObjectId);
+                        CoverActiveClientRpc(true, bouncerInteraction.SaveRayStaute.GetComponent<NetworkObject>().NetworkObjectId);
 
                         StatueInGameUI.Instance.CoverSet(this.gameObject);
 

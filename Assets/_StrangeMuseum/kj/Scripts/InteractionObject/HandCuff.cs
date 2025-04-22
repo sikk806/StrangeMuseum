@@ -111,14 +111,14 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
                 if (bouncerIntercation.IsStatue.Value)
                 {
                     Debug.Log("조각상 확인");
-                    if (bouncerIntercation.RayStaute != null)
+                    if (bouncerIntercation.SaveRayStaute != null)
                     {
                         Debug.Log("조각상 CoverInteracted 호출 ");
 
                         if(isHandCuffUsing.Value == false)
                         {
-                            bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(this, minMoveSpeed, minRushSpeed, handCuffCooltime, ClientId);
-                            bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().PlayFearSound(HandCuffFearSound);
+                            bouncerIntercation.SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(this, minMoveSpeed, minRushSpeed, handCuffCooltime, ClientId);
+                            bouncerIntercation.SaveRayStaute.GetComponent<StatueInteraction>().PlayFearSound(HandCuffFearSound);
                             HandActiveClientRpc(ClientId);
                         }
 
