@@ -1,64 +1,65 @@
 using System;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 
 public class SecurityDie : NetworkBehaviour
 {
     //경비원 사망 여부
-    public NetworkVariable<bool> isSecurityDie = 
-        new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SyncVar]
+    public bool isSecurityDie;
 
     //조각상과 충돌 여부
-    public NetworkVariable<bool> isStatueCollider = 
-        new NetworkVariable<bool>(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SyncVar]
+    public bool isStatueCollider;
 
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    [Command(requiresAuthority = false)] // 클라이언트도 요청할 수 있도록 설정
     public void SetIsBrokenServerRpc(bool value)
     {
-        isSecurityDie.Value = value;
+        isSecurityDie = value;
     }
 
 
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    [Command(requiresAuthority = false)] // 클라이언트도 요청할 수 있도록 설정
     public void SetIsStatueColliderServerRpc(bool value)
     {
-        isStatueCollider.Value = value;
+        isStatueCollider = value;
     }
 
     [SerializeField]
-    GameObject currentBox;
-    public void BoxSet(NetworkObjectReference box)
+    NetworkIdentity currentSecurityBox; //경비원이 현재 입은 박스
+    public void BoxSet(NetworkIdentity box)
     {
-        if (!IsOwner) { return; }
+        if (!isOwned) { return; }
 
-        if (box.TryGet(out NetworkObject networkObject))
+        if (box.TryGetComponent(out NetworkIdentity networkObject))
         {
-            currentBox = box;
+            currentSecurityBox = box;
         }
     }
     private void Update()
     {
-        if (!IsOwner) { return; } 
+        if (!isOwned) { return; } 
        
-        if (isStatueCollider.Value == true)
+        if (isStatueCollider == true)
         {
-            currentBox.GetComponent<ShieldBox>().NotifyClientBoxRemoved();
+            currentSecurityBox.GetComponent<ShieldBox>().NotifyClientBoxRemoved();
             SetIsStatueColliderServerRpc(false);
         }
     }
     private void OnTriggerEnter(Collider other)
     {
 
-        if (other.gameObject.CompareTag("Statue") && isStatueCollider.Value == false)
+        if (other.gameObject.CompareTag("Statue") && isStatueCollider == false)
         {
             SetIsStatueColliderServerRpc(true);
 
-            if (IsOwner || IsServer)
+            if (isOwned || isServer)
             {
                 Debug.Log("----------------------------In1");
                 GameManager.Instance.UpdatePlayerCountServerRpc(true, -1);
                 GameManager.Instance.UpdatePlayerCountServerRpc(false, 1);
-                GameManager.Instance.PlayerStat.Value[OwnerClientId] = "Statue";
+              
+                //GameManager.Instance.PlayerStat.Value[OwnerClientId] = "Statue"; //정식님이 역할 배정 구현 후 얘기 나누기.
             }
         }
     }
@@ -68,7 +69,7 @@ public class SecurityDie : NetworkBehaviour
         SetIsBrokenServerRpc(true);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void SecurityDieServerRpc()
     {
         if (OnDie != null)
@@ -97,10 +98,10 @@ public class SecurityDie : NetworkBehaviour
     private float explosionForce = 5f; // 튀는 힘
     private float explosionRadius = 3f; // 폭발 반경
 
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void SpawnBloodServerRpc()
     {
-        if (!IsServer) return;
+        if (!isServer) return;
 
         Debug.Log("SpawnBloodServerRpc() - IsServer = true");
 
@@ -111,7 +112,7 @@ public class SecurityDie : NetworkBehaviour
     [ClientRpc]
     void SpawnBloodClientRpc(Vector3 bloodPosition)
     {
-        if (IsServer) return;
+        if (isServer) return;
 
         Debug.Log("SpawnBloodClientRpc() - IsServer = false");
 
@@ -129,15 +130,11 @@ public class SecurityDie : NetworkBehaviour
         GameObject blood = Instantiate(bloodPrefab, bloodPosition, Quaternion.identity);
 
         // 네트워크에서 피 객체를 Spawn
-        NetworkObject networkObject = blood.GetComponent<NetworkObject>();
-        if (networkObject != null)
-        {
-            networkObject.Spawn();
-        }
 
         // 클라이언트에서는 SpawnBloodClientRpc() 호출, 서버에서는 로컬로 처리
-        if (IsServer)
+        if (isServer)
         {
+            NetworkServer.Spawn(blood);
             SpawnBloodClientRpc(bloodPosition);
         }
 
@@ -145,10 +142,10 @@ public class SecurityDie : NetworkBehaviour
         Destroy(blood, 5f);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void SpawnFragmentServerRpc()
     {
-        if (!IsServer) return;
+        if (!isServer) return;
 
         Debug.Log("SpawnFragmentServerRpc - IsServer = true");
 
@@ -159,7 +156,7 @@ public class SecurityDie : NetworkBehaviour
     [ClientRpc]
     private void SpawnFragmentClientRpc()
     {
-        if (IsServer) return;
+        if (isServer) return;
 
         Debug.Log("SpawnFragmentClientRpc - IsServer = false");
 
@@ -179,11 +176,9 @@ public class SecurityDie : NetworkBehaviour
                     UnityEngine.Random.rotation
                 );
 
-                // 네트워크 객체로 Spawn
-                NetworkObject networkObject = fragment.GetComponent<NetworkObject>();
-                if (networkObject != null)
+                if (isServer)
                 {
-                    networkObject.Spawn();
+                    NetworkServer.Spawn(fragment);
                 }
 
                 Rigidbody rb = fragment.GetComponent<Rigidbody>();

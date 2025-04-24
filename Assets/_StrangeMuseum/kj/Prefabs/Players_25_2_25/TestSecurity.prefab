@@ -614,10 +614,8 @@ GameObject:
   - component: {fileID: 4609989650439060360}
   - component: {fileID: 8740064873044306242}
   - component: {fileID: 5513580793875675497}
-  - component: {fileID: 854591518834693855}
   - component: {fileID: 1464467580131560704}
   - component: {fileID: -5139576709211526103}
-  - component: {fileID: 2134833983344411397}
   - component: {fileID: 2202249983208133745}
   - component: {fileID: 1872208728460040252}
   - component: {fileID: 8353053050235340944}
@@ -736,31 +734,6 @@ CapsuleCollider:
   m_Height: 1.6
   m_Direction: 1
   m_Center: {x: -0.01, y: 0.8, z: -0.025073528}
---- !u!114 &854591518834693855
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6042096211448569219}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2366299107
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &1464467580131560704
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -773,7 +746,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 63995fbfa298ca1419b0d207cdcdd4e2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  MovementSpeed: 5
+  InitWalkingSpeed: 0
+  JumpForce: 3
+  Gravity: 9.8
   LayDistance: 3
   LightLayDistance: 30
   pickUpSound: {fileID: 8300000, guid: 23a7f6dc317754d41bf076e4c5114f70, type: 3}
@@ -786,8 +765,7 @@ MonoBehaviour:
   SaveRayStaute: {fileID: 0}
   IsStatue:
     m_InternalValue: 0
-  isInteracted:
-    m_InternalValue: 0
+  isInteracted: 0
 --- !u!114 &-5139576709211526103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -800,30 +778,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8557b0d27a3e27849b2c3921a66a3727, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  isMissionProgress:
-    m_InternalValue: 0
---- !u!114 &2134833983344411397
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6042096211448569219}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2c6af55a80bbf514c854917a99a2e5a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  MovementSpeed: 5
-  InitWalkingSpeed: 5
-  JumpForce: 3
-  Gravity: 9.8
-  playerState: 0
-  MouseSensitivity: 2
-  SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
-  CharacterMesh: {fileID: 0}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  isMissionProgress: 0
 --- !u!114 &2202249983208133745
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -836,12 +794,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6187bd00cd244a4189e962f2e4c859b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  isSecurityDie:
-    m_InternalValue: 0
-  isStatueCollider:
-    m_InternalValue: 0
-  currentBox: {fileID: 0}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  isSecurityDie: 0
+  isStatueCollider: 0
+  currentSecurityBox: {fileID: 0}
   bloodPrefab: {fileID: 0}
   fragmentPrefabs: []
 --- !u!114 &1872208728460040252
@@ -931,6 +889,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0
   MovementSpeed: 5
+  InitWalkingSpeed: 0
   JumpForce: 3
   Gravity: 9.8
   MouseSensitivity: 2
@@ -945,7 +904,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4667027443064242434}
-  - component: {fileID: 2276384062427256249}
   m_Layer: 3
   m_Name: Box
   m_TagString: Untagged
@@ -969,31 +927,6 @@ Transform:
   - {fileID: 3444384485127090959}
   m_Father: {fileID: 5754097081868145229}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2276384062427256249
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7148736106507618845}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3576783928
-  InScenePlacedSourceGlobalObjectIdHash: 2291498698
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!1 &7683420347547717944
 GameObject:
   m_ObjectHideFlags: 0
@@ -1441,18 +1374,6 @@ PrefabInstance:
     m_TransformParent: {fileID: 4667027443064242434}
     m_Modifications:
     - target: {fileID: 124327153934129658, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.68141174
-      objectReference: {fileID: 0}
-    - target: {fileID: 124327153934129658, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.68281114
-      objectReference: {fileID: 0}
-    - target: {fileID: 124327153934129658, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-      propertyPath: m_LocalScale.z
-      value: 0.6610769
-      objectReference: {fileID: 0}
-    - target: {fileID: 124327153934129658, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0.0167
       objectReference: {fileID: 0}
@@ -1492,23 +1413,16 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 5870971298225661016, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-      propertyPath: GlobalObjectIdHash
-      value: 865214698
-      objectReference: {fileID: 0}
-    - target: {fileID: 5870971298225661016, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-      propertyPath: InScenePlacedSourceGlobalObjectIdHash
-      value: 1817074715
-      objectReference: {fileID: 0}
     - target: {fileID: 6773915570499476573, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
       propertyPath: m_Name
       value: SecurityBodyBox
       objectReference: {fileID: 0}
+    - target: {fileID: 8865719075777265542, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
+      propertyPath: _assetId
+      value: 111350930
+      objectReference: {fileID: 0}
     m_RemovedComponents:
-    - {fileID: 6523191271552486154, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-    - {fileID: 3588136373110623616, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-    - {fileID: 5870971298225661016, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-    - {fileID: 1207565900837681686, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
+    - {fileID: 8865719075777265542, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []

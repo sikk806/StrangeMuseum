@@ -20,6 +20,8 @@ public class PlayerController : NetworkBehaviour
     //public Zone
     [Header("MovementSetting")]
     public float MovementSpeed = 5f;// default : 5f
+    public float InitWalkingSpeed;// default : 5f
+
     public float JumpForce = 3f;
     public float Gravity = 9.8f;
 
@@ -63,7 +65,10 @@ public class PlayerController : NetworkBehaviour
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
 
-        //Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
+        InitWalkingSpeed = MovementSpeed;
+
+        Debug.Log("커서 ");
+        Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
     }
 
     // Update is called once per frame

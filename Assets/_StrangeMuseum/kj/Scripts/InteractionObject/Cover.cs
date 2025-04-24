@@ -67,9 +67,9 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                NetworkObjectReference objRef = this.gameObject;
+                //NetworkObjectReference objRef = this.gameObject;
 
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득 요청
+                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득 요청
 
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
@@ -98,44 +98,44 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     }
  
     [ServerRpc(RequireOwnership = false)]
-    public void UseServerRpc(ulong clientId)
+    public void UseServerRpc(uint clientId)
     {
         // Bouncer 리스트 가져오기
-        GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Statue");
+        //GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Statue");
 
-        // 아이템 사용한 경비원 찾기
-        foreach (var bouncer in bouncers)
-        {
-            NetworkObject netObj = bouncer.GetComponent<NetworkObject>();
-            if (netObj != null && netObj.OwnerClientId == clientId)
-            {
-                Debug.Log(netObj.OwnerClientId);
-                bouncerInteraction = bouncer.GetComponent<SecurityInteraction>();
+        //// 아이템 사용한 경비원 찾기
+        //foreach (var bouncer in bouncers)
+        //{
+        //    NetworkObject netObj = bouncer.GetComponent<NetworkObject>();
+        //    if (netObj != null && netObj.OwnerClientId == clientId)
+        //    {
+        //        Debug.Log(netObj.OwnerClientId);
+        //        bouncerInteraction = bouncer.GetComponent<SecurityInteraction>();
 
-                if (bouncerInteraction.IsStatue.Value)
-                {
-                    Debug.Log("조각상 확인");
-                    if (bouncerInteraction.SaveRayStaute != null)
-                    {                   
-                        // 🚀 ClientRpc 호출
-                        CoverActiveClientRpc(true, bouncerInteraction.SaveRayStaute.GetComponent<NetworkObject>().NetworkObjectId);
+        //        if (bouncerInteraction.IsStatue.Value)
+        //        {
+        //            Debug.Log("조각상 확인");
+        //            if (bouncerInteraction.SaveRayStaute != null)
+        //            {                   
+        //                // 🚀 ClientRpc 호출
+        //                CoverActiveClientRpc(true, bouncerInteraction.SaveRayStaute.GetComponent<NetworkObject>().NetworkObjectId);
 
-                        StatueInGameUI.Instance.CoverSet(this.gameObject);
+        //                StatueInGameUI.Instance.CoverSet(this.gameObject);
 
-                    }
-                    else
-                    {
-                        Debug.Log("조각상 확인 불가 ");
-                    }
-                }
-                else
-                {
-                    Debug.Log("에임 미스");
-                }
+        //            }
+        //            else
+        //            {
+        //                Debug.Log("조각상 확인 불가 ");
+        //            }
+        //        }
+        //        else
+        //        {
+        //            Debug.Log("에임 미스");
+        //        }
 
-                break;
-            }
-        }
+        //        break;
+        //    }
+        //}
 
     }
 
@@ -166,7 +166,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
         NetworkObjectReference objRef = this.gameObject;
 
-        GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 삭제 요청
+        //GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 삭제 요청
     }
 
 }

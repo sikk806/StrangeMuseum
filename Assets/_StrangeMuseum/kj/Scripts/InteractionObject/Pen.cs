@@ -33,9 +33,9 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                NetworkObjectReference objRef = this.gameObject;
+                //NetworkObjectReference objRef = this.gameObject;
 
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
+                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
 
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
@@ -67,7 +67,7 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
   
     [ServerRpc(RequireOwnership = false)]
-    public void UseServerRpc(ulong ClientId)
+    public void UseServerRpc(uint ClientId)
     {
         // Server-side action
         ProjectileLancuher securityLancuher = GameObject.FindGameObjectWithTag("Bouncer").GetComponent<ProjectileLancuher>();
@@ -86,12 +86,12 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
     }
 
     [ClientRpc]
-    public void PenInteractedClientRpc(ulong targetClientId)
+    public void PenInteractedClientRpc(uint targetClientId)
     {
 
 
-        if (NetworkManager.Singleton.LocalClientId != targetClientId)
-            return;
+        //if (NetworkManager.Singleton.LocalClientId != targetClientId)
+        //    return;
 
 
         SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
@@ -107,6 +107,6 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
         NetworkObjectReference objRef = this.gameObject;
 
-        GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
+      //  GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
     }
 }

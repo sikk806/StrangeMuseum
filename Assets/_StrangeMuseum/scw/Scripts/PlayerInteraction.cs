@@ -1,4 +1,4 @@
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -8,10 +8,9 @@ public class PlayerInteraction : NetworkBehaviour
      * 이 스크립트는 경비원과 오브젝트간 상호작용에 대한 기능을 담은 스크립트입니다.
      */
 
-
-    public NetworkVariable<bool> isMissionProgress = new NetworkVariable<bool>
-        (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //미션 진행 중인지?(진행률을 보여주고 있는지?)
-
+    [SyncVar]
+    public bool isMissionProgress = false;
+    
 
     private SecurityController playerController;
     private float interactionDistance = 1.5f; // 플레이어 눈(카메라)으로부터 상호작용이 가능한 거리
@@ -21,15 +20,15 @@ public class PlayerInteraction : NetworkBehaviour
         playerController = GetComponent<SecurityController>();
     }
 
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
+    [Command(requiresAuthority = false)] // 클라이언트도 요청할 수 있도록 설정
     public void SetIsProgressServerRpc(bool value) //네트워크 bool 변수 여부 설정 메서드
     {
-        isMissionProgress.Value = value;
+        isMissionProgress = value;
     }
 
     void Update()
     {
-        if(!IsOwner) return;
+        if(!isOwned) return;
         //if(!playerController.playerCamera) return;
 
         // RaycastHit hit;
@@ -75,8 +74,9 @@ public class PlayerInteraction : NetworkBehaviour
         if (Input.GetMouseButton(0)) // 유지
         {
             Vector3 playerPosition = transform.position;
-            ulong myId = NetworkManager.Singleton.LocalClientId;
-            inspectableObject.ProceedInspectedTime(myId, playerPosition);
+            
+            //ulong myId = NetworkManager.Singleton.LocalClientId;  //미러 방식으로 변경 필요
+            //inspectableObject.ProceedInspectedTime(myId, playerPosition);
         }
 
         if (Input.GetMouseButtonUp(0))

@@ -30,9 +30,9 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                NetworkObjectReference objRef = this.gameObject;
+                //NetworkObjectReference objRef = this.gameObject;
 
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
+                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
 
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
@@ -78,7 +78,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UseServerRpc(ulong ClientId)
+    public void UseServerRpc(uint ClientId)
     {
         if (!IsServer) return;
 
@@ -87,7 +87,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void EnergyDrinkInteractedServerRpc(ulong ClientId)
+    public void EnergyDrinkInteractedServerRpc(uint ClientId)
     {
 
         Debug.Log($"서버에서 에너지 드링크 사용 처리 - ClientId: {ClientId}");
@@ -95,35 +95,36 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         var allSecurityInteractions = FindObjectsOfType<SecurityInteraction>();
 
         SecurityInteraction targetBouncer = null;
-        foreach (var security in allSecurityInteractions)
-        {
 
-            if (security.OwnerClientId == ClientId)  // 해당 클라이언트의 Bouncer인지 확인
-            {
-                targetBouncer = security;
-                break;
-            }
-        }
+        //foreach (var security in allSecurityInteractions)
+        //{
 
-        if (targetBouncer != null && isEnergyDrinkUsing.Value == false)
-        {
-            if (isEnergyDrinkUsing.Value == true)
-            {
-                Debug.Log("에너지 드링크 기능 적용중");
-                return;
-            }
+        //    if (OwnerClientId == ClientId)  // 해당 클라이언트의 Bouncer인지 확인
+        //    {
+        //        targetBouncer = security;
+        //        break;
+        //    }
+        //}
+
+        //if (targetBouncer != null && isEnergyDrinkUsing.Value == false)
+        //{
+        //    if (isEnergyDrinkUsing.Value == true)
+        //    {
+        //        Debug.Log("에너지 드링크 기능 적용중");
+        //        return;
+        //    }
 
 
-            SetIsInEnergyDrinkServerRpc(true);
+        //    SetIsInEnergyDrinkServerRpc(true);
 
-            targetBouncer.EnergyDrinkFunction(this,EnergyDrinkCooltime, MaxSpeed);
+        //    targetBouncer.EnergyDrinkFunction(this,EnergyDrinkCooltime, MaxSpeed);
 
-            EnergyDrinkInteractedClientRpc(ClientId);
-        }
-        else
-        {
-            Debug.LogError("에너지 드링크 사용 중");
-        }
+        //    EnergyDrinkInteractedClientRpc(ClientId);
+        //}
+        //else
+        //{
+        //    Debug.LogError("에너지 드링크 사용 중");
+        //}
     }
     [ClientRpc]
     public void EnergyDrinkInteractedClientRpc(ulong targetClientId)
@@ -139,7 +140,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     }
 
     [ServerRpc(RequireOwnership = false)] ////RPC 호출 시 소유 여부에 관계없이 호출 가능.
-    public void ResetEnergyDrinkServerRpc(ulong clientId)
+    public void ResetEnergyDrinkServerRpc()
     {
         SetIsInEnergyDrinkServerRpc(false);
 
@@ -148,6 +149,6 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
         NetworkObjectReference objRef = this.gameObject;
 
-        GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
+        //GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
     }
 }

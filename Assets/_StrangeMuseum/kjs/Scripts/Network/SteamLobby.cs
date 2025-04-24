@@ -16,6 +16,7 @@ public class SteamLobby : MonoBehaviour
 
     private const string HostAddressKey = "HostAddress";
 
+    [SerializeField]
     private bool isSteamAvailable; // 혼자 작업할 때 필요한 것.
 
     private void Start()
@@ -53,6 +54,7 @@ public class SteamLobby : MonoBehaviour
             Debug.Log("Local host started (no Steam)");
             networkManager.networkAddress = "localhost";
             networkManager.StartHost();
+
             return;
         }
 

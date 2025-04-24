@@ -1,6 +1,7 @@
 using Mirror;
 using Steamworks;
 using UnityEngine;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class PlayerLobbyController : NetworkBehaviour
 {
@@ -26,6 +27,8 @@ public class PlayerLobbyController : NetworkBehaviour
 
     private void Start()
     {
+        Debug.Log($" ConnectionID : {ConnectionID}");
+
         DontDestroyOnLoad(this.gameObject);   
     }
 
@@ -66,8 +69,8 @@ public class PlayerLobbyController : NetworkBehaviour
     public override void OnStartClient()
     {
         Manager.GamePlayers.Add(this);
-        LobbyController.Instance.UpdateLobbyName();
-        LobbyController.Instance.UpdatePlayerList();
+        //LobbyController.Instance.UpdateLobbyName();
+        //LobbyController.Instance.UpdatePlayerList();
     }
 
     public override void OnStopClient()

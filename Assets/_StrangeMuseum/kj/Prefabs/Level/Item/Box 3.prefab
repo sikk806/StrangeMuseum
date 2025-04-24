@@ -11,10 +11,10 @@ GameObject:
   - component: {fileID: 8906425250074482598}
   - component: {fileID: 9146984247473674842}
   - component: {fileID: 8033326833906479478}
-  - component: {fileID: 318739538174422600}
   - component: {fileID: 6850830203835368613}
   - component: {fileID: 795890246225911473}
   - component: {fileID: 1219828413524666779}
+  - component: {fileID: -6381565824252667989}
   m_Layer: 6
   m_Name: Box 3
   m_TagString: Box
@@ -90,31 +90,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &318739538174422600
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5527360832863044529}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3767619477
-  InScenePlacedSourceGlobalObjectIdHash: 3767619477
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &6850830203835368613
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,11 +102,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b039b6362a565394aa2e79c379f4f453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   BoxUI: {fileID: 4030549418918185853, guid: 378e578b1a22eb840a9c9d26f532145e, type: 3}
   boxInvincibilityTime: 2
-  isBoxUsing:
-    m_InternalValue: 0
+  isBoxUsing: 0
+  storedBoxRef: {fileID: 0}
   itemLayer: 0
   isInteract: 0
 --- !u!114 &795890246225911473
@@ -146,7 +123,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2e8faa74e9ab447982ac4150c3948e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   isPickedUp: 0
 --- !u!65 &1219828413524666779
 BoxCollider:
@@ -169,3 +148,20 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 0.55028903, y: 0.55028903, z: 0.5502889}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &-6381565824252667989
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5527360832863044529}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2099460145
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

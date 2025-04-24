@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -117,19 +117,23 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
         return slotDataList[SelectedIndex];
     }
 
-    public void UseSelectedItem()
+    public void UseSelectedItem(uint id)
     {
         SlotData data = GetSelectedData();
 
         if (data.IsEmpty) return;
 
+        Debug.Log("비어있지 않ㅇㅁ");
+
         Slot currentSlot = slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>();
 
         IUsableItem usableItem = currentSlot.AssignedItem[SelectedIndex].GetComponent<IUsableItem>();
 
+
         if (usableItem != null)
         {
-            usableItem.UseServerRpc(NetworkManager.Singleton.LocalClientId); //아이템 기능 메서드 호출 부분
+            Debug.Log("사용 메서드 실행 " + id);
+            usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
           
 
         }

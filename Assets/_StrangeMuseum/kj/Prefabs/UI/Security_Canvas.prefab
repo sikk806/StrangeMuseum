@@ -10,7 +10,6 @@ GameObject:
   m_Component:
   - component: {fileID: 6557817157630500167}
   - component: {fileID: 8849381200719942944}
-  - component: {fileID: 5993926730849152074}
   - component: {fileID: 6091544262588832097}
   - component: {fileID: 408237594241469477}
   m_Layer: 5
@@ -50,32 +49,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 15648695639838303}
   m_CullTransparentMesh: 1
---- !u!114 &5993926730849152074
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15648695639838303}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 0
-  m_ChildAlignment: 4
-  m_Spacing: -28
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 0
-  m_ChildControlHeight: 0
-  m_ChildScaleWidth: 0
-  m_ChildScaleHeight: 0
-  m_ReverseArrangement: 0
 --- !u!114 &6091544262588832097
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -88,6 +61,39 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8466c2188024354a9986069f4588962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  dontDestroyOnLoad: 1
+  runInBackground: 1
+  headlessStartMode: 0
+  editorAutoStart: 0
+  sendRate: 60
+  offlineScene: 
+  onlineScene: 
+  offlineSceneLoadDelay: 0
+  transport: {fileID: 0}
+  networkAddress: localhost
+  maxConnections: 100
+  disconnectInactiveConnections: 0
+  disconnectInactiveTimeout: 60
+  authenticator: {fileID: 0}
+  playerPrefab: {fileID: 0}
+  autoCreatePlayer: 1
+  playerSpawnMethod: 0
+  spawnPrefabs: []
+  exceptionsDisconnect: 1
+  snapshotSettings:
+    bufferTimeMultiplier: 2
+    bufferLimit: 32
+    catchupNegativeThreshold: -1
+    catchupPositiveThreshold: 1
+    catchupSpeed: 0.019999999552965164
+    slowdownSpeed: 0.03999999910593033
+    driftEmaDuration: 1
+    dynamicAdjustment: 1
+    dynamicAdjustmentTolerance: 1
+    deliveryTimeEmaDuration: 2
+  evaluationMethod: 0
+  evaluationInterval: 3
+  timeInterpolationGui: 0
   SlotPrefab: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
   maxSlot: 3
   slotDataList: []
@@ -483,8 +489,8 @@ GameObject:
   - component: {fileID: 4200169024526768944}
   - component: {fileID: 3511179096113038957}
   - component: {fileID: 2008569082660477792}
-  - component: {fileID: 3972785132970293408}
   - component: {fileID: 5446494648819870612}
+  - component: {fileID: 7628856837493019950}
   m_Layer: 5
   m_Name: Security_Canvas
   m_TagString: Untagged
@@ -579,31 +585,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &3972785132970293408
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4316314992766219179}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2219956408
-  InScenePlacedSourceGlobalObjectIdHash: 2219956408
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &5446494648819870612
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -616,7 +597,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1dc4745d0c15e5e4da3c24d42c8cac05, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   InteractionUI: {fileID: 3445287738157476327}
   UsingIcon: {fileID: 21300000, guid: 69da02ec34c73624b91727759ad616df, type: 3}
   PickUpIcon: {fileID: 21300000, guid: bffdf8cbd8232a14c9e2eb0ebe93c6c4, type: 3}
@@ -625,6 +608,23 @@ MonoBehaviour:
   SlotManager: {fileID: 6091544262588832097}
   itemType: 0
   itemList: 0
+--- !u!114 &7628856837493019950
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4316314992766219179}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 497297884
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &8398367584148928603
 GameObject:
   m_ObjectHideFlags: 0
@@ -1026,6 +1026,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
+      propertyPath: Number
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_Name
       value: Slot (2)
@@ -1127,6 +1131,10 @@ PrefabInstance:
     - target: {fileID: 57790705428029860, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
+      propertyPath: Number
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_Name

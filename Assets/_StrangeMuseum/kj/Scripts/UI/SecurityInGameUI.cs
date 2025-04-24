@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using TMPro;
 using Unity.Burst.CompilerServices;
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using static ItemData;
+using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class SecurityInGameUI : NetworkBehaviour
 {
@@ -47,11 +48,8 @@ public class SecurityInGameUI : NetworkBehaviour
     ItemData.ItemList itemList;
 
     PlayerInteraction Interaction;
-    SecurityInteraction bouncerInteraction;
-
-
-    TestMoveController testMoveController;
-    
+    SecurityInteraction securityInteraction;
+ 
 
     private void Awake()
     {
@@ -70,26 +68,30 @@ public class SecurityInGameUI : NetworkBehaviour
     {
       
         InteractionUI.SetActive(false);
+        ulong id = netId;
 
-        ulong localClientId = NetworkManager.Singleton.LocalClientId;
+        Debug.Log($" NetId : {netId}");
+       
 
         // 모든 경비원 오브젝트를 찾고, 로컬 클라이언트 ID와 비교하여 해당 경비원의 Interaction을 가져옴
         GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
         foreach (var bouncer in bouncers)
         {
+
             // 각 경비원에 대해 로컬 클라이언트 ID가 일치하는지 확인
-            if (bouncer.GetComponent<NetworkObject>().OwnerClientId == localClientId)
+            if (bouncer.GetComponent<PlayerLobbyController>().ConnectionID == (int)id)
             {
                 // 일치하는 경비원 찾으면 그 경비원의 Interaction 객체를 할당
-                if (GameManager.Instance.PlayerStat.Value[OwnerClientId] == "Statue")
-                {
-                    Destroy(this.gameObject);
-                }
+                //if (GameManager.Instance.PlayerStat.Value[OwnerClientId] == "Statue")
+                //{
+                //    Destroy(this.gameObject);
+                //}
 
-                bouncerInteraction = bouncer.GetComponent<SecurityInteraction>();
+                playerId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
+
+                securityInteraction = bouncer.GetComponent<SecurityInteraction>();
                 Interaction = bouncer.GetComponent<PlayerInteraction>();
-                testMoveController = bouncer.GetComponent<TestMoveController>();
                 break; // 하나만 찾으면 됨
             }
         }
@@ -98,7 +100,9 @@ public class SecurityInGameUI : NetworkBehaviour
 
     }
 
-    private void Update()
+    uint playerId;
+
+    private void Update() 
     {
         SecurityInteractionUI();
 
@@ -121,10 +125,9 @@ public class SecurityInGameUI : NetworkBehaviour
         }
 
 
-        if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress.Value == false)
-        {
-            Debug.Log("경비원이 아이템을 사용했을 때 경비원의 id : " + NetworkManager.Singleton.LocalClientId);
-            SlotManager.UseSelectedItem();
+        if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress == false)
+        {       
+            SlotManager.UseSelectedItem(playerId);
         }
     }
 
@@ -133,16 +136,16 @@ public class SecurityInGameUI : NetworkBehaviour
         //1. 비어 있을 때 와 비어 있지 않을 때 
         // 2. 아이템을 쳐다 볼 때와 쳐다보지 않을 때 
 
-        if (bouncerInteraction.isInteracted.Value == true) //아이템 쳐다 볼 때
+        if (securityInteraction.isInteracted == true) //아이템 쳐다 볼 때
         {
-            if(bouncerInteraction.SaveRayItem != null)
+            if(securityInteraction.SaveRayItem != null)
             {
                 ItemList currentItem = SlotManager.slotDataList[SlotManager.SelectedIndex].itemList;
                 ItemUseType currentItemType = SlotManager.slotDataList[SlotManager.SelectedIndex].itemUseType;
 
                 if (SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false) //슬롯에 뭔가 있음
                 {
-                    currentItem = bouncerInteraction.SaveRayItem.GetComponent<IUsableItem>().GetItemList();
+                    currentItem = securityInteraction.SaveRayItem.GetComponent<IUsableItem>().GetItemList();
 
                     OnItemNameUI(currentItem); //바라본 아이템 이름 출력
 
@@ -154,7 +157,7 @@ public class SecurityInGameUI : NetworkBehaviour
                 {
                     if(currentItem == ItemList.None) 
                     {
-                        currentItem = bouncerInteraction.SaveRayItem.GetComponent<IUsableItem>().GetItemList();
+                        currentItem = securityInteraction.SaveRayItem.GetComponent<IUsableItem>().GetItemList();
                         
                         OnItemNameUI(currentItem);
                         OnInteractionUI(InteractionType.PickUp); // 줍기 아이콘 활성화
@@ -170,7 +173,7 @@ public class SecurityInGameUI : NetworkBehaviour
         }
         else //아이템 쳐다보지 않을 때
         {
-            if(bouncerInteraction.SaveRayItem != null )
+            if(securityInteraction.SaveRayItem != null )
             {
                 if(SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false) //슬롯에 뭔가 있음
                 {
@@ -203,7 +206,7 @@ public class SecurityInGameUI : NetworkBehaviour
         switch (itemType)
         {
             case ItemUseType.Self: //자기 자신에게 사용하는 아이템을 든 상태 . 박스, 에너지 드링크, 볼펜
-                if (bouncerInteraction.isInteracted.Value == true) //다른 아이템 바라볼 경우
+                if (securityInteraction.isInteracted == true) //다른 아이템 바라볼 경우
                 {
                     OnInteractionUI(InteractionType.PickUp); //픽업 ui 보여주고
                 }
@@ -214,13 +217,13 @@ public class SecurityInGameUI : NetworkBehaviour
                 break;
             case ItemUseType.Target: //상대에게 사용하는 아이템을 든 상태 . 피 묻은 천, 구속구
 
-                if (bouncerInteraction.isInteracted.Value == true) //다른 아이템 바라볼 경우
+                if (securityInteraction.isInteracted == true) //다른 아이템 바라볼 경우
                 {
                     OnInteractionUI(InteractionType.PickUp); //픽업 ui 보여주고
                 }
                 else //그냥 기존 아이템을 상태일 경우
                 {
-                    if (bouncerInteraction.IsStatue.Value)
+                    if (securityInteraction.IsStatue)
                     {
                         OnInteractionUI(InteractionType.Target); //사용법 ui 보여주고
                     }
@@ -241,7 +244,7 @@ public class SecurityInGameUI : NetworkBehaviour
     public void OnInteractionUI(InteractionType type = InteractionType.None)
     {
 
-        if (type == InteractionType.None || Interaction.isMissionProgress.Value == true)
+        if (type == InteractionType.None || Interaction.isMissionProgress == true)
         {
             InteractionUI.gameObject.SetActive(false);
             return;
@@ -276,7 +279,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public void OnItemNameUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
     {
-        if (Interaction.isMissionProgress.Value == true )
+        if (Interaction.isMissionProgress == true )
         {
             itemObjectName.text = " ";
             return;
@@ -317,7 +320,7 @@ public class SecurityInGameUI : NetworkBehaviour
     public void OnItemExplainUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
     {
 
-        if (Interaction.isMissionProgress.Value == true)
+        if (Interaction.isMissionProgress == true)
         {
             ItemExplain.text = " ";
             return;
