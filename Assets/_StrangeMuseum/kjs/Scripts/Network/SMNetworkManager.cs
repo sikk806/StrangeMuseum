@@ -12,7 +12,7 @@ public class SMNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().name == "Lobby")
+        if (SceneManager.GetActiveScene().name == "NetworkTest")
         {
              PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab[0]);
              GamePlayerInstance.transform.position = Vector3.zero;

@@ -10,8 +10,14 @@ public class NetworkItem : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdPickUpItemServerRpc(GameObject objRef)
     {
+        Debug.Log("1");
+
         if (isPickedUp) return;
+
+        Debug.Log("2");
+
         isPickedUp = true;
+
 
         objRef.gameObject.SetActive(false);
         RpcPickUpItemClientRpc(objRef);

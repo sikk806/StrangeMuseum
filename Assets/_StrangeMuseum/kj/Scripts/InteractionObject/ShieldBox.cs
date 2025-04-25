@@ -52,7 +52,6 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
                 GameObject objRef = this.gameObject;
                 GetComponent<NetworkItem>().CmdPickUpItemServerRpc(objRef);
 
-
                 //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
@@ -69,16 +68,14 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
                 }
 
                 //ItemData에 Add하는 부분
-
                 ItemManager.Instance.AddItem(ItemData.ItemList.Box);
                 slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Box);
 
                 break; 
             }
         }
+
     }
-
-
     [Command(requiresAuthority = false)]
     public void UseServerRpc(uint clientId)
     {
