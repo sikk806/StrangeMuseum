@@ -4774,6 +4774,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BloodyHeaven
       objectReference: {fileID: 0}
+    - target: {fileID: 7494962940105913522, guid: a1163424ab50bcb43988555cac811149, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 4147758721
+      objectReference: {fileID: 0}
     - target: {fileID: 9101929767119413532, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: GlobalObjectIdHash
       value: 1665113172
@@ -6090,6 +6094,10 @@ PrefabInstance:
     - target: {fileID: 3340654157581502539, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: m_Name
       value: BloodyHeaven (2)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7494962940105913522, guid: a1163424ab50bcb43988555cac811149, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3130348884
       objectReference: {fileID: 0}
     - target: {fileID: 9101929767119413532, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -11727,6 +11735,10 @@ PrefabInstance:
     - target: {fileID: 3340654157581502539, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: m_Name
       value: BloodyHeaven (4)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7494962940105913522, guid: a1163424ab50bcb43988555cac811149, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 4210021264
       objectReference: {fileID: 0}
     - target: {fileID: 9101929767119413532, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -35026,6 +35038,10 @@ PrefabInstance:
     - target: {fileID: 3340654157581502539, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: m_Name
       value: BloodyHeaven (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7494962940105913522, guid: a1163424ab50bcb43988555cac811149, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 804937826
       objectReference: {fileID: 0}
     - target: {fileID: 9101929767119413532, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: GlobalObjectIdHash
@@ -62001,6 +62017,10 @@ PrefabInstance:
     - target: {fileID: 3340654157581502539, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: m_Name
       value: BloodyHeaven (3)
+      objectReference: {fileID: 0}
+    - target: {fileID: 7494962940105913522, guid: a1163424ab50bcb43988555cac811149, type: 3}
+      propertyPath: GlobalObjectIdHash
+      value: 3489878400
       objectReference: {fileID: 0}
     - target: {fileID: 9101929767119413532, guid: a1163424ab50bcb43988555cac811149, type: 3}
       propertyPath: GlobalObjectIdHash
