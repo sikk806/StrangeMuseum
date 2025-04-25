@@ -6,15 +6,15 @@ using Steamworks;
 
 public class SMNetworkManager : NetworkManager
 {
-    [SerializeField] private PlayerLobbyController GamePlayerPrefab;
+    [SerializeField] private List<PlayerLobbyController> GamePlayerPrefab;
 
     public List<PlayerLobbyController> GamePlayers { get; } = new List<PlayerLobbyController>(); // Info of Players
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().name == "NetworkTest")
+        if (SceneManager.GetActiveScene().name == "PlayScene")
         {
-             PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
+             PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab[0]);
              GamePlayerInstance.transform.position = Vector3.zero;
 
             GamePlayerInstance.ConnectionID = conn.connectionId;

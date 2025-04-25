@@ -60,8 +60,7 @@ public class GameManager : NetworkBehaviour
             IsAllConnected.Value = true;
         }
 
-        Debug.Log("SecurityCount: " + SecurityCount.Value);
-        Debug.Log("StatueCount: " + StatueCount.Value);
+        return;
 
        
         if (Input.GetKeyDown(KeyCode.Escape))

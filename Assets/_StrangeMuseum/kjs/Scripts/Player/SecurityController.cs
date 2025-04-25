@@ -1,5 +1,7 @@
+using System.Collections;
 using Mirror;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(NetworkAnimator))]
 public class SecurityController : PlayerController
@@ -21,8 +23,14 @@ public class SecurityController : PlayerController
     protected override void Start()
     {
         if(!isOwned) return;
+        DontDestroyOnLoad(gameObject);
+
+        Debug.Log("Start()");
 
         base.Start();
+
+        SceneManager.sceneLoaded += InitPlayerPosition;
+        Debug.Log("SetDelegate");
 
         // 자신의 스킨은 볼 수 없도록. (그림자만 존재하도록)
         skinnedMeshRenderer = CharacterMesh.GetComponent<SkinnedMeshRenderer>();
@@ -64,5 +72,20 @@ public class SecurityController : PlayerController
 
         playerCamera.localRotation = Quaternion.Euler(pitch, yaw, 0f);
         playerCamera.position = transform.position + transform.rotation * SecurityCameraPosition;
+    }
+
+    protected void InitPlayerPosition(Scene scene, LoadSceneMode mode)
+    {
+        if(scene.name == "PlayScene")
+        {
+            StartCoroutine("SetPlayerPosition");
+        }
+    }
+
+    IEnumerator SetPlayerPosition()
+    {
+        yield return new WaitUntil(() => NetworkClient.ready);
+
+        transform.position = new Vector3(-21f, 2f, 41f);
     }
 }

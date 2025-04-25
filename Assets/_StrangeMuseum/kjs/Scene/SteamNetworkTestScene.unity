@@ -1959,7 +1959,7 @@ MonoBehaviour:
   editorAutoStart: 0
   sendRate: 60
   offlineScene: Assets/_StrangeMuseum/kjs/Scene/SteamNetworkTestScene.unity
-  onlineScene: Assets/_StrangeMuseum/kjs/Scene/NetworkTest.unity
+  onlineScene: Assets/_StrangeMuseum/GameScenes/PlayScene.unity
   offlineSceneLoadDelay: 0
   transport: {fileID: 1826124550}
   networkAddress: localhost
@@ -1987,7 +1987,8 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
-  GamePlayerPrefab: {fileID: 1872208728460040252, guid: 4498b11b8407c3c4a9981da127b9e220, type: 3}
+  GamePlayerPrefab:
+  - {fileID: 6913776565164800456, guid: 283123eb4434e11489dc6aafde9b9602, type: 3}
 --- !u!114 &1826124554
 MonoBehaviour:
   m_ObjectHideFlags: 0

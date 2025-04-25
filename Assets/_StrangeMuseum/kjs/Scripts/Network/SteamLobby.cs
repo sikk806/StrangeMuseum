@@ -47,7 +47,7 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        HostButton.SetActive(false);
+        //HostButton.SetActive(false);
 
         if (!isSteamAvailable)
         {
@@ -77,7 +77,7 @@ public class SteamLobby : MonoBehaviour
         // Check able to create Lobby. If Not show the hostButton Again
         if (callback.m_eResult != EResult.k_EResultOK)
         {
-            HostButton.SetActive(true);
+            //HostButton.SetActive(true);
             return;
         }
 

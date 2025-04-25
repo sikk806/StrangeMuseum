@@ -29,7 +29,7 @@ public class PlayerLobbyController : NetworkBehaviour
     {
         Debug.Log($" ConnectionID : {ConnectionID}");
 
-        DontDestroyOnLoad(this.gameObject);   
+        DontDestroyOnLoad(this.gameObject);
     }
 
     private void PlayerReadyUpdate(bool oldValue, bool newValue)
