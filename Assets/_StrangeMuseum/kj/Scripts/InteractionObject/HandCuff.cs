@@ -53,9 +53,9 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                NetworkObjectReference objRef = this.gameObject;
+                //NetworkObjectReference objRef = this.gameObject;
 
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
+                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
 
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
@@ -83,7 +83,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void UseServerRpc(ulong id)
+    public void UseServerRpc(uint id)
     {
         if (IsServer == false) { return; }
 
@@ -94,46 +94,46 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void HandCuffInteractedServerRpc(ulong ClientId)
+    public void HandCuffInteractedServerRpc(uint ClientId)
     {
-        Debug.Log("서버에서 구속구 사용 처리");
-        GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
+        //Debug.Log("서버에서 구속구 사용 처리");
+        //GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
-        // 아이템 사용한 경비원 찾기
-        foreach (var bouncer in bouncers)
-        {
-            NetworkObject netObj = bouncer.GetComponent<NetworkObject>();
-            if (netObj != null && netObj.OwnerClientId == ClientId)
-            {
-                Debug.Log(netObj.OwnerClientId);
-                bouncerIntercation = bouncer.GetComponent<SecurityInteraction>();
+        //// 아이템 사용한 경비원 찾기
+        //foreach (var bouncer in bouncers)
+        //{
+        //    NetworkObject netObj = bouncer.GetComponent<NetworkObject>();
+        //    if (netObj != null && netObj.OwnerClientId == ClientId)
+        //    {
+        //        Debug.Log(netObj.OwnerClientId);
+        //        bouncerIntercation = bouncer.GetComponent<SecurityInteraction>();
 
-                if (bouncerIntercation.IsStatue.Value)
-                {
-                    Debug.Log("조각상 확인");
-                    if (bouncerIntercation.RayStaute != null)
-                    {
-                        Debug.Log("조각상 CoverInteracted 호출 ");
+        //        if (bouncerIntercation.IsStatue.Value)
+        //        {
+        //            Debug.Log("조각상 확인");
+        //            if (bouncerIntercation.SaveRayStaute != null)
+        //            {
+        //                Debug.Log("조각상 CoverInteracted 호출 ");
 
-                        if(isHandCuffUsing.Value == false)
-                        {
-                            bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(this, minMoveSpeed, minRushSpeed, handCuffCooltime, ClientId);
-                            bouncerIntercation.RayStaute.GetComponent<StatueInteraction>().PlayFearSound(HandCuffFearSound);
-                            HandActiveClientRpc(ClientId);
-                        }
+        //                if(isHandCuffUsing.Value == false)
+        //                {
+        //                    bouncerIntercation.SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(this, minMoveSpeed, minRushSpeed, handCuffCooltime, ClientId);
+        //                    bouncerIntercation.SaveRayStaute.GetComponent<StatueInteraction>().PlayFearSound(HandCuffFearSound);
+        //                    HandActiveClientRpc(ClientId);
+        //                }
 
                         
-                    }
-                    else
-                    {
-                        Debug.Log("조각상 확인 불가 ");
-                    }
-                }
+        //            }
+        //            else
+        //            {
+        //                Debug.Log("조각상 확인 불가 ");
+        //            }
+        //        }
 
 
-                break;
-            }
-        }
+        //        break;
+        //    }
+        //}
 
     }
 
@@ -162,7 +162,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
         NetworkObjectReference objRef = this.gameObject;
 
-        GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
+       // GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
     }
 
 }

@@ -11,11 +11,10 @@ GameObject:
   - component: {fileID: 124327153934129658}
   - component: {fileID: 4251248536204858368}
   - component: {fileID: 5806668621328469382}
-  - component: {fileID: 5870971298225661016}
   - component: {fileID: 3588136373110623616}
   - component: {fileID: 6523191271552486154}
   - component: {fileID: -2868002616597825096}
-  - component: {fileID: -3276464450583988737}
+  - component: {fileID: 6365536191941600805}
   m_Layer: 6
   m_Name: Box 1
   m_TagString: Box
@@ -31,13 +30,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6773915570499476573}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.08019686, y: 0.63273424, z: 0.0064164116, w: 0.7701784}
+  m_LocalRotation: {x: -0.08019601, y: 0.6327349, z: 0.0064170994, w: 0.77017784}
   m_LocalPosition: {x: -3.83, y: 2.3191524, z: -0.0000063180923}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -7.565, y: 79.16, z: -5.302}
 --- !u!33 &4251248536204858368
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -91,31 +90,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!114 &5870971298225661016
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6773915570499476573}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1986757053
-  InScenePlacedSourceGlobalObjectIdHash: 1986757053
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &3588136373110623616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -128,13 +102,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b039b6362a565394aa2e79c379f4f453, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   BoxUI: {fileID: 4030549418918185853, guid: 378e578b1a22eb840a9c9d26f532145e, type: 3}
   boxInvincibilityTime: 2
-  isBoxUsing:
-    m_InternalValue: 0
+  isBoxUsing: 0
+  storedBoxRef: {fileID: 0}
   itemLayer: 0
-  Box: {fileID: 0}
+  isInteract: 0
 --- !u!114 &6523191271552486154
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -147,7 +123,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2e8faa74e9ab447982ac4150c3948e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   isPickedUp: 0
 --- !u!65 &-2868002616597825096
 BoxCollider:
@@ -164,13 +142,13 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &-3276464450583988737
+--- !u!114 &6365536191941600805
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -179,8 +157,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6773915570499476573}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d64a611284ab2ee44a9b4dc73269ccff, type: 3}
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsItemView: 0
-  ItemHeight: 0.5
+  sceneId: 0
+  _assetId: 3239442981
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

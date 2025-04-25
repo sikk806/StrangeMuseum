@@ -7,8 +7,7 @@ using UnityEngine;
 public class StatueAttack : NetworkBehaviour
 {
     [Header("AttackSetting")]
-        public NetworkVariable<float> RushSpeed = new NetworkVariable<float>(50f, NetworkVariableReadPermission.Everyone,
-        NetworkVariableWritePermission.Server);  // default : 50f
+    public float RushSpeed = 50f;  // default : 50f
 
     public float InitRushSpeed;
     public float RushDuration = 0.2f;
@@ -20,7 +19,7 @@ public class StatueAttack : NetworkBehaviour
 
     void Start()
     {
-        InitRushSpeed = RushSpeed.Value;
+        InitRushSpeed = RushSpeed;
         playerCamera = Camera.main.transform;
     }
 
@@ -52,7 +51,7 @@ public class StatueAttack : NetworkBehaviour
         go.transform.LookAt(playerCamera);
         while (elapseTime < RushDuration)
         {
-            characterController.Move(rushDirection * RushSpeed.Value * Time.deltaTime);
+            characterController.Move(rushDirection * RushSpeed * Time.deltaTime);
             elapseTime += Time.deltaTime;
 
             playerCamera.position = transform.position + transform.rotation * GetComponent<StatueController>().StatueCameraPosition;

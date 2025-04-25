@@ -96,9 +96,10 @@ GameObject:
   m_Component:
   - component: {fileID: 7763854995140959550}
   - component: {fileID: 6325274353703791914}
-  - component: {fileID: 1316050708143366014}
+  - component: {fileID: 3264276457498798756}
   - component: {fileID: 2124135173565059415}
   - component: {fileID: 2731023876945056466}
+  - component: {fileID: -1706734884192624732}
   m_Layer: 6
   m_Name: OldPen
   m_TagString: Pen
@@ -143,7 +144,7 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 9.401817}
   m_Center: {x: 0, y: 0, z: -0.5904865}
---- !u!114 &1316050708143366014
+--- !u!114 &3264276457498798756
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -155,7 +156,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 906482204
+  GlobalObjectIdHash: 3780241597
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -183,7 +184,6 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   PenDrinkUI: {fileID: 7083497462365922944, guid: a74040b3bc647a7488328065164b1504, type: 3}
   itemLayer: 0
-  pen: {fileID: 0}
 --- !u!114 &2731023876945056466
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -196,5 +196,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b2e8faa74e9ab447982ac4150c3948e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   isPickedUp: 0
+--- !u!114 &-1706734884192624732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7119772569965643005}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3021045645
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

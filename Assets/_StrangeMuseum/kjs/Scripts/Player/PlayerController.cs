@@ -20,6 +20,8 @@ public class PlayerController : NetworkBehaviour
     //public Zone
     [Header("MovementSetting")]
     public float MovementSpeed = 5f;// default : 5f
+    public float InitWalkingSpeed;// default : 5f
+
     public float JumpForce = 3f;
     public float Gravity = 9.8f;
 
@@ -47,7 +49,6 @@ public class PlayerController : NetworkBehaviour
 
     protected virtual void Awake()
     {
-        SceneManager.sceneLoaded += SettingCamera;
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         // PlayerInteraction 합쳐야 함.
@@ -55,6 +56,8 @@ public class PlayerController : NetworkBehaviour
 
     protected virtual void Start()
     {
+        SceneManager.sceneLoaded += SettingCamera;
+        Debug.Log("SetDelegate");
         // Player 기본 상태 세팅
         playerState = PlayerState.Idle;
         transform.Rotate(Vector3.zero);
@@ -63,6 +66,9 @@ public class PlayerController : NetworkBehaviour
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
 
+        InitWalkingSpeed = MovementSpeed;
+
+        Debug.Log("커서 ");
         //Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
     }
 
@@ -134,6 +140,8 @@ public class PlayerController : NetworkBehaviour
         // Player 카메라 가져오기.
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
+
+        Debug.Log("ConnectionID : " + GetComponent<PlayerLobbyController>().ConnectionID);
 
     }
 

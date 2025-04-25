@@ -34,7 +34,7 @@ public class Slot : MonoBehaviour
     private void Start()
     {
 
-        Number = int.Parse(gameObject.name.Substring(gameObject.name.IndexOf("_") + 1));     
+       // Number = int.Parse(gameObject.name.Substring(gameObject.name.IndexOf("_") + 1));     
 
 
 

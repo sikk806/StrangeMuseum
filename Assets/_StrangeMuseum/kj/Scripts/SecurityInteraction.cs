@@ -1,3 +1,4 @@
+using Mirror;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,7 +14,7 @@ using UnityEngine.UIElements;
 
 //네트워크 관련 아이템 변수들은 각 아이템 스크립트에서 관리 -> 시도 해보기
 
-public class SecurityInteraction : NetworkBehaviour
+public class SecurityInteraction : PlayerController
 {
     public float LayDistance; //상호작용 레이
 
@@ -21,9 +22,8 @@ public class SecurityInteraction : NetworkBehaviour
 
     private IInteractable interactableItem; // 상호작용할 수 있는 아이템 저장
 
-    private IUsableItem inusableItem; // 상호작용할 수 있는 아이템 저장
+    private IUsableItem iusableItem; // 상호작용할 수 있는 아이템 저장
 
-    private TestMoveController testMoveController; //임시
 
     [SerializeField]
     private AudioClip pickUpSound; // 구속구 공포 효과음
@@ -46,43 +46,29 @@ public class SecurityInteraction : NetworkBehaviour
     [SerializeField]
     private AudioClip CoverFearSound; // 구속구 공포 효과음
 
-    public GameObject RayItem; //바라본 아이템 저장 
+    public GameObject SaveRayItem; //바라본 아이템 저장 
 
-    public GameObject RayStaute; //바라본 조각상 저장
+    public GameObject SaveRayStaute; //바라본 조각상 저장
 
-    public NetworkVariable<bool> IsStatue = new NetworkVariable<bool>
-        (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server);
+    [SyncVar]
+    public bool isInteracted;
+    [SyncVar]
+    public bool IsStatue;
 
-    public NetworkVariable<bool> isInteracted = new NetworkVariable<bool>
-     (false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsStatueServerRpc(bool value)
+    public override void OnStartLocalPlayer()
     {
-        IsStatue.Value = value;
-    }
+        base.OnStartLocalPlayer();
 
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsInteractedServerRpc(bool value)
-    {
-        isInteracted.Value = value;
-    }
-
-    public override void OnNetworkSpawn()
-    {
-        base.OnNetworkSpawn();
-
-        if (IsOwner)  // 내가 소유한 클라이언트라면
+        if (isOwned)  // 내가 소유한 클라이언트라면
         {
             uiInstance = Instantiate(InGameUIPrefab);
         }
     }
-    public override void OnNetworkDespawn()
+    public override void OnStopLocalPlayer()
     {
-        base.OnNetworkDespawn();
+        base.OnStopLocalPlayer();
 
-        if (IsOwner)
+        if (isOwned)
         {
             Destroy(uiInstance);
 
@@ -91,31 +77,33 @@ public class SecurityInteraction : NetworkBehaviour
     }
 
 
-    private void Start()
+    protected override void Start()
     {
        
-        if (IsOwner == false)
+        if (isOwned == false)
         {
             return;
         }
 
-        testMoveController = GetComponent<TestMoveController>();
+        base.Start();
 
-        if (IsOwner)  // 내가 소유한 클라이언트라면
+        if (isOwned)  // 내가 소유한 클라이언트라면
         {
             networkLight.intensity = 0;
 
-            uiInstance = Instantiate(InGameUIPrefab);
+           // uiInstance = Instantiate(InGameUIPrefab);
             Debug.Log("OnDie += HandleDie 등록");
         }
     }
 
-    private void Update()
+    protected override void Update()
     {
-        if (IsOwner == false)
+        if (isOwned == false)
         {
             return;
         }
+
+        base.Update();
 
         BouncerInteractionRay();
 
@@ -125,26 +113,21 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void BouncerInteracted()
     {
-        if (interactableItem == null)
-        {
-            return;
-        }
+        if (interactableItem == null) { return; }      
 
-        if (Input.GetMouseButtonDown(0) && isInteracted.Value == true && interactableItem != null)
+        if (Input.GetMouseButtonDown(0) && isInteracted == true && interactableItem != null)
         {
-            RayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
+            SaveRayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
 
             interactableItem.Interact();
 
-            inusableItem.ItemView(NetworkManager.Singleton.LocalClientId);
 
-            SetIsInteractedServerRpc(false);
 
             SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None);
 
             SoundManager.Instance.PlaySfx(pickUpSound);
 
-            if (RayItem.gameObject.tag == "Cover")
+            if (SaveRayItem.gameObject.tag == "Cover")
             {
                 PlayFearSound(CoverFearSound);
             }    
@@ -161,13 +144,25 @@ public class SecurityInteraction : NetworkBehaviour
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
                 || hit.collider.CompareTag("Pen"))
             {
-               
                 interactableItem = hit.collider.GetComponent<IInteractable>();
-                inusableItem = hit.collider.GetComponent<IUsableItem>();
+                iusableItem = hit.collider.GetComponent<IUsableItem>();
+
+                ItemData.ItemList rayItem = iusableItem.GetItemList();
+
+                if(ItemManager.Instance.inventoryDictionary.ContainsKey(rayItem))
+                {
+                    if (ItemManager.Instance.CountCurrentItem(rayItem))
+                    {
+                        Debug.LogWarning($"해당 {rayItem}은 소지 개수를 초과 했으므로 상호작용 불가능");
+                        return;
+                    }
+                }
+
 
                 bool isInteractedNow = interactableItem != null;
-                SetIsInteractedServerRpc(isInteractedNow);
-                // SetInteractedServerRpc(isInteractedNow);
+
+                isInteracted = true;
+
                 ItemSave(hit.collider.gameObject);
             }
             if (hit.collider.CompareTag("Statue"))
@@ -179,11 +174,11 @@ public class SecurityInteraction : NetworkBehaviour
         {
             interactableItem = null;
 
-            SetIsInteractedServerRpc(false);
+            isInteracted = false;
 
-            if (isInteracted.Value) // 값이 이미 false라면 다시 호출하지 않음
+            if (isInteracted) // 값이 이미 false라면 다시 호출하지 않음
             {
-                SetIsInteractedServerRpc(false);
+                isInteracted = false;
             }
             StatueInterated(false, null);
         }
@@ -191,7 +186,7 @@ public class SecurityInteraction : NetworkBehaviour
     }
     private void ItemSave(GameObject obj = null)
     {
-        RayItem = obj;
+        SaveRayItem = obj;
     }
 
     #region 손전등 Light 여부에 따른 조각상 행동 제한
@@ -246,17 +241,17 @@ public class SecurityInteraction : NetworkBehaviour
     //}
     #endregion
 
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void RayStatueServerRpc(NetworkObjectReference coverRef)
     {
         if (coverRef.TryGet(out NetworkObject networkObject))
         {
-            RayStaute = networkObject.gameObject;
+            SaveRayStaute = networkObject.gameObject;
             RayStatueClientRpc(coverRef); // 서버에서 클라이언트로 전달
         }
     }
 
-    [ClientRpc]
+    [Client]
     public void RayStatueClientRpc(NetworkObjectReference boxRef)
     {
         if (!boxRef.TryGet(out NetworkObject networkObject))
@@ -264,15 +259,15 @@ public class SecurityInteraction : NetworkBehaviour
             return;
         }
 
-        RayStaute = networkObject.gameObject;
+        SaveRayStaute = networkObject.gameObject;
     }
 
     public void StatueInterated(bool value, GameObject statue)
     {
-        if (statue == null) { SetIsStatueServerRpc(false); return; }
+        if (statue == null) { IsStatue = false; return; }
 
 
-        SetIsStatueServerRpc(true);
+        IsStatue = true;
 
         if (statue != null)
         {
@@ -304,8 +299,8 @@ public class SecurityInteraction : NetworkBehaviour
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            testMoveController.MovementSpeed =
-                Mathf.Lerp(testMoveController.MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
+            MovementSpeed =
+                Mathf.Lerp(MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
 
 
 
@@ -318,14 +313,14 @@ public class SecurityInteraction : NetworkBehaviour
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            testMoveController.MovementSpeed =
-            Mathf.Lerp(testMoveController.MovementSpeed, testMoveController.InitWalkingSpeed, elapsedTime / halfCooldown);
+            MovementSpeed =
+            Mathf.Lerp(MovementSpeed, InitWalkingSpeed, elapsedTime / halfCooldown);
 
             yield return null;
         }
 
 
-        energyDrink.ResetEnergyDrinkServerRpc(NetworkManager.Singleton.LocalClientId);
+        energyDrink.ResetEnergyDrinkServerRpc();
 
  
     }

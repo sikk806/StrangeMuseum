@@ -87,25 +87,6 @@ public class TestMoveController : NetworkBehaviour
 
         // Freeze 상태일 때 이동 입력이 들어오면 Idle로 전환
 
-        if (SecurityInGameUI.Instance.isItemFirstView == true) { return; }
-
-        if (playerState == TestPlayerState.Freeze )
-        {
-
-            float h = Input.GetAxisRaw("Horizontal");
-            float v = Input.GetAxisRaw("Vertical");
-
-            if (IsMoveInputDetected())
-            {
-                Debug.Log("행동 정지 후 해제");
-                SetPlayerState(TestPlayerState.Idle);
-                return;
-            }
-
-            // Freeze 상태에서는 이동/ 마우스 회전 안 함
-            return;
-        }
-
         PlayerMovement();
 
         MouseMove();

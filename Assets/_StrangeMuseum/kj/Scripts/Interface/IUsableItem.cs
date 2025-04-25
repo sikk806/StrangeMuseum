@@ -2,9 +2,7 @@ using UnityEngine;
 
 public interface IUsableItem
 {
-    public void UseServerRpc(ulong id);
-    public void ItemView(ulong id);
-
+    public void UseServerRpc(uint id);
 
     public ItemData.ItemList GetItemList();
     public ItemData.ItemUseType GetItemType();

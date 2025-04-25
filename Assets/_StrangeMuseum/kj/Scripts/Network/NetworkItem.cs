@@ -1,4 +1,5 @@
-using Unity.Netcode;
+using Mirror;
+using Unity.Services.Authentication;
 using UnityEngine;
 
 public class NetworkItem : NetworkBehaviour
@@ -6,28 +7,25 @@ public class NetworkItem : NetworkBehaviour
     [SerializeField]
     public bool isPickedUp = false;
 
-    [ServerRpc(RequireOwnership = false)]
-    public void PickUpItemServerRpc(NetworkObjectReference objRef)
+    [Command(requiresAuthority = false)]
+    public void CmdPickUpItemServerRpc(GameObject objRef)
     {
         if (isPickedUp) return;
-
         isPickedUp = true;
 
-        PickUpItemClientRpc(objRef);
+        objRef.gameObject.SetActive(false);
+        RpcPickUpItemClientRpc(objRef);
     }
 
     [ClientRpc]
-    private void PickUpItemClientRpc(NetworkObjectReference objRef)
+    private void RpcPickUpItemClientRpc(GameObject obj)
     {
-        if (objRef.TryGet(out NetworkObject obj))
-        {
-            obj.gameObject.SetActive(false);
-        }
+        obj.gameObject.SetActive(false);
     }
 
-    public void DestroyItem(NetworkObject obj)
+    public void DestroyItem(GameObject obj)
     {
-        if (!IsServer)
+        if (!isServer)
             return;
 
         Destroy(obj.gameObject);

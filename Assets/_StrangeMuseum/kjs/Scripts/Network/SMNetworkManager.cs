@@ -6,7 +6,7 @@ using Steamworks;
 
 public class SMNetworkManager : NetworkManager
 {
-    [SerializeField] private PlayerLobbyController GamePlayerPrefab;
+    [SerializeField] private List<PlayerLobbyController> GamePlayerPrefab;
 
     public List<PlayerLobbyController> GamePlayers { get; } = new List<PlayerLobbyController>(); // Info of Players
 
@@ -14,7 +14,7 @@ public class SMNetworkManager : NetworkManager
     {
         if (SceneManager.GetActiveScene().name == "Lobby")
         {
-             PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
+             PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab[0]);
              GamePlayerInstance.transform.position = Vector3.zero;
 
             GamePlayerInstance.ConnectionID = conn.connectionId;

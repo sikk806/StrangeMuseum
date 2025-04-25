@@ -5,13 +5,13 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
+  - enabled: 1
     path: Assets/_StrangeMuseum/GameScenes/MainScene.unity
     guid: 2f1abd0ba19d90a4f8843e1455a67ec0
   - enabled: 0
     path: Assets/_StrangeMuseum/GameScenes/Lobby.unity
     guid: 26623ed2cd3f10f4c8c5a778a054d991
-  - enabled: 0
+  - enabled: 1
     path: Assets/_StrangeMuseum/GameScenes/PlayScene.unity
     guid: 37bfd036050e0aa4f954eee88d2bf9bb
   - enabled: 0
@@ -20,9 +20,6 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/_StrangeMuseum/kj/Scene/KJ_TestScene.unity
     guid: 4670c8684ee638b44b98fac992fb38d7
-  - enabled: 1
-    path: Assets/_StrangeMuseum/kjs/Scene/SteamNetworkTestScene.unity
-    guid: 98c1430e1337c8a41ba4e854f80ab36f
   - enabled: 1
     path: Assets/_StrangeMuseum/kjs/Scene/Lobby.unity
     guid: a127f5a0e7c391146b77f7a4ded4d3fa
