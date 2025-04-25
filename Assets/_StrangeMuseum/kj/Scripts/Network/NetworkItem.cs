@@ -8,7 +8,7 @@ public class NetworkItem : NetworkBehaviour
     public bool isPickedUp = false;
 
     [Command(requiresAuthority = false)]
-    public void PickUpItemServerRpc(GameObject objRef)
+    public void CmdPickUpItemServerRpc(GameObject objRef)
     {
         if (isPickedUp) return;
         isPickedUp = true;

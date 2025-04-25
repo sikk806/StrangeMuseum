@@ -1989,7 +1989,7 @@ MonoBehaviour:
   evaluationInterval: 3
   timeInterpolationGui: 0
   GamePlayerPrefab:
-  - {fileID: 6913776565164800456, guid: 283123eb4434e11489dc6aafde9b9602, type: 3}
+  - {fileID: 1872208728460040252, guid: 4498b11b8407c3c4a9981da127b9e220, type: 3}
 --- !u!114 &1826124554
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2137,7 +2137,10 @@ MonoBehaviour:
   evaluationMethod: 0
   evaluationInterval: 3
   timeInterpolationGui: 0
-  GamePlayerPrefab: {fileID: 2029663946312191239, guid: e3bf8bd1c81649d4ba84360ac8d5b8e3, type: 3}
+  GamePlayerPrefab:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1 &1921320312
 GameObject:
   m_ObjectHideFlags: 0

@@ -50,7 +50,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
                 isInteract = true;
 
                 GameObject objRef = this.gameObject;
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef);
+                GetComponent<NetworkItem>().CmdPickUpItemServerRpc(objRef);
 
 
                 //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
