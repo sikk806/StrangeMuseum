@@ -9,11 +9,6 @@
     "ItemExplain": "사용 시, 이동속도 증가",
     "ItemMaxCount": 3
   },
-  "Box": {
-    "ItemName": "박스",
-    "ItemExplain": "사용 시, 조각상의 공격으로 부터 1회 방어",
-    "ItemMaxCount": 2
-  },
   "Cover": {
     "ItemName": "피 묻은 천",
     "ItemExplain": "조각상에게 사용 시, 조각상의 시야 기능 제한",
