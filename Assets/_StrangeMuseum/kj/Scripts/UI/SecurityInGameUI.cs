@@ -1,11 +1,8 @@
-using System.Collections.Generic;
 using TMPro;
-using Unity.Burst.CompilerServices;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using static ItemData;
-using static UnityEditor.Experimental.AssetDatabaseExperimental.AssetDatabaseCounters;
 
 public class SecurityInGameUI : NetworkBehaviour
 {

@@ -69,7 +69,7 @@ public class PlayerController : NetworkBehaviour
         InitWalkingSpeed = MovementSpeed;
 
         Debug.Log("커서 ");
-        Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
+        //Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
     }
 
     // Update is called once per frame
