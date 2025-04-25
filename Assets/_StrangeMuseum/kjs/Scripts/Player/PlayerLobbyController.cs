@@ -68,8 +68,8 @@ public class PlayerLobbyController : NetworkBehaviour
     public override void OnStartClient()
     {
         Manager.GamePlayers.Add(this);
-        //LobbyController.Instance.UpdateLobbyName();
-        //LobbyController.Instance.UpdatePlayerList();
+        LobbyController.Instance.UpdateLobbyName();
+        LobbyController.Instance.UpdatePlayerList();
     }
 
     public override void OnStopClient()
@@ -92,7 +92,7 @@ public class PlayerLobbyController : NetworkBehaviour
         }
         if(isClient)
         {
-            LobbyController.Instance.UpdatePlayerList();
+            //LobbyController.Instance.UpdatePlayerList();
         }
     }
 

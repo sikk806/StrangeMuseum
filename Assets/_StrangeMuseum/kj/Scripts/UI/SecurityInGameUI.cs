@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using TMPro;
-using Unity.Burst.CompilerServices;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;

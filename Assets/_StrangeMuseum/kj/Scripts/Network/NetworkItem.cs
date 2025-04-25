@@ -8,26 +8,27 @@ public class NetworkItem : NetworkBehaviour
     public bool isPickedUp = false;
 
     [Command(requiresAuthority = false)]
-    public void CmdPickUpItem(uint netId)
+    public void CmdPickUpItem(GameObject objRef)
     {
+        Debug.Log("1");
+
         if (isPickedUp) return;
+
+        Debug.Log("2");
+
         isPickedUp = true;
 
-        NetworkIdentity objIdentity = NetworkServer.spawned[netId];
-        if (objIdentity != null)
-        {
-            objIdentity.gameObject.SetActive(false);
-            RpcPickUpItem(netId);
-        }
+
+
+        objRef.gameObject.SetActive(false);
+        RpcPickUpItemClientRpc(objRef);
+
     }
 
     [ClientRpc]
-    private void RpcPickUpItem(uint netId)
+    private void RpcPickUpItemClientRpc(GameObject objRef)
     {
-        if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity objIdentity))
-        {
-            objIdentity.gameObject.SetActive(false);
-        }
+        objRef.gameObject.SetActive(false);
     }
 
     public void DestroyItem(GameObject obj)
