@@ -19,7 +19,9 @@ public class PlayerController : NetworkBehaviour
 {
     //public Zone
     [Header("MovementSetting")]
+    [SyncVar]
     public float MovementSpeed = 5f;// default : 5f
+    [SyncVar]
     public float InitWalkingSpeed;// default : 5f
 
     public float JumpForce = 3f;

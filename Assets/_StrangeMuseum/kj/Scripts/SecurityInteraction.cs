@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
@@ -14,7 +13,7 @@ using UnityEngine.UIElements;
 
 //네트워크 관련 아이템 변수들은 각 아이템 스크립트에서 관리 -> 시도 해보기
 
-public class SecurityInteraction : PlayerController
+public class SecurityInteraction : NetworkBehaviour
 {
     public float LayDistance; //상호작용 레이
 
@@ -54,6 +53,7 @@ public class SecurityInteraction : PlayerController
     public bool isInteracted;
     [SyncVar]
     public bool IsStatue;
+    
 
     public override void OnStartLocalPlayer()
     {
@@ -62,6 +62,7 @@ public class SecurityInteraction : PlayerController
         if (isOwned)  // 내가 소유한 클라이언트라면
         {
             uiInstance = Instantiate(InGameUIPrefab);
+
         }
     }
     public override void OnStopLocalPlayer()
@@ -77,7 +78,7 @@ public class SecurityInteraction : PlayerController
     }
 
 
-    protected override void Start()
+    void Start()
     {
        
         if (isOwned == false)
@@ -85,7 +86,6 @@ public class SecurityInteraction : PlayerController
             return;
         }
 
-        base.Start();
 
         if (isOwned)  // 내가 소유한 클라이언트라면
         {
@@ -96,14 +96,12 @@ public class SecurityInteraction : PlayerController
         }
     }
 
-    protected override void Update()
+    void Update()
     {
         if (isOwned == false)
         {
             return;
         }
-
-        base.Update();
 
         BouncerInteractionRay();
 
@@ -242,19 +240,19 @@ public class SecurityInteraction : PlayerController
     #endregion
 
     [Command(requiresAuthority = false)]
-    public void RayStatueServerRpc(NetworkObjectReference coverRef)
+    public void RayStatueServerRpc(NetworkIdentity statue)
     {
-        if (coverRef.TryGet(out NetworkObject networkObject))
+        if (statue.TryGetComponent(out NetworkIdentity networkObject))
         {
             SaveRayStaute = networkObject.gameObject;
-            RayStatueClientRpc(coverRef); // 서버에서 클라이언트로 전달
+            RayStatueClientRpc(statue); // 서버에서 클라이언트로 전달
         }
     }
 
     [Client]
-    public void RayStatueClientRpc(NetworkObjectReference boxRef)
+    public void RayStatueClientRpc(NetworkIdentity statue)
     {
-        if (!boxRef.TryGet(out NetworkObject networkObject))
+        if (!statue.TryGetComponent(out NetworkIdentity networkObject))
         {
             return;
         }
@@ -266,22 +264,19 @@ public class SecurityInteraction : PlayerController
     {
         if (statue == null) { IsStatue = false; return; }
 
-
         IsStatue = true;
 
         if (statue != null)
         {
-            if (statue.TryGetComponent(out NetworkObject networkObject))
+            if (statue.TryGetComponent(out NetworkIdentity networkObject))
             {
-
-                Debug.Log("RayStatueServerRpc 호출");
                 RayStatueServerRpc(networkObject);
             }
         }
 
     }
 
-  
+
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1. 에너지 드링크 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -291,16 +286,19 @@ public class SecurityInteraction : PlayerController
     }
 
     public IEnumerator EnergyDrinkFunc(EnergyDrink energyDrink, float cooltime, float maxSpeed)
-    {     
+    {
+        Debug.Log("EnergyDrinkFunc메서드 진입");
+
         float halfCooldown = cooltime / 2f; // 감소 & 회복을 위한 절반 시간
 
         float elapsedTime = 0f;
 
+
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            MovementSpeed =
-                Mathf.Lerp(MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
+           GetComponent<SecurityController>(). MovementSpeed =
+                Mathf.Lerp(GetComponent<SecurityController>().MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
 
 
 
@@ -313,8 +311,8 @@ public class SecurityInteraction : PlayerController
         while (elapsedTime < halfCooldown)
         {
             elapsedTime += Time.deltaTime;
-            MovementSpeed =
-            Mathf.Lerp(MovementSpeed, InitWalkingSpeed, elapsedTime / halfCooldown);
+            GetComponent<SecurityController>().MovementSpeed =
+            Mathf.Lerp(GetComponent<SecurityController>().MovementSpeed, GetComponent<SecurityController>().InitWalkingSpeed, elapsedTime / halfCooldown);
 
             yield return null;
         }
@@ -322,9 +320,8 @@ public class SecurityInteraction : PlayerController
 
         energyDrink.ResetEnergyDrinkServerRpc();
 
- 
-    }
 
+    }
     public void PlayFearSound(AudioClip audio)
     {
         SoundManager.Instance.PlaySfx(audio);

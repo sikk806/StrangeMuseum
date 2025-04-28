@@ -40,6 +40,8 @@ public class SteamLobby : MonoBehaviour
             return; // Steam 콜백 등록 생략
         }
 
+        isSteamAvailable = false;
+
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
         lobbyEntered = Callback<LobbyEnter_t>.Create(OnLobbyEntered);

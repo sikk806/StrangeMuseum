@@ -1,4 +1,4 @@
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
 using static ItemData;
 using UnityEngine.UIElements;
@@ -8,6 +8,18 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     public GameObject EnergyDrinkUI; //에너지 드링크
 
     private SecurityInteraction bouncerIntercation;
+
+    [SerializeField]
+    float EnergyDrinkCooltime;
+
+    [SerializeField]
+    float MaxSpeed;
+
+    [SerializeField]
+    int itemLayer;
+
+    [SyncVar]
+    public bool isEnergyDrinkUsing;
 
     public ItemData.ItemList GetItemList()
     {
@@ -30,9 +42,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                //NetworkObjectReference objRef = this.gameObject;
-
-                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
+                this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
 
                 slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
 
@@ -52,41 +62,18 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
             }
         }
     }
+ 
 
-    public void ItemView(ulong clientId)
-    {
-
-    }
-  
-    [SerializeField]
-    float EnergyDrinkCooltime;
-
-    [SerializeField]
-    float MaxSpeed;
-
-    [SerializeField]
-    int itemLayer;
-
-    public NetworkVariable<bool> isEnergyDrinkUsing = new NetworkVariable<bool>
-(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsInEnergyDrinkServerRpc(bool value)
-    {
-        isEnergyDrinkUsing.Value = value;
-    }
-
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void UseServerRpc(uint ClientId)
     {
-        if (!IsServer) return;
+        if (!isServer) return;
 
         Debug.Log($"에너지 드링크 사용 요청 - ClientId: {ClientId}");
         EnergyDrinkInteractedServerRpc(ClientId);
     }
 
-    [ServerRpc(RequireOwnership = false)]
+    [Command(requiresAuthority = false)]
     public void EnergyDrinkInteractedServerRpc(uint ClientId)
     {
 
@@ -96,59 +83,59 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
         SecurityInteraction targetBouncer = null;
 
-        //foreach (var security in allSecurityInteractions)
-        //{
+        foreach (var security in allSecurityInteractions)
+        {
 
-        //    if (OwnerClientId == ClientId)  // 해당 클라이언트의 Bouncer인지 확인
-        //    {
-        //        targetBouncer = security;
-        //        break;
-        //    }
-        //}
+            if (NetworkServer.connections.ContainsKey((int)ClientId))
+            {
+                targetBouncer = security;
+                break;
+            }
+        }
 
-        //if (targetBouncer != null && isEnergyDrinkUsing.Value == false)
-        //{
-        //    if (isEnergyDrinkUsing.Value == true)
-        //    {
-        //        Debug.Log("에너지 드링크 기능 적용중");
-        //        return;
-        //    }
+        if (targetBouncer != null && isEnergyDrinkUsing == false)
+        {
+            if (isEnergyDrinkUsing == true)
+            {
+                Debug.Log("에너지 드링크 기능 적용중");
+                return;
+            }
 
 
-        //    SetIsInEnergyDrinkServerRpc(true);
+            isEnergyDrinkUsing = true;
 
-        //    targetBouncer.EnergyDrinkFunction(this,EnergyDrinkCooltime, MaxSpeed);
+            targetBouncer.EnergyDrinkFunction(this, EnergyDrinkCooltime, MaxSpeed);
 
-        //    EnergyDrinkInteractedClientRpc(ClientId);
-        //}
-        //else
-        //{
-        //    Debug.LogError("에너지 드링크 사용 중");
-        //}
+            EnergyDrinkInteractedClientRpc(ClientId);
+        }
+        else
+        {
+            Debug.LogError("에너지 드링크 사용 중");
+        }
     }
     [ClientRpc]
-    public void EnergyDrinkInteractedClientRpc(ulong targetClientId)
+    public void EnergyDrinkInteractedClientRpc(uint targetClientId)
     {
-        Debug.Log("클라이언트에서 에너지 드링크 효과 적용");
 
-        if (NetworkManager.Singleton.LocalClientId != targetClientId)
+        if (!NetworkServer.connections.ContainsKey((int)targetClientId))
+        {
+            Debug.Log("클라이언트 ID 에너지 드링크 부분 맞지 않음");
             return;
+        }
 
-        SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
+         SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
 
 
     }
 
-    [ServerRpc(RequireOwnership = false)] ////RPC 호출 시 소유 여부에 관계없이 호출 가능.
+    [Command(requiresAuthority = false)]
     public void ResetEnergyDrinkServerRpc()
     {
-        SetIsInEnergyDrinkServerRpc(false);
+        isEnergyDrinkUsing = false;
 
         itemLayer = 0;
         bouncerIntercation = null;
 
-        NetworkObjectReference objRef = this.gameObject;
-
-        //GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
+        GetComponent<NetworkItem>().DestroyItem(this.gameObject); // 서버에 아이템 획득 요청
     }
 }
