@@ -53,6 +53,8 @@ public class PlayerController : NetworkBehaviour
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+
+        InitWalkingSpeed = MovementSpeed;
         // PlayerInteraction 합쳐야 함.
     }
 
@@ -68,7 +70,7 @@ public class PlayerController : NetworkBehaviour
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
 
-        InitWalkingSpeed = MovementSpeed;
+        
 
         Debug.Log("커서 ");
         Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기

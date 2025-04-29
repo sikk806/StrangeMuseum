@@ -279,49 +279,78 @@ public class SecurityInteraction : NetworkBehaviour
 
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1. 에너지 드링크 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-    public void EnergyDrinkFunction(EnergyDrink energyDrink, float cooltime, float maxSpeed)
+    #region 에너지드링크 동기화 부분
+    [Command(requiresAuthority = false)]
+    public void EnergyDrinkFunction(NetworkIdentity playerNetIdentity, NetworkIdentity energyDrinkIdentity,
+        int itemLayer, float cooltime, float maxSpeed)
     {
-        StartCoroutine(EnergyDrinkFunc(energyDrink, cooltime, maxSpeed));
+        //1. 호출한 클라이언트만 대상으로 TargetRpc 호출 - UI 삭제 부분
+        NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
+        TargetEnergyDrinkUI(targetConn, energyDrinkIdentity.netId, itemLayer); 
+
+        StartCoroutine(EnergyDrinkCoroutine(playerNetIdentity, energyDrinkIdentity, cooltime, maxSpeed, itemLayer));
+
     }
 
-    public IEnumerator EnergyDrinkFunc(EnergyDrink energyDrink, float cooltime, float maxSpeed)
+    [TargetRpc]
+    private void TargetEnergyDrinkUI(NetworkConnection target, uint energyDrinkNetId, int itemLayer)
     {
-        Debug.Log("EnergyDrinkFunc메서드 진입");
-
-        float halfCooldown = cooltime / 2f; // 감소 & 회복을 위한 절반 시간
-
-        float elapsedTime = 0f;
-
-
-        while (elapsedTime < halfCooldown)
+        try
         {
-            elapsedTime += Time.deltaTime;
-           GetComponent<SecurityController>(). MovementSpeed =
-                Mathf.Lerp(GetComponent<SecurityController>().MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
+            if (NetworkClient.spawned.TryGetValue(energyDrinkNetId, out var energyDrinkIdentity))
+            {
 
+                if (SecurityInGameUI.Instance != null)
+                {
+                    GameObject energyDrink = energyDrinkIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                    SecurityInGameUI.Instance.OnDestroyItemUI(energyDrink, itemLayer);
+                }
+                else
+                {
+                    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
+                }
 
+                Debug.Log("해당 클라이언트에서 에너지 드링크 UI 활성화 완료");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TargetSetSecurityBodyActiveAndUI] Rpc 오류: {ex.Message}\n{ex.StackTrace}");
+        }
 
+    }
+    private IEnumerator EnergyDrinkCoroutine(NetworkIdentity playerNetIdentity, NetworkIdentity energyDrinkIdentity, float cooltime, float maxSpeed,int itemLayer)
+    {
+
+        SecurityController seucurityController = playerNetIdentity.GetComponent<SecurityController>();
+
+        float halfCooldown = cooltime / 2f;
+        float elapsed = 0f;
+
+        // 속도 증가
+        while (elapsed < halfCooldown)
+        {
+            elapsed += Time.deltaTime;
+            seucurityController.MovementSpeed = Mathf.Lerp(seucurityController.InitWalkingSpeed, maxSpeed, elapsed / halfCooldown);
             yield return null;
         }
 
         yield return new WaitForSeconds(halfCooldown);
 
-        elapsedTime = 0f;
-        while (elapsedTime < halfCooldown)
+        // 속도 복원
+        elapsed = 0f;
+        while (elapsed < halfCooldown)
         {
-            elapsedTime += Time.deltaTime;
-            GetComponent<SecurityController>().MovementSpeed =
-            Mathf.Lerp(GetComponent<SecurityController>().MovementSpeed, GetComponent<SecurityController>().InitWalkingSpeed, elapsedTime / halfCooldown);
-
+            elapsed += Time.deltaTime;
+            seucurityController.MovementSpeed = Mathf.Lerp(maxSpeed, seucurityController.InitWalkingSpeed, elapsed / halfCooldown);
             yield return null;
         }
 
-
+        // 마무리
+        EnergyDrink energyDrink = energyDrinkIdentity.GetComponent<EnergyDrink>();
         energyDrink.ResetEnergyDrinkServerRpc();
-
-
     }
+    #endregion
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2. 박스 동기화 과정 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
@@ -330,7 +359,7 @@ public class SecurityInteraction : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void BoxFunction(NetworkIdentity playerNetIdentity, NetworkIdentity boxIdentity, int itemLayer)
     {
-        //1. 호출한 클라이언트만 대상으로 TargetRpc 호출
+        //1. 호출한 클라이언트만 대상으로 TargetRpc 호출 -  - UI 삭제 및 박스 활성화 부분
         NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
         TargetSetSecurityBodyActiveAndUI(playerNetIdentity.netId, boxIdentity.netId, itemLayer);
 

@@ -65,68 +65,32 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
  
 
     [Command(requiresAuthority = false)]
-    public void UseServerRpc(uint ClientId)
+    public void UseServerRpc(uint clientId)
     {
-        if (!isServer) return;
+        NetworkIdentity energyDrinkIdentity = GetComponent<NetworkIdentity>();
 
-        Debug.Log($"에너지 드링크 사용 요청 - ClientId: {ClientId}");
-        EnergyDrinkInteractedServerRpc(ClientId);
-    }
-
-    [Command(requiresAuthority = false)]
-    public void EnergyDrinkInteractedServerRpc(uint ClientId)
-    {
-
-        Debug.Log($"서버에서 에너지 드링크 사용 처리 - ClientId: {ClientId}");
-
-        var allSecurityInteractions = FindObjectsOfType<SecurityInteraction>();
-
-        SecurityInteraction targetBouncer = null;
-
-        foreach (var security in allSecurityInteractions)
+        if (NetworkServer.connections.TryGetValue((int)clientId, out NetworkConnectionToClient connection))
         {
+            NetworkIdentity playerNetObj = connection.identity;
 
-            if (NetworkServer.connections.ContainsKey((int)ClientId))
+            if (playerNetObj == null)
             {
-                targetBouncer = security;
-                break;
-            }
-        }
-
-        if (targetBouncer != null && isEnergyDrinkUsing == false)
-        {
-            if (isEnergyDrinkUsing == true)
-            {
-                Debug.Log("에너지 드링크 기능 적용중");
+                Debug.LogWarning("클라이언트의 PlayerObject (connection.identity)가 null입니다.");
                 return;
             }
 
+            bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
 
             isEnergyDrinkUsing = true;
 
-            targetBouncer.EnergyDrinkFunction(this, EnergyDrinkCooltime, MaxSpeed);
+            bouncerIntercation.EnergyDrinkFunction(playerNetObj, energyDrinkIdentity, itemLayer,EnergyDrinkCooltime, MaxSpeed);
 
-            EnergyDrinkInteractedClientRpc(ClientId);
         }
         else
         {
-            Debug.LogError("에너지 드링크 사용 중");
+            Debug.LogWarning("이 경비원은 접속하지 않은 유저입니다");
         }
-    }
-    [ClientRpc]
-    public void EnergyDrinkInteractedClientRpc(uint targetClientId)
-    {
-
-        if (!NetworkServer.connections.ContainsKey((int)targetClientId))
-        {
-            Debug.Log("클라이언트 ID 에너지 드링크 부분 맞지 않음");
-            return;
-        }
-
-         SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
-
-
-    }
+    } 
 
     [Command(requiresAuthority = false)]
     public void ResetEnergyDrinkServerRpc()
