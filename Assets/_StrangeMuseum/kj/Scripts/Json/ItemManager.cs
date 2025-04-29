@@ -150,7 +150,6 @@ public class ItemManager : MonoBehaviour
             if (inventoryDictionary[item] <= 0)
             {
                 inventoryDictionary.Remove(item);
-                itemDictionary.Remove(item); // 이 부분도 제거
                 Debug.Log($"아이템 {item}이 모두 소모되어 삭제되었습니다.");
             }
             else
@@ -164,9 +163,13 @@ public class ItemManager : MonoBehaviour
 
     public bool CountCurrentItem(ItemData.ItemList item)
     {
-        if (inventoryDictionary[item] == itemDictionary[item].ItemMaxCount)
+        if (inventoryDictionary.ContainsKey(item))
         {
-            return true;
+            if (inventoryDictionary[item] == itemDictionary[item].ItemMaxCount)
+            {
+                return true;
+            }
+
         }
 
         return false;

@@ -369,6 +369,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
             if (InventoryCheck(itemList)) //해당 아이템이 하나도 존재하지 않으면
             {
+
                 SlotManager.slotDataList[slotIndex].itemList = itemList;
                 SlotManager.slotDataList[slotIndex].itemUseType = itemType;
                 SlotManager.slotDataList[slotIndex].IsEmpty = false; // 빈 슬롯 됨
@@ -377,6 +378,7 @@ public class SecurityInGameUI : NetworkBehaviour
             else
             {
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
+
 
                 SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
                 SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;

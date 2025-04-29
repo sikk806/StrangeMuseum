@@ -131,15 +131,34 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
         Slot currentSlot = slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>();
 
-        IUsableItem usableItem = currentSlot.AssignedItem[SelectedIndex].GetComponent<IUsableItem>();
+        // 사용 가능한 첫 번째 아이템 찾기
+        GameObject usableObj = null;
+        int usableIndex = -1;
+
+        for (int i = 0; i < currentSlot.AssignedItem.Length; i++)
+        {
+            if (currentSlot.AssignedItem[i] != null)
+            {
+                usableObj = currentSlot.AssignedItem[i];
+                usableIndex = i;
+                break;
+            }
+        }
+
+        IUsableItem usableItem = usableObj.GetComponent<IUsableItem>();
 
 
         if (usableItem != null)
         {
             Debug.Log("사용 메서드 실행 " + id);
             usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
+            currentSlot.AssignedItem[usableIndex] = null;
 
-
+            for (int j = usableIndex; j < currentSlot.AssignedItem.Length - 1; j++)
+            {
+                currentSlot.AssignedItem[j] = currentSlot.AssignedItem[j + 1];
+                currentSlot.AssignedItem[j + 1] = null;
+            }
         }
 
     }

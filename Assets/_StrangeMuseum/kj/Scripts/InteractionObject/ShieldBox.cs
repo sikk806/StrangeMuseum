@@ -17,63 +17,69 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     [SyncVar]
     public bool isBoxUsing;
 
-    //   public NetworkVariable<bool> isBoxUsing = new NetworkVariable<bool>
-    //(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-  
-
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.Box;  }
 
     public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Self; }
 
-
     [SerializeField]
     int itemLayer;
 
-
     Slots slots;
-
-    [SerializeField]
-    bool isInteract = false;
 
     public void Interact()
     {
-        if(isInteract) { return;  } //이미 해당 아이템을 상호작용 하였는데, 좌클릭을 할 경우 습득하는 경우가 있으므로 방지.
-
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
         for (int i = 0; i < slots.slotDataList.Count; i++)
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                isInteract = true;
+                itemLayer = i; //빈 슬롯 넘버 저장
+            }
 
+            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
+
+            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+            int availableIndex = GetItemEmptyIndex(slot);
+
+            if(availableIndex != -1)
+            {
                 this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
 
                 //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
-                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+                slot.AssignedItem[availableIndex] = this.gameObject;
 
                 //UI 표시
                 if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
                 {
-
-                    Instantiate(BoxUI, slots.slotDataList[i].SlotObj.transform, false);
-
-                    itemLayer = i;
+                    Instantiate(BoxUI, slot.transform, false);
 
                     slots.AddItem(this.gameObject, itemLayer);
 
                 }
-
                 //ItemData에 Add하는 부분
                 ItemManager.Instance.AddItem(ItemData.ItemList.Box);
-                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Box);
+                slot.SlotItemCount(ItemData.ItemList.Box);
 
-                break; 
+                break;
             }
+         
         }
 
     }
+
+    public int GetItemEmptyIndex(Slot slot)
+    {
+        for (int i = 0; i < slot.AssignedItem.Length; i++)
+        {
+            if (slot.AssignedItem[i] == null)
+            {
+                return i;
+            }
+        }
+        return -1; // 모든 인덱스가 차있으면 -1
+    }
+
 
     void Update()
     {

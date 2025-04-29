@@ -18,6 +18,9 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
     [SerializeField]
     int itemLayer;
 
+    [SerializeField]
+    bool isInteract = false;
+
     [SyncVar]
     public bool isEnergyDrinkUsing;
 
@@ -33,36 +36,57 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
     Slot slot;
 
-    public void Interact() //에너지 드링크 상호작용 
+    public void Interact()
     {
 
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
         for (int i = 0; i < slots.slotDataList.Count; i++)
         {
+            // 슬롯 참조
             if (slots.slotDataList[i].IsEmpty)
+            {
+                itemLayer = i; //빈 슬롯 넘버 저장
+            }
+            
+            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
+
+            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+            int availableIndex = GetItemEmptyIndex(slot);
+
+            if (availableIndex != -1)
             {
                 this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
 
-                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+                slot.AssignedItem[availableIndex] = this.gameObject;
 
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.EnergyDrink) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.EnergyDrink) == false)
                 {
-                    Instantiate(EnergyDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
-
-                    itemLayer = i;
+                    Instantiate(EnergyDrinkUI, slot.transform, false);
 
                     slots.AddItem(this.gameObject, itemLayer);
                 }
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);
+                slot.SlotItemCount(ItemData.ItemList.EnergyDrink);
 
-                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.EnergyDrink);
                 break;
             }
         }
     }
- 
+
+    public int GetItemEmptyIndex(Slot slot)
+    {
+        for (int i = 0; i < slot.AssignedItem.Length; i++)
+        {
+            if (slot.AssignedItem[i] == null)
+            {
+                return i;
+            }
+        }
+        return -1; // 모든 인덱스가 차있으면 -1
+    }
+
 
     [Command(requiresAuthority = false)]
     public void UseServerRpc(uint clientId)

@@ -33,39 +33,50 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (slots.slotDataList[i].IsEmpty)
             {
-                //NetworkObjectReference objRef = this.gameObject;
+                itemLayer = i; //빈 슬롯 넘버 저장
+            }
 
-                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
+            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
 
-                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
+            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+            int availableIndex = GetItemEmptyIndex(slot);
+
+            if (availableIndex != -1)
+            {
+                this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+                slot.AssignedItem[availableIndex] = this.gameObject;
 
                 if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Pen) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
                 {
-                    Instantiate(PenDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
-
-                    itemLayer = i;
+                    Instantiate(PenDrinkUI, slot.transform, false);
 
                     slots.AddItem(this.gameObject, itemLayer);
                 }
 
                 ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
 
-
-                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Pen);
-
-
+                slot.SlotItemCount(ItemData.ItemList.Pen);
 
                 break;
             }
+             
         }
     }
 
-    public void ItemView(ulong clientId)
+    public int GetItemEmptyIndex(Slot slot)
     {
-
+        for (int i = 0; i < slot.AssignedItem.Length; i++)
+        {
+            if (slot.AssignedItem[i] == null)
+            {
+                return i;
+            }
+        }
+        return -1; // 모든 인덱스가 차있으면 -1
     }
 
-  
+
     [ServerRpc(RequireOwnership = false)]
     public void UseServerRpc(uint ClientId)
     {
