@@ -749,10 +749,6 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  MovementSpeed: 5
-  InitWalkingSpeed: 0
-  JumpForce: 3
-  Gravity: 9.8
   LayDistance: 3
   LightLayDistance: 30
   pickUpSound: {fileID: 8300000, guid: 23a7f6dc317754d41bf076e4c5114f70, type: 3}
@@ -763,9 +759,9 @@ MonoBehaviour:
   CoverFearSound: {fileID: 8300000, guid: 3e8a633eed110b849aa1782fca358097, type: 3}
   SaveRayItem: {fileID: 0}
   SaveRayStaute: {fileID: 0}
-  IsStatue:
-    m_InternalValue: 0
   isInteracted: 0
+  IsStatue: 0
+  securityBody: {fileID: 7148736106507618845}
 --- !u!114 &-5139576709211526103
 MonoBehaviour:
   m_ObjectHideFlags: 0

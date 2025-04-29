@@ -322,6 +322,64 @@ public class SecurityInteraction : NetworkBehaviour
 
 
     }
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2. 박스 동기화 과정 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    #region 박스 동기화 부분
+
+    [Command(requiresAuthority = false)]
+    public void BoxFunction(NetworkIdentity playerNetIdentity, NetworkIdentity boxIdentity, int itemLayer)
+    {
+        //1. 호출한 클라이언트만 대상으로 TargetRpc 호출
+        NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
+        TargetSetSecurityBodyActiveAndUI(playerNetIdentity.netId, boxIdentity.netId, itemLayer);
+
+        //2. 모든 클라이언트 시각화
+        BoxClientRpc(playerNetIdentity);
+
+    }
+    [ClientRpc]
+    void BoxClientRpc(NetworkIdentity body)
+    {
+        GameObject securityBody = body.transform.GetChild(2).gameObject;
+        securityBody.SetActive(true); // 서버에서도 활성화 
+    }
+
+    [TargetRpc]
+    void TargetSetSecurityBodyActiveAndUI(uint playerNetId, uint boxNetId, int itemLayer)
+    {
+        try
+        {
+            if (NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity) &&
+                NetworkClient.spawned.TryGetValue(boxNetId, out var boxIdentity))
+            {
+                if (playerIdentity.transform.childCount > 2)
+                {
+                    GameObject securityBody = playerIdentity.transform.GetChild(2).gameObject;
+                    securityBody.SetActive(true);
+                }
+
+                if (SecurityInGameUI.Instance != null)
+                {
+                    GameObject box = boxIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                    SecurityInGameUI.Instance.OnDestroyItemUI(box, itemLayer);
+                }
+                else
+                {
+                    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
+                }
+
+                Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TargetSetSecurityBodyActiveAndUI] Rpc 오류: {ex.Message}\n{ex.StackTrace}");
+        }
+    }
+    #endregion
+
+
     public void PlayFearSound(AudioClip audio)
     {
         SoundManager.Instance.PlaySfx(audio);

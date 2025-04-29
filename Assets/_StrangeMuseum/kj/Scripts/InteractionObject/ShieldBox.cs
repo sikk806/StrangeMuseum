@@ -20,8 +20,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     //   public NetworkVariable<bool> isBoxUsing = new NetworkVariable<bool>
     //(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
 
-    [SyncVar]
-    public NetworkIdentity storedBoxRef;
+  
 
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.Box;  }
 
@@ -76,103 +75,63 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
     }
 
+    void Update()
+    {
+       
+        if (Input.GetKeyDown(KeyCode.F1)) // 예를 들어 F1 키를 눌렀을 때
+        {
+            Debug.Log("현재 서버에 연결된 클라이언트들:");
+
+            foreach (var connection in NetworkServer.connections)
+            {
+                // connection.Key는 클라이언트의 ID, connection.Value는 NetworkConnectionToClient
+                Debug.Log($"Client ID: {connection.Key}, Connection Info: {connection.Value}");
+                RpcSendConnectionInfo(connection.Key);
+            }
+        }
+
+    }
+
+    [ClientRpc]
+    private void RpcSendConnectionInfo(int clientId)
+    {
+        Debug.Log("클라이언트로 전달된 서버 연결 정보: " + clientId);
+    }
 
     [Command(requiresAuthority = false)]
     public void UseServerRpc(uint clientId)
     {
-        Debug.Log("UseServerRpc 실행 " + (int)clientId);
+        Debug.Log("박스를 사용한 경비원의 아이디는 " + clientId + " 입니다");
 
-        if (NetworkServer.connections.ContainsKey((int)clientId))
+        NetworkIdentity boxNetworkIdentity = GetComponent<NetworkIdentity>();
+
+        if (NetworkServer.connections.TryGetValue((int)clientId, out NetworkConnectionToClient connection))
         {
-            Debug.Log("0");
+            NetworkIdentity playerNetObj = connection.identity;
 
-            NetworkConnectionToClient connection = NetworkServer.connections[(int)clientId];
-            NetworkIdentity playerNetObj = connection.identity;  // 클라이언트의 PlayerObject
-
-            if (playerNetObj != null)
+            if (playerNetObj == null)
             {
-                bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
-                securityDie = playerNetObj.GetComponent<SecurityDie>();
-
-                Debug.Log("1");
-
-                if (bouncerIntercation != null)
-                {
-                    Debug.Log("2");
-
-                    if (isBoxUsing == true) return;
-
-
-                    GameObject securityBody = bouncerIntercation.transform.GetChild(2).gameObject;
-                    if (securityBody != null)
-                    {
-                        Debug.Log("3");
-                        securityBody.SetActive(true);
-
-                        if (SecurityInGameUI.Instance != null)
-                        {
-                            SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
-                        }
-                    }
-
-                    NetworkIdentity objRef = GetComponent<NetworkIdentity>();
-
-                    BoxInteracted(objRef);
-                    BoxActiveClientRpc(true, clientId);
-                }
+                Debug.LogWarning("클라이언트의 PlayerObject (connection.identity)가 null입니다.");
+                return;
             }
+
+            bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
+            securityDie = playerNetObj.GetComponent<SecurityDie>();
+
+            isBoxUsing = true;
+
+            bouncerIntercation.BoxFunction(playerNetObj, boxNetworkIdentity, itemLayer);
+
+            securityDie.BoxSet(boxNetworkIdentity);
+
+         
         }
-    }
-
-    [ClientRpc]
-    private void BoxActiveClientRpc(bool isActive, uint clientId)
-    {
-      //  if (NetworkManager.Singleton.LocalClientId != clientId) return; // 해당 클라이언트에서만 실행
-
-        if (NetworkServer.connections.ContainsKey((int)clientId))
+        else
         {
-            NetworkConnectionToClient connection = NetworkServer.connections[(int)clientId];
-            NetworkIdentity playerNetObj = connection.identity;  // 클라이언트의 PlayerObject
-
-            if (playerNetObj != null)
-            {
-              
-
-                bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
-
-                securityDie = playerNetObj.GetComponent<SecurityDie>();
-
-                if (bouncerIntercation != null)
-                {
-                    GameObject securityBody = bouncerIntercation.transform.GetChild(2).gameObject;
-
-                    if (isActive)
-                    {
-                        if (SecurityInGameUI.Instance != null)
-                        {
-                            SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
-                        }
-                    }
-
-                    securityBody.SetActive(isActive);
-                }
-            }
+            Debug.LogWarning("이 경비원은 접속하지 않은 유저입니다");
         }
     }
 
-    public void BoxInteracted(NetworkIdentity box)
-    {
-        if (isServer == false) { return; }
-
-        isBoxUsing = true; //박스 사용 true
-
-        if (box.TryGetComponent(out NetworkIdentity networkObject))
-        {
-            BoxServerRpc(networkObject); //박스 객체 저장
-            securityDie.BoxSet(networkObject);
-        }
-
-    }
 
     public void NotifyClientBoxRemoved()
     {
@@ -180,7 +139,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         {
             Debug.Log("경비원 박스 입고 있었음");
 
-            if (NetworkClient.spawned.TryGetValue(netId,out NetworkIdentity networkObject))
+            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkObject))
             {
                 Debug.Log("결국 경비원 박스 벗음");
                 StartCoroutine(DelayBoxing()); //무적 시간
@@ -210,61 +169,11 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
 
     [Command(requiresAuthority = false)]
-    public void BoxServerRpc(NetworkIdentity boxRef)
-    {
-        if (boxRef == null) return;
-
-        storedBoxRef = boxRef;  // 서버에서 저장
-        BoxClientRpc(boxRef.netId);   // netId만 전달
-    }
-
-    [ClientRpc]
-    public void BoxClientRpc(uint netId)
-    {
-        if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity boxRef))
-        {
-            storedBoxRef = boxRef; // 클라이언트에서도 저장
-            Debug.Log($"클라이언트에서 받은 박스 오브젝트: {boxRef.name}");
-        }
-        else
-        {
-            Debug.LogWarning($"netId {netId}를 가진 오브젝트를 찾을 수 없습니다.");
-        }
-    }
-
-
-    [Command(requiresAuthority = false)]
-    private void BoxOffServerRpc()
-    {
-        if (!isServer) return;
-
-        BoxOff(); // 서버에서 BoxOff 처리
-
-        BoxOffClientRpc(); // 클라이언트에게 BoxOff 작업을 전달
-    }
-
-    [ClientRpc]
-    private void BoxOffClientRpc()
-    {
-        if (isServer) return;
-
-        BoxOff(); // 클라이언트에서 BoxOff 처리
-    }
-
-    private void BoxOff()
-    {
-        GameObject securityBody = bouncerIntercation.transform.GetChild(2).gameObject;
-        securityBody.SetActive(false);
-    }
-
-    [Command(requiresAuthority = false)]
     public void ResetInteractServerRpc()
     {
         securityDie = null;
         itemLayer = 0;
         bouncerIntercation = null;
-
-        BoxOffServerRpc();
 
         GetComponent<NetworkItem>().DestroyItem(this.gameObject);
     }

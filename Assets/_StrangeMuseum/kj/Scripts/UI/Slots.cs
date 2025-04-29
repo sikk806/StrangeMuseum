@@ -4,7 +4,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
+public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 {
 
     [SerializeField]
@@ -47,6 +47,8 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
                 Debug.Log("2번 슬롯의 아이템이 1번 슬롯으로 이동했습니다.");
             }
         }
+
+
     }
 
     public void SlotSet() //SecurityInGameUI.cs에서 Start문에서 호출
@@ -117,13 +119,15 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
         return slotDataList[SelectedIndex];
     }
 
+    private SecurityInteraction securityInteraction;
     public void UseSelectedItem(uint id)
     {
+
+
         SlotData data = GetSelectedData();
 
         if (data.IsEmpty) return;
 
-        Debug.Log("비어있지 않ㅇㅁ");
 
         Slot currentSlot = slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>();
 
@@ -134,10 +138,10 @@ public class Slots : MonoBehaviour //슬롯들의 부모 오브젝트(Slots)
         {
             Debug.Log("사용 메서드 실행 " + id);
             usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
-          
+
 
         }
-      
+
     }
 
     public void SwapFirstTwo()
