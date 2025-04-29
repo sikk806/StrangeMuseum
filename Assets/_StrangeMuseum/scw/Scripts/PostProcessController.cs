@@ -78,7 +78,8 @@ public class PostProcessController : MonoBehaviour
             // ·»Áî ¿Ö°î È¿°ú Á¶Àý (-1~1)
             if (lensDistortion != null)
             {
-                lensDistortion.intensity.value = Mathf.Sin(Time.time) * 0.1f;
+                lensDistortion.intensity.value = Mathf.Sin(Time.time) * 0.05f;
+                //lensDistortion.intensity.value = Mathf.PingPong(Time.time * 0.5f, 0.1f * 2) - 0.1f;
             }
 
             if (vignette != null)
