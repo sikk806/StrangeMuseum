@@ -25,7 +25,7 @@ public class ThrowPen : MonoBehaviour
         {
             Debug.Log(this.gameObject.name + "와 조각상 충돌");
             StatueInteraction statueInteraction = collision.gameObject.GetComponent<StatueInteraction>();
-            StartCoroutine(statueInteraction.ThrowPenFuca(voiceUsingCoolTime));
+            //StartCoroutine(statueInteraction.ThrowPenFuca(voiceUsingCoolTime));
         }
     }
 }

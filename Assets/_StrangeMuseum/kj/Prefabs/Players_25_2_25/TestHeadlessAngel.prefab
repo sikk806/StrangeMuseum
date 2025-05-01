@@ -310,6 +310,8 @@ MonoBehaviour:
   syncInterval: 0
   RushSpeed: 10
   initRushSpeed: 0
+  MoveSpeed: 10
+  initMoveSpeed: 0
 --- !u!114 &5683088420834677999
 MonoBehaviour:
   m_ObjectHideFlags: 0

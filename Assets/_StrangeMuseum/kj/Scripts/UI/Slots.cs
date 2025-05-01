@@ -39,14 +39,11 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
             }
         }
 
-        if (SelectedIndex == 0 && Input.GetKeyDown(KeyCode.LeftAlt))
-        {
-            if (slotDataList.Count > 1 && !slotDataList[1].IsEmpty)
-            {
-                SwapFirstTwo();
-                Debug.Log("2번 슬롯의 아이템이 1번 슬롯으로 이동했습니다.");
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.LeftAlt))
+        //{
+        //    RotateSlotsUp();
+        //    Debug.Log("퀵슬롯 회전 (ALT)");
+        //}
 
 
     }
@@ -120,6 +117,26 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
     }
 
     private SecurityInteraction securityInteraction;
+
+
+    public void SlotItemCount(ItemData.ItemList item, Slot slot) //슬롯에 들어 있는 아이템 개수
+    {
+
+        TextMeshProUGUI slotItemCount = slot.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
+
+        if (ItemManager.Instance.inventoryDictionary.TryGetValue(item, out int count))
+        {
+            Debug.Log($"현재 {item}의 개수는 {count} 입니다");
+
+            slotItemCount.text = count.ToString();
+        }
+        else
+        {
+            slotItemCount.text = "";
+        }
+
+    }
+
     public void UseSelectedItem(uint id)
     {
 
@@ -161,6 +178,30 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
             }
         }
 
+    }
+
+    public void RotateSlotsUp()
+    {
+        if (slotDataList.Count < 2) return;
+
+        // 슬롯 데이터 회전 (맨 뒤를 앞으로)
+        SlotData lastData = slotDataList[slotDataList.Count - 1];
+        slotDataList.RemoveAt(slotDataList.Count - 1);
+        slotDataList.Insert(0, lastData);
+
+        Slot lastSlot = slotList[slotList.Count - 1];
+        slotList.RemoveAt(slotList.Count - 1);
+        slotList.Insert(0, lastSlot);
+
+        // UI 순서 조정: 슬롯들이 서로 위치 바꾸도록
+        for (int i = 0; i < slotList.Count; i++)
+        {
+            slotList[i].transform.SetSiblingIndex(i);
+            slotList[i].GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString(); // 표시도 정리
+        }
+
+        // 선택 슬롯을 항상 0번으로 유지
+        SelectSlot(0);
     }
 
     public void SwapFirstTwo()

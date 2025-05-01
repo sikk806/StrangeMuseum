@@ -1,8 +1,8 @@
 using TMPro;
-using Unity.Netcode;
 using UnityEngine;
 using static ItemData;
 using UnityEngine.UIElements;
+using Mirror;
 
 public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 {
@@ -27,16 +27,11 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
     public GameObject HandcuffUI; //구속구 UI
 
-    private SecurityInteraction bouncerIntercation;
+    private SecurityInteraction bouncerInteraction;
 
-    public NetworkVariable<bool> isHandCuffUsing = new NetworkVariable<bool>
-(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
+    [SyncVar]
+    public bool isHandCuffUsing;
 
-    [ServerRpc(RequireOwnership = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsHandCuffServerRpc(bool value)
-    {
-        isHandCuffUsing.Value = value;
-    }
 
 
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.HandCuff; }
@@ -51,39 +46,50 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
         for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (slots.slotDataList[i].IsEmpty)
+            if (!slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.HandCuff)
             {
-                itemLayer = i; //빈 슬롯 넘버 저장
-            }
-
-            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
-
-            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
-            int availableIndex = GetItemEmptyIndex(slot);
-
-            if(availableIndex != -1)
-            {
-                this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
-
-                slot.AssignedItem[availableIndex] = this.gameObject;
-
-                //UI 표시
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.HandCuff) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
-                {
-                    Instantiate(HandcuffUI, slot.transform, false);
-
-                    slots.AddItem(this.gameObject, itemLayer);
-                }
-
-                ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
-                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.HandCuff);
-
+                AddItem(slots, i);
+                Debug.Log("처음 얻지 않은 아이템");
                 break;
             }
 
-         
+            if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
+            {
+                itemLayer = i;
+                AddItem(slots, i);
+                Debug.Log("처음 얻은 아이템");
+                return;
+            }
         }
        
+    }
+
+    private void AddItem(Slots slots, int currentHandCuffSlot)
+    {
+        Slot slot = slots.slotDataList[currentHandCuffSlot].SlotObj.GetComponent<Slot>();
+
+        // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+        int availableIndex = GetItemEmptyIndex(slot);
+
+        if (availableIndex != -1)
+        {
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            slot.AssignedItem[availableIndex] = this.gameObject;
+
+            //UI 표시
+            if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.HandCuff) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+            {
+                Instantiate(HandcuffUI, slot.transform, false);
+
+                slots.AddItem(this.gameObject, currentHandCuffSlot);
+            }
+
+            ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
+
+            slots.SlotItemCount(ItemData.ItemList.HandCuff, slot);
+
+        }
     }
     public int GetItemEmptyIndex(Slot slot)
     {
@@ -97,87 +103,47 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
         return -1; // 모든 인덱스가 차있으면 -1
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void UseServerRpc(uint id)
+    [Command(requiresAuthority = false)]
+    public void UseServerRpc(uint clientId)
     {
-        if (IsServer == false) { return; }
+        NetworkIdentity handCuffIdentity = GetComponent<NetworkIdentity>();
 
-        Debug.Log("서버에서 구속구 기능 호출");
-        HandCuffInteractedServerRpc(id);
+        if (NetworkServer.connections.TryGetValue((int)clientId, out NetworkConnectionToClient connection))
+        {
+            NetworkIdentity playerNetObj = connection.identity;
+
+            if (playerNetObj == null)
+            {
+                Debug.LogWarning("클라이언트의 PlayerObject (connection.identity)가 null입니다.");
+                return;
+            }
+
+            bouncerInteraction = playerNetObj.GetComponent<SecurityInteraction>();
+
+            bouncerInteraction.HandCuffFunction(playerNetObj, handCuffIdentity, itemLayer,minMoveSpeed,minRushSpeed,handCuffCooltime);
+
+        }
+        else
+        {
+            Debug.LogWarning("이 경비원은 접속하지 않은 유저입니다");
+        }
 
 
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void HandCuffInteractedServerRpc(uint ClientId)
-    {
-        //Debug.Log("서버에서 구속구 사용 처리");
-        //GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
-        //// 아이템 사용한 경비원 찾기
-        //foreach (var bouncer in bouncers)
-        //{
-        //    NetworkObject netObj = bouncer.GetComponent<NetworkObject>();
-        //    if (netObj != null && netObj.OwnerClientId == ClientId)
-        //    {
-        //        Debug.Log(netObj.OwnerClientId);
-        //        bouncerIntercation = bouncer.GetComponent<SecurityInteraction>();
-
-        //        if (bouncerIntercation.IsStatue.Value)
-        //        {
-        //            Debug.Log("조각상 확인");
-        //            if (bouncerIntercation.SaveRayStaute != null)
-        //            {
-        //                Debug.Log("조각상 CoverInteracted 호출 ");
-
-        //                if(isHandCuffUsing.Value == false)
-        //                {
-        //                    bouncerIntercation.SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(this, minMoveSpeed, minRushSpeed, handCuffCooltime, ClientId);
-        //                    bouncerIntercation.SaveRayStaute.GetComponent<StatueInteraction>().PlayFearSound(HandCuffFearSound);
-        //                    HandActiveClientRpc(ClientId);
-        //                }
-
-                        
-        //            }
-        //            else
-        //            {
-        //                Debug.Log("조각상 확인 불가 ");
-        //            }
-        //        }
-
-
-        //        break;
-        //    }
-        //}
-
-    }
-
-    [ClientRpc]
-    public void HandActiveClientRpc(ulong ClientId)
-    {
-  
-
-        if (NetworkManager.Singleton.LocalClientId != ClientId)
-            return;
-
-        Debug.Log("클라이언트에서 아이템 UI 제거");
-        SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject,itemLayer);
-    }
-
-
-
-    [ServerRpc(RequireOwnership = false)] //RPC 호출 시 소유 여부에 관계없이 호출 가능.
-    public void ResetInteractServerRpc(ulong ClientId)
+    [Command(requiresAuthority = false)]
+    public void ResetInteractServerRpc()
     {
         Debug.Log("서버에서 구속구 리셋");
 
         itemLayer = 0;
 
-        bouncerIntercation = null;
+        bouncerInteraction = null;
 
-        NetworkObjectReference objRef = this.gameObject;
 
-       // GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 획득 요청
+
+       GetComponent<NetworkItem>().DestroyItem(this.gameObject); // 서버에 아이템 획득 요청
     }
 
 }

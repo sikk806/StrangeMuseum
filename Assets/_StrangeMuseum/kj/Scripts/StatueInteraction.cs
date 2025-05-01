@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Net.NetworkInformation;
-using Unity.Netcode;
+using Mirror;
 using Unity.Services.Vivox;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
 public class StatueInteraction : NetworkBehaviour
 {
@@ -33,45 +34,41 @@ public class StatueInteraction : NetworkBehaviour
     {
         statueController = GetComponent<StatueController>();
         statueAttack = GetComponent<StatueAttack>();
+
+        Instantiate(InGameUIPrefab); //임시 - 조각상 생성 후 삭제
+
     }
 
     [SerializeField]
     GameObject InGameUIPrefab;
 
 
-    public override void OnNetworkSpawn()
+    public override void OnStartLocalPlayer() //조각상 네트워크 생성 전까지 호출 안됨
     {
-        base.OnNetworkSpawn();
+        base.OnStartLocalPlayer();
 
-        if (IsOwner == false) { Debug.Log("오너 아님 X"); return; }
+        if (isOwned)  // 내가 소유한 클라이언트라면
+        {
+           Instantiate(InGameUIPrefab);
 
-        Instantiate(InGameUIPrefab);
-
+        }
     }
 
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  1. 구속구 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
-    public void HandCuffInteracted(HandCuff handcuff, float minMoveSpeed, float minRushSpeed,
-        float handCuffCooltime, ulong clientid) // 상호작용 
+    [Command(requiresAuthority = false)]
+    public void HandCuffInteracted(NetworkIdentity handCuffIdentity, float minMoveSpeed, float minRushSpeed,
+        float handCuffCooltime) // 상호작용 
     {
-        if (IsServer == false) { return; }
-        if (IsClient == false) { return; }
 
-        if (handcuff.isHandCuffUsing.Value == true)
-        {
-            Debug.Log("구속구 기능 진행중임. 아직 사용불가");
-            return;
-        }
-
-        StartCoroutine(HandStuffFunc(handcuff, minMoveSpeed, minRushSpeed, handCuffCooltime));
-
-        handcuff.HandActiveClientRpc(clientid);
+        StartCoroutine(HandStuffFunc(handCuffIdentity, minMoveSpeed, minRushSpeed, handCuffCooltime));
     }
 
 
-    private IEnumerator HandStuffFunc(HandCuff handcuff, float minMoveSpeed, float minRushSpeed, float handCuffCooltime)
+    private IEnumerator HandStuffFunc(NetworkIdentity handCuffIdentity, float minMoveSpeed, float minRushSpeed, float handCuffCooltime)
     {
-        handcuff.SetIsHandCuffServerRpc(true);
+        TestHeadlessAngel testHeadlessAngel = GetComponent<TestHeadlessAngel>();
+        handCuffIdentity.GetComponent<HandCuff>().isHandCuffUsing = true;
 
         //감소 시간 - handCuffCooltime / 2 = 1.5초
         float elapsedTime = 0f;
@@ -79,8 +76,8 @@ public class StatueInteraction : NetworkBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            statueController.MovementSpeed = Mathf.Lerp(statueController.MovementSpeed, minMoveSpeed, elapsedTime / handCuffCooltime); //
-            statueAttack.RushSpeed = Mathf.Lerp(statueAttack.RushSpeed, minRushSpeed, elapsedTime / handCuffCooltime); //1.5
+            testHeadlessAngel.MoveSpeed = Mathf.Lerp(testHeadlessAngel.initMoveSpeed, minMoveSpeed, elapsedTime / handCuffCooltime); //
+            testHeadlessAngel.RushSpeed = Mathf.Lerp(testHeadlessAngel.initRushSpeed, minRushSpeed, elapsedTime / handCuffCooltime); //1.5
 
             yield return null;
         }
@@ -93,17 +90,19 @@ public class StatueInteraction : NetworkBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            //statueController.MovementSpeed = Mathf.Lerp(minMoveSpeed, statueController.InitMovementSpeed, elapsedTime / handCuffCooltime);
-            statueAttack.RushSpeed = Mathf.Lerp(minRushSpeed, statueAttack.InitRushSpeed, elapsedTime / handCuffCooltime);
+            testHeadlessAngel.MoveSpeed = Mathf.Lerp(minMoveSpeed, testHeadlessAngel.initMoveSpeed, elapsedTime / handCuffCooltime);
+            testHeadlessAngel.RushSpeed = Mathf.Lerp(minRushSpeed, testHeadlessAngel.initRushSpeed, elapsedTime / handCuffCooltime);
 
             yield return null;
         }
 
         Debug.Log("속도 정상 복구, 구속 효과 종료");
 
-        handcuff.ResetInteractServerRpc(NetworkManager.Singleton.LocalClientId);
+        handCuffIdentity.GetComponent<HandCuff>().isHandCuffUsing = false;
 
-        handcuff.SetIsHandCuffServerRpc(false);
+        handCuffIdentity.GetComponent<HandCuff>().ResetInteractServerRpc();
+
+
     }
 
     
@@ -113,10 +112,12 @@ public class StatueInteraction : NetworkBehaviour
         // audioSource.PlayOneShot(audio);
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void CoverOnOffServerRpc(bool value)
+    [Command(requiresAuthority = false)]
+    public void CoverOnOffServerRpc(bool value, NetworkIdentity BloodCover)
     {
         transform.GetChild(4).gameObject.SetActive(value);
+
+        StatueInGameUI.Instance.CoverUI(BloodCover);
 
         CoverOnOffClientRpc(value);
     }
@@ -130,17 +131,17 @@ public class StatueInteraction : NetworkBehaviour
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  3. 던지는 볼펜  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
 
-    public IEnumerator ThrowPenFuca(float voiceUsingTime) //voiceUsingTime -> 보이스 사용 가능 시간
-    {
-        if (IsOwner == false) { yield return null; }
+    //public IEnumerator ThrowPenFuca(float voiceUsingTime) //voiceUsingTime -> 보이스 사용 가능 시간
+    //{
+    //    if (IsOwner == false) { yield return null; }
 
 
-        // 조각상 보이스 챗 비활성화 
-        VivoxService.Instance.MuteOutputDevice();
-        yield return new WaitForSeconds(voiceUsingTime);
-        // 조각상 보이스 챗 활성화
-        VivoxService.Instance.UnmuteOutputDevice();
-    }
+    //    // 조각상 보이스 챗 비활성화 
+    //    VivoxService.Instance.MuteOutputDevice();
+    //    yield return new WaitForSeconds(voiceUsingTime);
+    //    // 조각상 보이스 챗 활성화
+    //    VivoxService.Instance.UnmuteOutputDevice();
+    //}
 
 }
 

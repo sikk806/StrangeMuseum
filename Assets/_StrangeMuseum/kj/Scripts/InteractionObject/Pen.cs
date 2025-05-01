@@ -31,39 +31,49 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
         for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (slots.slotDataList[i].IsEmpty)
+            if (!slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.Pen)
             {
-                itemLayer = i; //빈 슬롯 넘버 저장
-            }
-
-            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
-
-            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
-            int availableIndex = GetItemEmptyIndex(slot);
-
-            if (availableIndex != -1)
-            {
-                this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
-
-                slot.AssignedItem[availableIndex] = this.gameObject;
-
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Pen) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
-                {
-                    Instantiate(PenDrinkUI, slot.transform, false);
-
-                    slots.AddItem(this.gameObject, itemLayer);
-                }
-
-                ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
-
-                slot.SlotItemCount(ItemData.ItemList.Pen);
-
+                AddItem(slots, i);
+                Debug.Log("처음 얻지 않은 아이템");
                 break;
             }
-             
+
+            if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
+            {
+                itemLayer = i; //처음 얻은 아이템에만 적용
+
+                AddItem(slots, i);
+                Debug.Log("처음 얻은 아이템");
+                return;
+            }
         }
     }
+    private void AddItem(Slots slots, int currentPenSlot)
+    {
+        Slot slot = slots.slotDataList[currentPenSlot].SlotObj.GetComponent<Slot>();
 
+        // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+        int availableIndex = GetItemEmptyIndex(slot);
+
+        if (availableIndex != -1)
+        {
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            slot.AssignedItem[availableIndex] = this.gameObject;
+
+            if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Pen) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+            {
+                Instantiate(PenDrinkUI, slot.transform, false);
+
+                slots.AddItem(this.gameObject, currentPenSlot);
+            }
+
+            ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
+
+            slots.SlotItemCount(ItemData.ItemList.Pen, slot);
+
+        }
+    }
     public int GetItemEmptyIndex(Slot slot)
     {
         for (int i = 0; i < slot.AssignedItem.Length; i++)

@@ -48,19 +48,6 @@ public class Slot : MonoBehaviour
         }
     }
 
-    public void SlotItemCount(ItemData.ItemList item) //슬롯에 들어 있는 아이템 개수
-    {
-        if (ItemManager.Instance.inventoryDictionary.TryGetValue(item, out int count))
-        {
-            Debug.Log($"현재 {item}의 개수는 {count} 입니다");
-            ItemCountText.text = count.ToString();
-        }
-        else
-        {
-            ItemCountText.text = "";
-        }
-
-    }
     public void SlotSelectImage()
     {
         this.GetComponent<Image>().sprite = selectImage;
@@ -71,7 +58,6 @@ public class Slot : MonoBehaviour
         this.GetComponent<Image>().sprite = defalutImage;
     }
 
-   
 
-  
+
 }

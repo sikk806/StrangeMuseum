@@ -43,38 +43,48 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
 
         for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            // 슬롯 참조
-            if (slots.slotDataList[i].IsEmpty)
+            if (!slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.EnergyDrink)
             {
-                itemLayer = i; //빈 슬롯 넘버 저장
-            }
-            
-            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
-
-            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
-            int availableIndex = GetItemEmptyIndex(slot);
-
-            if (availableIndex != -1)
-            {
-                this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
-
-                slot.AssignedItem[availableIndex] = this.gameObject;
-
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.EnergyDrink) == false)
-                {
-                    Instantiate(EnergyDrinkUI, slot.transform, false);
-
-                    slots.AddItem(this.gameObject, itemLayer);
-                }
-
-                ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);
-                slot.SlotItemCount(ItemData.ItemList.EnergyDrink);
-
+                AddItem(slots, i);
+                Debug.Log("처음 얻지 않은 아이템");
                 break;
+            }
+
+            if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
+            {
+                itemLayer = i; //처음 얻은 아이템에만 적용
+
+                AddItem(slots, i);
+                Debug.Log("처음 얻은 아이템");
+                return;
             }
         }
     }
 
+    private void AddItem(Slots slots, int currentDrinkSlot)
+    {
+        Slot slot = slots.slotDataList[currentDrinkSlot].SlotObj.GetComponent<Slot>();
+
+        // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+        int availableIndex = GetItemEmptyIndex(slot);
+
+        if (availableIndex != -1)
+        {
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            slot.AssignedItem[availableIndex] = this.gameObject;
+
+            if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.EnergyDrink) == false)
+            {
+                Instantiate(EnergyDrinkUI, slot.transform, false);
+
+                slots.AddItem(this.gameObject, currentDrinkSlot);
+            }
+
+            ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);
+            slots.SlotItemCount(ItemData.ItemList.EnergyDrink, slot);
+        }
+    }
     public int GetItemEmptyIndex(Slot slot)
     {
         for (int i = 0; i < slot.AssignedItem.Length; i++)

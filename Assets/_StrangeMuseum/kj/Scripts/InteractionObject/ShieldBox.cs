@@ -32,42 +32,52 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
         for (int i = 0; i < slots.slotDataList.Count; i++)
         {
-            if (slots.slotDataList[i].IsEmpty)
+            if (!slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.Box)
             {
-                itemLayer = i; //빈 슬롯 넘버 저장
-            }
-
-            Slot slot = slots.slotDataList[i].SlotObj.GetComponent<Slot>();
-
-            // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
-            int availableIndex = GetItemEmptyIndex(slot);
-
-            if(availableIndex != -1)
-            {
-                this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
-
-                //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
-                slot.AssignedItem[availableIndex] = this.gameObject;
-
-                //UI 표시
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
-                {
-                    Instantiate(BoxUI, slot.transform, false);
-
-                    slots.AddItem(this.gameObject, itemLayer);
-
-                }
-                //ItemData에 Add하는 부분
-                ItemManager.Instance.AddItem(ItemData.ItemList.Box);
-                slot.SlotItemCount(ItemData.ItemList.Box);
-
+                AddItem(slots, i);
+                Debug.Log("처음 얻지 않은 아이템");
                 break;
             }
-         
+
+            if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
+            {
+                itemLayer = i; //처음 얻은 아이템에만 적용
+
+                AddItem(slots, i);
+                Debug.Log("처음 얻은 아이템");
+                return;
+            }
         }
 
     }
 
+    private void AddItem(Slots slots, int currentBoxSlot)
+    {
+        Slot slot = slots.slotDataList[currentBoxSlot].SlotObj.GetComponent<Slot>();
+
+        // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
+        int availableIndex = GetItemEmptyIndex(slot);
+
+        if (availableIndex != -1)
+        {
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
+            slot.AssignedItem[availableIndex] = this.gameObject;
+
+            //UI 표시
+            if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+            {
+                Instantiate(BoxUI, slot.transform, false);
+
+                slots.AddItem(this.gameObject, currentBoxSlot);
+
+            }
+            //ItemData에 Add하는 부분
+            ItemManager.Instance.AddItem(ItemData.ItemList.Box);
+             slots.SlotItemCount(ItemData.ItemList.Box, slot);
+        }
+    }
     public int GetItemEmptyIndex(Slot slot)
     {
         for (int i = 0; i < slot.AssignedItem.Length; i++)
