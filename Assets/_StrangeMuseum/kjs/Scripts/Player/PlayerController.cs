@@ -17,6 +17,11 @@ public enum PlayerState
 [RequireComponent(typeof(NetworkAnimator))]
 public class PlayerController : NetworkBehaviour
 {
+    [SyncVar] public int ConnectionID;
+    [SyncVar] public int PlayerIdNumber;
+    [SyncVar] public ulong PlayerSteamId;
+    [SyncVar] public string PlayerName;
+
     //public Zone
     [Header("MovementSetting")]
     [SyncVar]
