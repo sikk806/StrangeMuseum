@@ -49,17 +49,17 @@ public class StatueInGameUI : NetworkBehaviour
 
         int statueCount = 0;
 
-        foreach (var bouncer in bouncers)
-        {
-            statueCount++;
+        // foreach (var bouncer in bouncers)
+        // {
+        //     statueCount++;
 
           //  statueId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
 
-            Debug.Log("조각상   " + statueCount + "의 접속 ID" + statueId);
+        //     Debug.Log("조각상   " + statueCount + "의 접속 ID" + statueId);
 
-            statueInteraction = bouncer.GetComponent<StatueInteraction>();
+        //     statueInteraction = bouncer.GetComponent<StatueInteraction>();
 
-        }
+        // }
 
     }
 

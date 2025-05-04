@@ -19,7 +19,7 @@ public class SMNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().name == "NetworkTest")
+        if (SceneManager.GetActiveScene().name == "Lobby")
         {
             PlayerController GamePlayerInstance = Instantiate(securityPrefab);
             GamePlayerInstance.transform.position = Vector3.zero;
@@ -49,33 +49,31 @@ public class SMNetworkManager : NetworkManager
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        //if(scene.name == "NetworkTest")
-        //{
-        //    foreach(var player in GamePlayers)
-        //    {
-        //        NetworkServer.DestroyPlayerForConnection(player.connectionToClient);
-        //        GameObject playerObj = null;
+        if(scene.name == "NetworkTest")
+        {
+           foreach(var player in GamePlayers)
+           {
+               NetworkServer.DestroyPlayerForConnection(player.connectionToClient);
+               GameObject playerObj = null;
 
-        //        int randomPrefab = Random.Range(0, 1);
-        //        if(randomPrefab == 0)
-        //        {
-        //            playerObj = Instantiate(securityPrefab);
-        //        }
-        //        else if(randomPrefab == 1)
-        //        {
-        //            playerObj = Instantiate(statuePrefab);
-        //        }
-        //        NetworkServer.AddPlayerForConnection(player.connectionToClient, playerObj);
+                int randomPrefab = Random.Range(0, 2);
+                if(randomPrefab == 0)
+                {
+                    playerObj = Instantiate(statuePrefab);
+                }
+                else if(randomPrefab == 1)
+                {
+                    playerObj = Instantiate(securityPrefab);
+                }
+                NetworkServer.AddPlayerForConnection(player.connectionToClient, playerObj);
 
-        //        PlayerController playerController = playerObj.GetComponent<PlayerController>();
+               PlayerController playerController = playerObj.GetComponent<PlayerController>();
 
-        //        playerController.ConnectionID = player.ConnectionID;
-        //        playerController.PlayerIdNumber = player.PlayerIdNumber;
-        //        playerController.PlayerSteamId = player.PlayerSteamId;
-        //        playerController.PlayerName = player.PlayerName;
-        //    }        
-        //}
+               playerController.ConnectionID = player.ConnectionID;
+               playerController.PlayerIdNumber = player.PlayerIdNumber;
+               playerController.PlayerSteamId = player.PlayerSteamId;
+               playerController.PlayerName = player.PlayerName;
+           }        
+        }
     }
-
-    
 }
