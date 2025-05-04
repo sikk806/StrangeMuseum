@@ -19,7 +19,7 @@ public class SMNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().name == "NetworkTest")
+        if (SceneManager.GetActiveScene().name == "Lobby")
         {
             PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             GamePlayerInstance.transform.position = Vector3.zero;
@@ -56,14 +56,14 @@ public class SMNetworkManager : NetworkManager
                 NetworkServer.DestroyPlayerForConnection(player.connectionToClient);
                 GameObject playerObj = null;
 
-                int randomPrefab = Random.Range(0, 1);
+                int randomPrefab = Random.Range(0, 2);
                 if(randomPrefab == 0)
                 {
-                    playerObj = Instantiate(securityPrefab);
+                    playerObj = Instantiate(statuePrefab);
                 }
                 else if(randomPrefab == 1)
                 {
-                    playerObj = Instantiate(statuePrefab);
+                    playerObj = Instantiate(securityPrefab);
                 }
                 NetworkServer.AddPlayerForConnection(player.connectionToClient, playerObj);
 
@@ -76,6 +76,4 @@ public class SMNetworkManager : NetworkManager
             }        
         }
     }
-
-    
 }
