@@ -55,7 +55,6 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
             if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
             {
-                itemLayer = i;
                 AddItem(slots, i);
                 Debug.Log("처음 얻은 아이템");
                 return;
@@ -66,6 +65,8 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
     private void AddItem(Slots slots, int currentHandCuffSlot)
     {
+        itemLayer = currentHandCuffSlot; //처음 얻은 아이템에만 적용
+
         Slot slot = slots.slotDataList[currentHandCuffSlot].SlotObj.GetComponent<Slot>();
 
         // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음

@@ -40,7 +40,6 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 
             if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
             {
-                itemLayer = i; //처음 얻은 아이템에만 적용
 
                 AddItem(slots, i);
                 Debug.Log("처음 얻은 아이템");
@@ -50,6 +49,8 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
     }
     private void AddItem(Slots slots, int currentPenSlot)
     {
+        itemLayer = currentPenSlot; //처음 얻은 아이템에만 적용
+
         Slot slot = slots.slotDataList[currentPenSlot].SlotObj.GetComponent<Slot>();
 
         // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음

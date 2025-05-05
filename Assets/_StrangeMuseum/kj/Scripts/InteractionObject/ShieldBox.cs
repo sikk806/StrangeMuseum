@@ -34,6 +34,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         {
             if (!slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.Box)
             {
+
                 AddItem(slots, i);
                 Debug.Log("처음 얻지 않은 아이템");
                 break;
@@ -41,7 +42,6 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
             if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
             {
-                itemLayer = i; //처음 얻은 아이템에만 적용
 
                 AddItem(slots, i);
                 Debug.Log("처음 얻은 아이템");
@@ -53,6 +53,8 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
     private void AddItem(Slots slots, int currentBoxSlot)
     {
+        itemLayer = currentBoxSlot;
+
         Slot slot = slots.slotDataList[currentBoxSlot].SlotObj.GetComponent<Slot>();
 
         // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
