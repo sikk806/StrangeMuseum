@@ -385,7 +385,9 @@ public class SecurityInGameUI : NetworkBehaviour
                 SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
             }
 
-            //SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>().SlotItemCount(itemList);
+            Slot slot = SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>();
+
+            SlotManager.SlotItemCount(itemList, slot);
         }
     
 

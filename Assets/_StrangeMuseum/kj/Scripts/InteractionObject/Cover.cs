@@ -47,7 +47,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
             if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
             {
-                itemLayer = i; //처음 얻은 아이템에만 적용
+
 
                 AddItem(slots, i);
                 Debug.Log("처음 얻은 아이템");
@@ -61,6 +61,8 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
     private void AddItem(Slots slots,int currentCoverSlot)
     {
+        itemLayer = currentCoverSlot; //처음 얻은 아이템에만 적용
+
         Slot slot = slots.slotDataList[currentCoverSlot].SlotObj.GetComponent<Slot>();
 
         // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
