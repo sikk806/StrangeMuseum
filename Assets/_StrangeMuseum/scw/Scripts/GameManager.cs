@@ -54,20 +54,21 @@ public class GameManager : NetworkBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SettingManager.Instance.gameObject.SetActive(
-                !SettingManager.Instance.gameObject.activeSelf);
-        }
-
         if (IsServer && !IsAllConnected.Value && PlayerStat.Value.Count == 4)
         {
             Debug.Log("모두 접속!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
             IsAllConnected.Value = true;
         }
 
-        Debug.Log("SecurityCount: " + SecurityCount.Value);
-        Debug.Log("StatueCount: " + StatueCount.Value);
+        return;
+
+       
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            SettingManager.Instance.gameObject.SetActive(
+                !SettingManager.Instance.gameObject.activeSelf);
+        }
+
     }
 
     [ServerRpc]

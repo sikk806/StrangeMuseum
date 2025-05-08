@@ -84,7 +84,7 @@ public class ProjectileLancuher : NetworkBehaviour
     void FireClientRpc(ulong penNetworkObjectId) // 클라이언트에서 호출되는 메서드
     {
         // 클라이언트에서 이미 오너일 경우 반복을 방지
-        GetComponent<SecurityInteraction>().CameraOff();
+       // GetComponent<SecurityInteraction>().CameraOff();
 
         NetworkObject penNetworkObject = NetworkManager.Singleton.SpawnManager.SpawnedObjects[penNetworkObjectId];
 
@@ -110,6 +110,6 @@ public class ProjectileLancuher : NetworkBehaviour
     {
         yield return new WaitForSeconds(delay);
         // 클라이언트에게 펜 던지기 이벤트 전달
-        GetComponent<SecurityInteraction>().CameraOn();
+       // GetComponent<SecurityInteraction>().CameraOn();
     }
 }

@@ -1,4 +1,5 @@
-using Unity.Netcode;
+using Mirror;
+using Unity.Services.Authentication;
 using UnityEngine;
 
 public class NetworkItem : NetworkBehaviour
@@ -6,60 +7,35 @@ public class NetworkItem : NetworkBehaviour
     [SerializeField]
     public bool isPickedUp = false;
 
-    [ServerRpc(RequireOwnership = false)]
-    public void PickUpItemServerRpc(NetworkObjectReference objRef)
+    [Command(requiresAuthority = false)]
+    public void CmdPickUpItem(GameObject objRef)
     {
+        Debug.Log("1");
+
         if (isPickedUp) return;
 
+        Debug.Log("2");
+
         isPickedUp = true;
-        PickUpItemClientRpc(objRef);
+
+
+
+        objRef.gameObject.SetActive(false);
+        RpcPickUpItemClientRpc(objRef);
+
     }
 
     [ClientRpc]
-    private void PickUpItemClientRpc(NetworkObjectReference objRef)
+    private void RpcPickUpItemClientRpc(GameObject objRef)
     {
-        if (objRef.TryGet(out NetworkObject obj))
-        {
-            obj.gameObject.SetActive(false);
-        }
+        objRef.gameObject.SetActive(false);
     }
 
-    public void DestroyItem(NetworkObject obj)
+    public void DestroyItem(GameObject obj)
     {
-        if (!IsServer)
+        if (!isServer)
             return;
 
         Destroy(obj.gameObject);
     }
-
-    //[SerializeField]
-    //private bool isPickedUp = false;
-
-    //[ServerRpc(RequireOwnership = false)]//RPC 호출 시 소유 여부에 관계없이 호출 가능.
-    //public void PickUpItemServerRpc(GameObject go)
-    //{
-    //    if (isPickedUp) return;
-
-    //    isPickedUp = true;
-    //    PickUpItemClientRpc(go);
-    //}
-
-    //[ClientRpc]
-    //private void PickUpItemClientRpc(GameObject go)
-    //{
-    //    go.gameObject.SetActive(false); // 모든 클라이언트에서 비활성화
-    //}
-
-
-    //public  void DestroyItem(GameObject obj) //NetworkBehaviour 용 OnDestroy()임. 
-    //{
-    //    if (IsServer == false)
-    //    {
-    //        return;
-    //    }
-
-    //    Destroy(obj);
-
-
-    //}
 }

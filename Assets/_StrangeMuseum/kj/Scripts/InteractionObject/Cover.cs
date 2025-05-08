@@ -1,6 +1,7 @@
-using Unity.Netcode;
+using Mirror;
 using UnityEngine;
-using static Define;
+using static ItemData;
+using UnityEngine.UIElements;
 
 
 public class Cover : NetworkBehaviour, IInteractable, IUsableItem
@@ -8,123 +9,133 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
     public GameObject CoverUI; // 구속구 UI
     private SecurityInteraction bouncerInteraction;
+    private StatueInGameUI statueIngameUI;
+
 
     [SerializeField]
     private float CoverCooltime;
     [SerializeField]
     private int itemLayer;
 
-    public ItemUseType GetItemLayer() => ItemUseType.Target;
-    public ItemList GetItemType() => ItemList.Cover;
+    public ItemData.ItemList GetItemList() { return ItemData.ItemList.Cover; }
+
+    public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Target; }
+
+    [SyncVar]
+    public bool isCoverUsing;
 
 
-    public void Interact(SecurityInteraction bouncer) // 구속구 상호작용
+    public GameObject CoverGameObject;
+
+    Slot slot;
+    public void Interact() //구속구 상호작용 
     {
-        this.gameObject.tag = "Untagged";
-        this.gameObject.layer = 0; //Defalut
+        Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        bouncerInteraction = bouncer.GetComponent<SecurityInteraction>();
+        ItemData.ItemList itemType = ItemData.ItemList.Cover;
 
-        for (int i = 0; i < SecurityInGameUI.Instance.SlotData.Count; i++)
+        if (slots.itemSlotIndex.TryGetValue(itemType, out Slot slot))
         {
-            if (SecurityInGameUI.Instance.SlotData[i].IsEmpty)
+            Debug.Log("중복 아이템 슬롯 번호" + slot);
+            AddItem(slots, slot, itemLayer);
+            return;
+        }
+
+        // 수갑이 없는 상태이므로 빈 슬롯 탐색
+        for (int i = 0; i < slots.slotList.Count; i++)
+        {
+            var data = slots.slotList[i];
+
+            Debug.Log("처음 습득 한 아이템 슬롯 번호" + i);
+            if (data.SlotData.IsEmpty && data.SlotData.itemList == ItemData.ItemList.None)
             {
-
-                //Transform cover = transform.GetChild(2);
-                NetworkObjectReference objRef = this.gameObject;
-
-                GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득 요청
-                itemLayer = i;
-
-                Instantiate(CoverUI, SecurityInGameUI.Instance.SlotData[i].SlotObj.transform, false);
-
-                SecurityInGameUI.Instance.SlotData[i].IsEmpty = false;
-
-
-                SecurityInGameUI.Instance.SlotData[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
-
-                SecurityInGameUI.Instance.AddItemToSlot(this.gameObject, i);
-
-                break;
+                slots.itemSlotIndex[itemType] = data; // 슬롯 인덱스 기억
+                Debug.Log(" 슬롯 인덱스 기억" + slots.itemSlotIndex[itemType]);
+                AddItem(slots, slots.itemSlotIndex[itemType], i);
+                return;
             }
         }
 
     }
 
-
-   
-
-
-    [ServerRpc(RequireOwnership = false)]
-    public void UseServerRpc(ulong clientId)
+    private void AddItem(Slots slots, Slot ItemSlot, int itemLayer)
     {
-        // Bouncer 리스트 가져오기
-        GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
-        // 아이템 사용한 경비원 찾기
-        foreach (var bouncer in bouncers)
+        this.itemLayer = itemLayer;
+
+        // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
+
+        int availableIndex = GetItemEmptyIndex(ItemSlot);
+
+        if (availableIndex != -1)
         {
-            NetworkObject netObj = bouncer.GetComponent<NetworkObject>();
-            if (netObj != null && netObj.OwnerClientId == clientId)
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            ItemSlot.AssignedItem[availableIndex] = this.gameObject;
+            // UI가 없을 때만 생성
+            if (!ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Cover))
             {
-                Debug.Log(netObj.OwnerClientId);
-                bouncerInteraction = bouncer.GetComponent<SecurityInteraction>();
+                Debug.Log("슬롯 오브젝트 이름 2 ---- " + ItemSlot.gameObject);
+                Instantiate(CoverUI, ItemSlot.transform, false);
+                slots.AddItem(this.gameObject, ItemSlot);
+            }
 
-                if (bouncerInteraction.IsStatue.Value)
-                {
-                    Debug.Log("조각상 확인");
-                    if (bouncerInteraction.RayStaute != null)
-                    {
-                        Debug.Log("조각상 CoverInteracted 호출 ");
-                        bouncerInteraction.RayStaute.GetComponent<StatueInteraction>().CoverInteracted(true, this.gameObject);
-                       
-                        // 🚀 ClientRpc 호출
-                        CoverActiveClientRpc(true, bouncerInteraction.RayStaute.GetComponent<NetworkObject>().NetworkObjectId);
-                    }
-                    else
-                    {
-                        Debug.Log("조각상 확인 불가 ");
-                    }
-                }
+            ItemManager.Instance.AddItem(ItemData.ItemList.Cover);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Cover);
 
-               
-                break;
+        }
+    }
+    public int GetItemEmptyIndex(Slot slot)
+    {
+        for (int i = 0; i < slot.AssignedItem.Length; i++)
+        {
+            if (slot.AssignedItem[i] == null)
+            {
+                return i;
             }
         }
-
-        // 조각상 감지 로직
-     
-
+        return -1; // 모든 인덱스가 차있으면 -1
     }
 
-
-    [ClientRpc]
-    private void CoverActiveClientRpc(bool isActive, ulong statueId)
+    [Command(requiresAuthority = false)]
+    public void UseServerRpc(uint clientId)
     {
-        if (SecurityInGameUI.Instance != null)
+        NetworkIdentity bloodCoverIdentity = GetComponent<NetworkIdentity>();
+
+        if (NetworkServer.connections.TryGetValue((int)clientId, out NetworkConnectionToClient connection))
         {
-            SecurityInGameUI.Instance.OnDestroyItemUI(itemLayer);
-            SecurityInGameUI.Instance.RemoveItemLayer(itemLayer);
+            NetworkIdentity playerNetObj = connection.identity;
+
+            if (playerNetObj == null)
+            {
+                Debug.LogWarning("클라이언트의 PlayerObject (connection.identity)가 null입니다.");
+                return;
+            }
+
+            bouncerInteraction = playerNetObj.GetComponent<SecurityInteraction>();
+
+            bouncerInteraction.BloodCoverFunction(playerNetObj, bloodCoverIdentity, itemLayer);
+
+        }
+        else
+        {
+            Debug.LogWarning("이 경비원은 접속하지 않은 유저입니다");
         }
 
     }
 
 
-    [ServerRpc(RequireOwnership = false)]
-    public void ResetInteractServerRpc(ulong statueId)
-    {
-        Debug.Log("리셋 커버");
+ 
 
+    [Command(requiresAuthority = false)]
+    public void ResetInteractServerRpc()
+    {
         itemLayer = 0;
 
         bouncerInteraction = null;
 
-        CoverActiveClientRpc(false, statueId); // 모든 Statue 비활성화
 
-
-        NetworkObjectReference objRef = this.gameObject;
-
-        GetComponent<NetworkItem>().DestroyItem(objRef); // 서버에 아이템 삭제 요청
+        GetComponent<NetworkItem>().DestroyItem(this.gameObject); // 서버에 아이템 삭제 요청
     }
 
 }
