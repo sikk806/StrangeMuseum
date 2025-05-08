@@ -3,6 +3,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using static ItemData;
+using System.Collections.Generic;
 
 public class SecurityInGameUI : NetworkBehaviour
 {
@@ -131,10 +132,10 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             if(securityInteraction.SaveRayItem != null)
             {
-                ItemList currentItem = SlotManager.slotDataList[SlotManager.SelectedIndex].itemList;
-                ItemUseType currentItemType = SlotManager.slotDataList[SlotManager.SelectedIndex].itemUseType;
+                ItemList currentItem = SlotManager.slotList[0].SlotData.itemList;
+                ItemUseType currentItemType = SlotManager.slotList[0].SlotData.itemUseType;
 
-                if (SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false) //슬롯에 뭔가 있음
+                if (SlotManager.slotList[0].SlotData.IsEmpty == false) //슬롯에 뭔가 있음
                 {
                     currentItem = securityInteraction.SaveRayItem.GetComponent<IUsableItem>().GetItemList();
 
@@ -166,10 +167,10 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             if(securityInteraction.SaveRayItem != null )
             {
-                if(SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false) //슬롯에 뭔가 있음
+                if(SlotManager.slotList[0].SlotData.IsEmpty == false) //슬롯에 뭔가 있음
                 {
-                    ItemList currentItem = SlotManager.slotDataList[SlotManager.SelectedIndex].itemList;
-                    ItemUseType currentItemType = SlotManager.slotDataList[SlotManager.SelectedIndex].itemUseType;
+                    ItemList currentItem = SlotManager.slotList[0].SlotData.itemList;
+                    ItemUseType currentItemType = SlotManager.slotList[0].SlotData.itemUseType;
 
                     OnItemNameUI(currentItem);
 
@@ -383,11 +384,13 @@ public class SecurityInGameUI : NetworkBehaviour
                 SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
                 SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;
                 SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
+
+                SlotManager.itemSlotIndex.Remove(itemList); // 슬롯 인덱스 해제
             }
 
             Slot slot = SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>();
 
-            SlotManager.SlotItemCount(itemList, slot);
+            slot.SlotItemCount(itemList);
         }
     
 

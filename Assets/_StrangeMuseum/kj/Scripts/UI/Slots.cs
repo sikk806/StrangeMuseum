@@ -3,6 +3,7 @@ using TMPro;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 {
@@ -17,33 +18,38 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public List<Slot> slotList = new List<Slot>();
 
+    private List<Vector3> initialPositions = new List<Vector3>();
+
+    public Dictionary<ItemData.ItemList, Slot> itemSlotIndex = new Dictionary<ItemData.ItemList, Slot>();
+
     public int SelectedIndex { get;  set; } = 0;
+
 
     private void Update()
     {
 
-        for (int i = 0; i < slotDataList.Count; i++)
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1 + i)) // KeyCode.Alpha1 == 49
-            {
-                SecurityInGameUI.Instance.OnItemExplainUI(ItemData.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
-                SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
-                SecurityInGameUI.Instance.OnItemNameUI(ItemData.ItemList.None);
-
-                SelectSlot(i);
-
-            }
-            else
-            {
-                slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
-            }
-        }
-
-        //if (Input.GetKeyDown(KeyCode.LeftAlt))
+        //for (int i = 0; i < slotDataList.Count; i++)
         //{
-        //    RotateSlotsUp();
-        //    Debug.Log("퀵슬롯 회전 (ALT)");
+        //    if (Input.GetKeyDown(KeyCode.Alpha1 + i)) // KeyCode.Alpha1 == 49
+        //    {
+        //        SecurityInGameUI.Instance.OnItemExplainUI(ItemData.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
+        //        SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
+        //        SecurityInGameUI.Instance.OnItemNameUI(ItemData.ItemList.None);
+
+        //        SelectSlot(i);
+
+        //    }
+        //    else
+        //    {
+        //        slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
+        //    }
         //}
+
+        // ALT키로 슬롯 회전
+        if (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
+        {
+            RotateSlotsUp();
+        }
 
 
     }
@@ -66,14 +72,18 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
             slot.SlotData = data;
 
             slotList.Add(slot);
+            slot.SlotData.OriginalIndex = i;
+           // slotParentChild.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString();
 
-            slotParentChild.gameObject.GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString();
+            initialPositions.Add(slotParentChild.position);  // 위치 저장
 
-
+            Slot slotLists = slotList[i];
+            RectTransform slotRect = slot.GetComponent<RectTransform>();
+            SlotSizeSet(slot, slotRect, i);
         }
-        SelectSlot(0); //처음엔 0번
+       // SelectSlot(0); //처음엔 0번
     }
-    public void AddItem(GameObject item, int slotIndex)
+    public void AddItem(GameObject item, Slot slot)
     {
         IUsableItem usableItem = item.GetComponent<IUsableItem>();
 
@@ -84,13 +94,10 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
             if (ItemManager.Instance.itemDictionary.ContainsKey(list))
             {
-                SlotData slotData = slotDataList[slotIndex];
+                slot.SlotData.itemList = list;
+                slot.SlotData.itemUseType = type;
+                slot.SlotData.IsEmpty = false; 
 
-                slotData.itemList = list;
-                slotData.itemUseType = type;
-                slotData.IsEmpty = false;
-
-                SelectSlot(slotIndex);
             }
 
         }
@@ -119,34 +126,16 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
     private SecurityInteraction securityInteraction;
 
 
-    public void SlotItemCount(ItemData.ItemList item, Slot slot) //슬롯에 들어 있는 아이템 개수
-    {
-
-        TextMeshProUGUI slotItemCount = slot.transform.GetChild(1).GetComponentInChildren<TextMeshProUGUI>();
-
-        if (ItemManager.Instance.inventoryDictionary.TryGetValue(item, out int count))
-        {
-            Debug.Log($"현재 {item}의 개수는 {count} 입니다");
-
-            slotItemCount.text = count.ToString();
-        }
-        else
-        {
-            slotItemCount.text = "";
-        }
-
-    }
-
     public void UseSelectedItem(uint id)
     {
-
+       
 
         SlotData data = GetSelectedData();
 
         if (data.IsEmpty) return;
 
 
-        Slot currentSlot = slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>();
+        Slot currentSlot = slotList[0].GetComponent<Slot>();
 
         // 사용 가능한 첫 번째 아이템 찾기
         GameObject usableObj = null;
@@ -182,50 +171,57 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public void RotateSlotsUp()
     {
-        if (slotDataList.Count < 2) return;
+       // if (slotDataList.Count < 2) return;
 
-        // 슬롯 데이터 회전 (맨 뒤를 앞으로)
-        SlotData lastData = slotDataList[slotDataList.Count - 1];
-        slotDataList.RemoveAt(slotDataList.Count - 1);
-        slotDataList.Insert(0, lastData);
+        // === 순서 회전 ===
+        //SlotData lastData = slotDataList[slotDataList.Count - 1];
+        //slotDataList.RemoveAt(slotDataList.Count - 1);
+        //slotDataList.Insert(0, lastData);
 
         Slot lastSlot = slotList[slotList.Count - 1];
         slotList.RemoveAt(slotList.Count - 1);
         slotList.Insert(0, lastSlot);
 
-        // UI 순서 조정: 슬롯들이 서로 위치 바꾸도록
+        // === 위치 이동 애니메이션 ===
         for (int i = 0; i < slotList.Count; i++)
         {
-            slotList[i].transform.SetSiblingIndex(i);
-            slotList[i].GetComponentInChildren<TextMeshProUGUI>().text = (i + 1).ToString(); // 표시도 정리
+            Slot slot = slotList[i];
+            slot.transform.DOMove(initialPositions[i], 0.3f);
+
+            RectTransform slotRect = slot.GetComponent<RectTransform>();
+
+            SlotSizeSet(slot, slotRect, i);
         }
 
-        // 선택 슬롯을 항상 0번으로 유지
-        SelectSlot(0);
+        // 선택 슬롯 유지
+        //  SelectSlot(0);
     }
 
-    public void SwapFirstTwo()
+    private void SlotSizeSet(Slot slot , RectTransform slotRect, int i)
     {
-        if (slotDataList.Count < 2) return;
 
-        SlotData firstSlotData = slotDataList[0];
-        SlotData secondSlotData = slotDataList[1];
+        if (i == 0)
+        {
+            slotRect.sizeDelta = new Vector2(124f, 117f);
 
-        //1. 데이터 교체
-        (firstSlotData.itemList, secondSlotData.itemList) = (secondSlotData.itemList, firstSlotData.itemList);
-        (firstSlotData.itemUseType, secondSlotData.itemUseType) = (secondSlotData.itemUseType, firstSlotData.itemUseType);
-        (firstSlotData.IsEmpty, secondSlotData.IsEmpty) = (secondSlotData.IsEmpty, firstSlotData.IsEmpty);
+            // 자식 0번째 오브젝트만 사이즈 조절
+            if (slot.transform.childCount > 0)
+            {
+                RectTransform child0 = slot.transform.GetChild(0).GetComponent<RectTransform>();
+                child0.anchoredPosition = new Vector2(42, -38f); // 위치 이동
+                child0.sizeDelta = new Vector2(39f, 37f);
+            }
+        }
+        else
+        {
+            slotRect.sizeDelta = new Vector2(85f, 85f);
 
-        //2. 이미지 교체
-        Transform firstTransform = firstSlotData.SlotObj.transform.GetChild(1);
-        Transform secondTransform = secondSlotData.SlotObj.transform.GetChild(1);
-
-        Image firstSprite = firstTransform.GetComponent<Image>();
-        Image secondSprite = secondTransform.GetComponent<Image>();
-
-        Sprite tempSprite = firstSprite.sprite;
-        firstSprite.sprite = secondSprite.sprite;
-        secondSprite.sprite = tempSprite;
+            if (slot.transform.childCount > 0)
+            {
+                RectTransform child0 = slot.transform.GetChild(0).GetComponent<RectTransform>();
+                child0.anchoredPosition = new Vector2(25f, -26f);
+                child0.sizeDelta = new Vector2(26f, 25f);
+            }
+        }
     }
-
 }

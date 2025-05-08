@@ -82,7 +82,7 @@ public class ItemManager : MonoBehaviour
 
         itemDictionary = new Dictionary<ItemData.ItemList, ItemData>
             {
-                 { ItemData.ItemList.HandCuff, new ItemData("구속구", "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소",2) },
+                 { ItemData.ItemList.HandCuff, new ItemData("구속구", "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소",5) },
                  { ItemData.ItemList.EnergyDrink, new ItemData("에너지 드링크", "사용 시, 이동속도 증가",3) },
                  { ItemData.ItemList.Box, new ItemData("박스", "사용 시, 조각상의 공격으로 부터 1회 방어",2) },
                  { ItemData.ItemList.Cover, new ItemData("피 묻은 천", "조각상에게 사용 시, 조각상의 시야 기능 제한",2) },
@@ -150,6 +150,7 @@ public class ItemManager : MonoBehaviour
             if (inventoryDictionary[item] <= 0)
             {
                 inventoryDictionary.Remove(item);
+ 
                 Debug.Log($"아이템 {item}이 모두 소모되어 삭제되었습니다.");
             }
             else
@@ -175,5 +176,6 @@ public class ItemManager : MonoBehaviour
         return false;
       
     }
+
 
 }

@@ -2,7 +2,7 @@
   "HandCuff": {
     "ItemName": "구속구",
     "ItemExplain": "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소",
-    "ItemMaxCount": 2
+    "ItemMaxCount": 5
   },
   "EnergyDrink": {
     "ItemName": "에너지 드링크",

@@ -11,16 +11,12 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
     [SerializeField]
     float handCuffCooltime;
-
     [SerializeField]
     float minMoveSpeed;
-
     [SerializeField]
     float minRushSpeed;
-
     [SerializeField]
-    int itemLayer;
-
+    int itemLayer = -1;
 
     [SerializeField]
     private AudioClip HandCuffFearSound; // 구속구 공포 효과음
@@ -44,52 +40,59 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     {
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        for (int i = 0; i < slots.slotDataList.Count; i++)
-        {
-            if (!slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.HandCuff)
-            {
-                AddItem(slots, i);
-                Debug.Log("처음 얻지 않은 아이템");
-                break;
-            }
+        ItemData.ItemList itemType = ItemData.ItemList.HandCuff;
 
-            if (slots.slotDataList[i].IsEmpty && slots.slotDataList[i].itemList == ItemData.ItemList.None)
+        if (slots.itemSlotIndex.TryGetValue(itemType, out Slot slot))
+        {
+            Debug.Log("중복 아이템 슬롯 번호" + slot);
+            AddItem(slots, slot, itemLayer);
+            return;
+        }
+
+        // 수갑이 없는 상태이므로 빈 슬롯 탐색
+        for (int i = 0; i < slots.slotList.Count; i++)
+        {
+            var data = slots.slotList[i];
+
+            Debug.Log("처음 습득 한 아이템 슬롯 번호" + i);
+            if (data.SlotData.IsEmpty && data.SlotData.itemList == ItemData.ItemList.None)
             {
-                AddItem(slots, i);
-                Debug.Log("처음 얻은 아이템");
+                slots.itemSlotIndex[itemType] = data; // 슬롯 인덱스 기억
+                Debug.Log(" 슬롯 인덱스 기억" + slots.itemSlotIndex[itemType]);
+                AddItem(slots, slots.itemSlotIndex[itemType] , i);
                 return;
             }
         }
-       
+
     }
 
-    private void AddItem(Slots slots, int currentHandCuffSlot)
+    private void AddItem(Slots slots, Slot ItemSlot , int itemLayer)
     {
-        itemLayer = currentHandCuffSlot; //처음 얻은 아이템에만 적용
 
-        Slot slot = slots.slotDataList[currentHandCuffSlot].SlotObj.GetComponent<Slot>();
+        this.itemLayer = itemLayer;
 
-        // 현재 슬롯의 빈 AssignedItem 인덱스를 찾음
-        int availableIndex = GetItemEmptyIndex(slot);
+       // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
+
+        int availableIndex = GetItemEmptyIndex(ItemSlot);
 
         if (availableIndex != -1)
         {
             this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
 
-            slot.AssignedItem[availableIndex] = this.gameObject;
+            ItemSlot.AssignedItem[availableIndex] = this.gameObject;
 
-            //UI 표시
-            if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.HandCuff) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
+            // UI가 없을 때만 생성
+            if (!ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.HandCuff))
             {
-                Instantiate(HandcuffUI, slot.transform, false);
-
-                slots.AddItem(this.gameObject, currentHandCuffSlot);
+                Debug.Log("슬롯 오브젝트 이름 2 ---- " + ItemSlot.gameObject);
+                Instantiate(HandcuffUI, ItemSlot.transform, false);
+                slots.AddItem(this.gameObject, ItemSlot);
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
+            ItemSlot.SlotItemCount(ItemData.ItemList.HandCuff);
 
-            slots.SlotItemCount(ItemData.ItemList.HandCuff, slot);
-
+           
         }
     }
     public int GetItemEmptyIndex(Slot slot)

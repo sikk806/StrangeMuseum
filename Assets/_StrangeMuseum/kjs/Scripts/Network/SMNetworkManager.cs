@@ -7,7 +7,7 @@ using Steamworks;
 public class SMNetworkManager : NetworkManager
 {
     [SerializeField] private PlayerLobbyController GamePlayerPrefab;
-    [SerializeField] private PlayerController securityPrefab;
+    [SerializeField] private GameObject securityPrefab;
     [SerializeField] private GameObject statuePrefab;
 
     public List<PlayerLobbyController> GamePlayers { get; } = new List<PlayerLobbyController>(); // Info of Players
@@ -19,23 +19,26 @@ public class SMNetworkManager : NetworkManager
 
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
-        if (SceneManager.GetActiveScene().name == "Lobby")
+        if (SceneManager.GetActiveScene().name == "NetworkTest")
         {
-            PlayerController GamePlayerInstance = Instantiate(securityPrefab);
-            GamePlayerInstance.transform.position = Vector3.zero;
+            GameObject GamePlayerInstance = Instantiate(securityPrefab);
 
-            GamePlayerInstance.ConnectionID = conn.connectionId;
-            GamePlayerInstance.PlayerIdNumber = GamePlayers.Count + 1;
+            PlayerController playerController = GamePlayerInstance.GetComponent<PlayerController>();
+
+            playerController.transform.position = Vector3.zero;
+
+            playerController.ConnectionID = conn.connectionId;
+            playerController.PlayerIdNumber = GamePlayers.Count + 1;
             //GamePlayerInstance.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.Instance.CurrentLobbyID, GamePlayers.Count);
             if (SteamManager.Initialized && SteamLobby.Instance != null)
             {
-                GamePlayerInstance.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(
+                playerController.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex(
                     (CSteamID)SteamLobby.Instance.CurrentLobbyID, GamePlayers.Count);
             }
             else
             {
                 Debug.Log("Steam not initialized or SteamLobby missing. Assigning dummy SteamID.");
-                GamePlayerInstance.PlayerSteamId = 0; // fallback or dummy ID
+                playerController.PlayerSteamId = 0; // fallback or dummy ID
             }
 
             NetworkServer.AddPlayerForConnection(conn, GamePlayerInstance.gameObject);
