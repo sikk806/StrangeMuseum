@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class StatueController : PlayerController
@@ -22,6 +23,10 @@ public class StatueController : PlayerController
 
     protected override void Start()
     {
+        if(!isOwned) return;
+
+        base.Start();
+
         initRushSpeed = RushSpeed;
     }
 

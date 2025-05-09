@@ -3,6 +3,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using static ItemData;
+using System.Collections.Generic;
 
 public class SecurityInGameUI : NetworkBehaviour
 {
@@ -50,6 +51,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
     private void Awake()
     {
+
         if (instance == null)
         {
             instance = this;
@@ -63,51 +65,44 @@ public class SecurityInGameUI : NetworkBehaviour
 
     private void Start()
     {
-      
-        InteractionUI.SetActive(false);
-        ulong id = netId;
+        base.OnStartLocalPlayer();
 
-        Debug.Log($" NetId : {netId}");
-       
+      
+
+        InteractionUI.SetActive(false);
 
         // 모든 경비원 오브젝트를 찾고, 로컬 클라이언트 ID와 비교하여 해당 경비원의 Interaction을 가져옴
         GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
+        int SecuriyCount = 0;
+
         foreach (var bouncer in bouncers)
         {
+            SecuriyCount++;
 
-            // 각 경비원에 대해 로컬 클라이언트 ID가 일치하는지 확인
-            if (bouncer.GetComponent<PlayerLobbyController>().ConnectionID == (int)id)
-            {
-                // 일치하는 경비원 찾으면 그 경비원의 Interaction 객체를 할당
-                //if (GameManager.Instance.PlayerStat.Value[OwnerClientId] == "Statue")
-                //{
-                //    Destroy(this.gameObject);
-                //}
+            playerId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
 
-                playerId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
+            Debug.Log("경비원   " + SecuriyCount + "의 접속 ID" + playerId);
 
-                securityInteraction = bouncer.GetComponent<SecurityInteraction>();
-                Interaction = bouncer.GetComponent<PlayerInteraction>();
-                break; // 하나만 찾으면 됨
-            }
+            securityInteraction = bouncer.GetComponent<SecurityInteraction>();
+
+            Interaction = bouncer.GetComponent<PlayerInteraction>();
         }
 
         SlotManager.SlotSet(); //슬롯들 초기화
 
     }
 
-    uint playerId;
+    public uint playerId;
 
     private void Update() 
     {
         SecurityInteractionUI();
 
-        //ItemSlotUpdate();
-
-
         if (Input.GetKeyDown(KeyCode.I))
         {
+            Debug.Log("현재 기준 이 스크립트를 갖고 있는 경비원 ID" + playerId);
+
             if(ItemManager.Instance.inventoryDictionary.Count > 0)
             {
                 foreach (var item in ItemManager.Instance.inventoryDictionary)
@@ -123,7 +118,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
 
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress == false)
-        {       
+        {
             SlotManager.UseSelectedItem(playerId);
         }
     }
@@ -137,10 +132,10 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             if(securityInteraction.SaveRayItem != null)
             {
-                ItemList currentItem = SlotManager.slotDataList[SlotManager.SelectedIndex].itemList;
-                ItemUseType currentItemType = SlotManager.slotDataList[SlotManager.SelectedIndex].itemUseType;
+                ItemList currentItem = SlotManager.slotList[0].SlotData.itemList;
+                ItemUseType currentItemType = SlotManager.slotList[0].SlotData.itemUseType;
 
-                if (SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false) //슬롯에 뭔가 있음
+                if (SlotManager.slotList[0].SlotData.IsEmpty == false) //슬롯에 뭔가 있음
                 {
                     currentItem = securityInteraction.SaveRayItem.GetComponent<IUsableItem>().GetItemList();
 
@@ -172,10 +167,10 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             if(securityInteraction.SaveRayItem != null )
             {
-                if(SlotManager.slotDataList[SlotManager.SelectedIndex].IsEmpty == false) //슬롯에 뭔가 있음
+                if(SlotManager.slotList[0].SlotData.IsEmpty == false) //슬롯에 뭔가 있음
                 {
-                    ItemList currentItem = SlotManager.slotDataList[SlotManager.SelectedIndex].itemList;
-                    ItemUseType currentItemType = SlotManager.slotDataList[SlotManager.SelectedIndex].itemUseType;
+                    ItemList currentItem = SlotManager.slotList[0].SlotData.itemList;
+                    ItemUseType currentItemType = SlotManager.slotList[0].SlotData.itemUseType;
 
                     OnItemNameUI(currentItem);
 
@@ -375,6 +370,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
             if (InventoryCheck(itemList)) //해당 아이템이 하나도 존재하지 않으면
             {
+
                 SlotManager.slotDataList[slotIndex].itemList = itemList;
                 SlotManager.slotDataList[slotIndex].itemUseType = itemType;
                 SlotManager.slotDataList[slotIndex].IsEmpty = false; // 빈 슬롯 됨
@@ -384,12 +380,17 @@ public class SecurityInGameUI : NetworkBehaviour
             {
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
 
+
                 SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
                 SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;
                 SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
+
+                SlotManager.itemSlotIndex.Remove(itemList); // 슬롯 인덱스 해제
             }
 
-            SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>().SlotItemCount(itemList);
+            Slot slot = SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>();
+
+            slot.SlotItemCount(itemList);
         }
     
 

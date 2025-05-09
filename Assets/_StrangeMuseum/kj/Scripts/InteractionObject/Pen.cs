@@ -6,7 +6,7 @@ using UnityEngine.UIElements;
 
 public class Pen : NetworkBehaviour, IInteractable, IUsableItem
 {
-    public GameObject PenDrinkUI; //에너지 드링크
+    public GameObject PenUI; //에너지 드링크
 
     private SecurityInteraction bouncerIntercation;
 
@@ -25,47 +25,80 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
         return ItemData.ItemUseType.Self;
     }
 
-    public void Interact() //에너지 드링크 상호작용 
+    public void Interact() //구속구 상호작용 
     {
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        for (int i = 0; i < slots.slotDataList.Count; i++)
+        ItemData.ItemList itemType = ItemData.ItemList.Pen;
+
+        if (slots.itemSlotIndex.TryGetValue(itemType, out Slot slot))
         {
-            if (slots.slotDataList[i].IsEmpty)
+            Debug.Log("중복 아이템 슬롯 번호" + slot);
+            AddItem(slots, slot, itemLayer);
+            return;
+        }
+
+        // 수갑이 없는 상태이므로 빈 슬롯 탐색
+        for (int i = 0; i < slots.slotList.Count; i++)
+        {
+            var data = slots.slotList[i];
+
+            Debug.Log("처음 습득 한 아이템 슬롯 번호" + i);
+            if (data.SlotData.IsEmpty && data.SlotData.itemList == ItemData.ItemList.None)
             {
-                //NetworkObjectReference objRef = this.gameObject;
-
-                //GetComponent<NetworkItem>().PickUpItemServerRpc(objRef); // 서버에 아이템 획득했다고 정보 알림
-
-                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
-
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Pen) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
-                {
-                    Instantiate(PenDrinkUI, slots.slotDataList[i].SlotObj.transform, false);
-
-                    itemLayer = i;
-
-                    slots.AddItem(this.gameObject, itemLayer);
-                }
-
-                ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
-
-
-                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Pen);
-
-
-
-                break;
+                slots.itemSlotIndex[itemType] = data; // 슬롯 인덱스 기억
+                Debug.Log(" 슬롯 인덱스 기억" + slots.itemSlotIndex[itemType]);
+                AddItem(slots, slots.itemSlotIndex[itemType], i);
+                return;
             }
         }
+
     }
 
-    public void ItemView(ulong clientId)
+    private void AddItem(Slots slots, Slot ItemSlot, int itemLayer)
     {
 
+        this.itemLayer = itemLayer;
+
+        // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
+
+        int availableIndex = GetItemEmptyIndex(ItemSlot);
+
+        if (availableIndex != -1)
+        {
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            ItemSlot.AssignedItem[availableIndex] = this.gameObject;
+
+
+
+            // UI가 없을 때만 생성
+            if (!ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Pen))
+            {
+                Debug.Log("슬롯 오브젝트 이름 2 ---- " + ItemSlot.gameObject);
+                Instantiate(PenUI, ItemSlot.transform, false);
+                slots.AddItem(this.gameObject, ItemSlot);
+            }
+
+            ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Pen);
+
+
+        }
+    }
+    public int GetItemEmptyIndex(Slot slot)
+    {
+        for (int i = 0; i < slot.AssignedItem.Length; i++)
+        {
+            if (slot.AssignedItem[i] == null)
+            {
+                return i;
+            }
+        }
+        return -1; // 모든 인덱스가 차있으면 -1
     }
 
-  
+
     [ServerRpc(RequireOwnership = false)]
     public void UseServerRpc(uint ClientId)
     {

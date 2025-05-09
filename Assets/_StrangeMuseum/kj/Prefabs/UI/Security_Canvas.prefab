@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 6557817157630500167}
   - component: {fileID: 8849381200719942944}
   - component: {fileID: 6091544262588832097}
-  - component: {fileID: 408237594241469477}
   m_Layer: 5
   m_Name: Slots
   m_TagString: Untagged
@@ -61,73 +60,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c8466c2188024354a9986069f4588962, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  runInBackground: 1
-  headlessStartMode: 0
-  editorAutoStart: 0
-  sendRate: 60
-  offlineScene: 
-  onlineScene: 
-  offlineSceneLoadDelay: 0
-  transport: {fileID: 0}
-  networkAddress: localhost
-  maxConnections: 100
-  disconnectInactiveConnections: 0
-  disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
-  playerPrefab: {fileID: 0}
-  autoCreatePlayer: 1
-  playerSpawnMethod: 0
-  spawnPrefabs: []
-  exceptionsDisconnect: 1
-  snapshotSettings:
-    bufferTimeMultiplier: 2
-    bufferLimit: 32
-    catchupNegativeThreshold: -1
-    catchupPositiveThreshold: 1
-    catchupSpeed: 0.019999999552965164
-    slowdownSpeed: 0.03999999910593033
-    driftEmaDuration: 1
-    dynamicAdjustment: 1
-    dynamicAdjustmentTolerance: 1
-    deliveryTimeEmaDuration: 2
-  evaluationMethod: 0
-  evaluationInterval: 3
-  timeInterpolationGui: 0
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   SlotPrefab: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
   maxSlot: 3
   slotDataList: []
   slotList: []
---- !u!114 &408237594241469477
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 15648695639838303}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 856d5aa8f181aee4b9b543cbd6c9a915, type: 3}
-  m_Type: 0
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
 --- !u!1 &850410041009757550
 GameObject:
   m_ObjectHideFlags: 0
@@ -608,6 +547,7 @@ MonoBehaviour:
   SlotManager: {fileID: 6091544262588832097}
   itemType: 0
   itemList: 0
+  playerId: 0
 --- !u!114 &7628856837493019950
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -906,11 +846,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 57790705428029860, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 82.4
+      value: 62.45
       objectReference: {fileID: 0}
     - target: {fileID: 57790705428029860, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -57.8
+      value: -57.032
       objectReference: {fileID: 0}
     - target: {fileID: 57790705428029860, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -926,7 +866,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_Name
-      value: Slot
+      value: Slot_0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1026,13 +966,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
-      propertyPath: Number
-      value: 2
-      objectReference: {fileID: 0}
     - target: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_Name
-      value: Slot (2)
+      value: Slot_2
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1114,7 +1050,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 57790705428029860, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 209.5
+      value: 226
       objectReference: {fileID: 0}
     - target: {fileID: 57790705428029860, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -1132,13 +1068,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7941047703179793504, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
-      propertyPath: Number
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 9046754500683191129, guid: 344a1c93c7d2d53428b5073fb4aaf034, type: 3}
       propertyPath: m_Name
-      value: Slot (1)
+      value: Slot_1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

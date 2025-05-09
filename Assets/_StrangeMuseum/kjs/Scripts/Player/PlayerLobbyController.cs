@@ -61,15 +61,15 @@ public class PlayerLobbyController : NetworkBehaviour
     {
         CmdSetPlayerName(SteamFriends.GetPersonaName().ToString());
         gameObject.name = "LocalGamePlayer";
-        LobbyController.Instance.FindLocalPlayer();
-        LobbyController.Instance.UpdateLobbyName();
+       // LobbyController.Instance.FindLocalPlayer();
+      //  LobbyController.Instance.UpdateLobbyName();
     }
 
     public override void OnStartClient()
     {
         Manager.GamePlayers.Add(this);
-        LobbyController.Instance.UpdateLobbyName();
-        LobbyController.Instance.UpdatePlayerList();
+     //   LobbyController.Instance.UpdateLobbyName();
+        //LobbyController.Instance.UpdatePlayerList();
     }
 
     public override void OnStopClient()

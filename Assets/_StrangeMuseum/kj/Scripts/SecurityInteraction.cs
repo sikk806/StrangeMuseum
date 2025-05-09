@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
@@ -14,7 +13,7 @@ using UnityEngine.UIElements;
 
 //네트워크 관련 아이템 변수들은 각 아이템 스크립트에서 관리 -> 시도 해보기
 
-public class SecurityInteraction : PlayerController
+public class SecurityInteraction : NetworkBehaviour
 {
     public float LayDistance; //상호작용 레이
 
@@ -54,6 +53,7 @@ public class SecurityInteraction : PlayerController
     public bool isInteracted;
     [SyncVar]
     public bool IsStatue;
+    
 
     public override void OnStartLocalPlayer()
     {
@@ -62,6 +62,7 @@ public class SecurityInteraction : PlayerController
         if (isOwned)  // 내가 소유한 클라이언트라면
         {
             uiInstance = Instantiate(InGameUIPrefab);
+
         }
     }
     public override void OnStopLocalPlayer()
@@ -77,7 +78,7 @@ public class SecurityInteraction : PlayerController
     }
 
 
-    protected override void Start()
+    void Start()
     {
        
         if (isOwned == false)
@@ -85,7 +86,6 @@ public class SecurityInteraction : PlayerController
             return;
         }
 
-        base.Start();
 
         if (isOwned)  // 내가 소유한 클라이언트라면
         {
@@ -96,14 +96,12 @@ public class SecurityInteraction : PlayerController
         }
     }
 
-    protected override void Update()
+    void Update()
     {
         if (isOwned == false)
         {
             return;
         }
-
-        base.Update();
 
         BouncerInteractionRay();
 
@@ -167,20 +165,21 @@ public class SecurityInteraction : PlayerController
             }
             if (hit.collider.CompareTag("Statue"))
             {
-                StatueInterated(true, hit.collider.gameObject);
+                IsStatue = true;
+                StatueSave(hit.collider.gameObject);
             }
         }
         else
         {
             interactableItem = null;
-
             isInteracted = false;
+            IsStatue = false;
 
             if (isInteracted) // 값이 이미 false라면 다시 호출하지 않음
             {
                 isInteracted = false;
             }
-            StatueInterated(false, null);
+            StatueSave(null);
         }
 
     }
@@ -189,6 +188,11 @@ public class SecurityInteraction : PlayerController
         SaveRayItem = obj;
     }
 
+    private void StatueSave(GameObject obj = null)
+    {
+
+        SaveRayStaute = obj;
+    }
     #region 손전등 Light 여부에 따른 조각상 행동 제한
     //private void LightItemRay()
     //{
@@ -241,90 +245,262 @@ public class SecurityInteraction : PlayerController
     //}
     #endregion
 
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1. 에너지 드링크  동기화 과정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    #region 에너지드링크 동기화 부분
     [Command(requiresAuthority = false)]
-    public void RayStatueServerRpc(NetworkObjectReference coverRef)
+    public void EnergyDrinkFunction(NetworkIdentity playerNetIdentity, NetworkIdentity energyDrinkIdentity,
+        int itemLayer, float cooltime, float maxSpeed)
     {
-        if (coverRef.TryGet(out NetworkObject networkObject))
-        {
-            SaveRayStaute = networkObject.gameObject;
-            RayStatueClientRpc(coverRef); // 서버에서 클라이언트로 전달
-        }
+        //1. 호출한 클라이언트만 대상으로 TargetRpc 호출 - UI 삭제 부분
+        NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
+        TargetEnergyDrinkUI(targetConn, energyDrinkIdentity.netId, itemLayer); 
+
+        StartCoroutine(EnergyDrinkCoroutine(playerNetIdentity, energyDrinkIdentity, cooltime, maxSpeed, itemLayer));
+
     }
 
-    [Client]
-    public void RayStatueClientRpc(NetworkObjectReference boxRef)
+    [TargetRpc]
+    private void TargetEnergyDrinkUI(NetworkConnection target, uint energyDrinkNetId, int itemLayer)
     {
-        if (!boxRef.TryGet(out NetworkObject networkObject))
+        try
         {
-            return;
-        }
-
-        SaveRayStaute = networkObject.gameObject;
-    }
-
-    public void StatueInterated(bool value, GameObject statue)
-    {
-        if (statue == null) { IsStatue = false; return; }
-
-
-        IsStatue = true;
-
-        if (statue != null)
-        {
-            if (statue.TryGetComponent(out NetworkObject networkObject))
+            if (NetworkClient.spawned.TryGetValue(energyDrinkNetId, out var energyDrinkIdentity))
             {
 
-                Debug.Log("RayStatueServerRpc 호출");
-                RayStatueServerRpc(networkObject);
+                if (SecurityInGameUI.Instance != null)
+                {
+                    GameObject energyDrink = energyDrinkIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                    SecurityInGameUI.Instance.OnDestroyItemUI(energyDrink, itemLayer);
+                }
+                else
+                {
+                    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
+                }
+
+                Debug.Log("해당 클라이언트에서 에너지 드링크 UI 활성화 완료");
             }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TargetSetSecurityBodyActiveAndUI] Rpc 오류: {ex.Message}\n{ex.StackTrace}");
         }
 
     }
-
-  
-
-    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1. 에너지 드링크 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-
-    public void EnergyDrinkFunction(EnergyDrink energyDrink, float cooltime, float maxSpeed)
+    private IEnumerator EnergyDrinkCoroutine(NetworkIdentity playerNetIdentity, NetworkIdentity energyDrinkIdentity, float cooltime, float maxSpeed,int itemLayer)
     {
-        StartCoroutine(EnergyDrinkFunc(energyDrink, cooltime, maxSpeed));
-    }
 
-    public IEnumerator EnergyDrinkFunc(EnergyDrink energyDrink, float cooltime, float maxSpeed)
-    {     
-        float halfCooldown = cooltime / 2f; // 감소 & 회복을 위한 절반 시간
+        SecurityController seucurityController = playerNetIdentity.GetComponent<SecurityController>();
 
-        float elapsedTime = 0f;
+        float halfCooldown = cooltime / 2f;
+        float elapsed = 0f;
 
-        while (elapsedTime < halfCooldown)
+        // 속도 증가
+        while (elapsed < halfCooldown)
         {
-            elapsedTime += Time.deltaTime;
-            MovementSpeed =
-                Mathf.Lerp(MovementSpeed, maxSpeed, elapsedTime / halfCooldown);
-
-
-
+            elapsed += Time.deltaTime;
+            seucurityController.MovementSpeed = Mathf.Lerp(seucurityController.InitWalkingSpeed, maxSpeed, elapsed / halfCooldown);
             yield return null;
         }
 
         yield return new WaitForSeconds(halfCooldown);
 
-        elapsedTime = 0f;
-        while (elapsedTime < halfCooldown)
+        // 속도 복원
+        elapsed = 0f;
+        while (elapsed < halfCooldown)
         {
-            elapsedTime += Time.deltaTime;
-            MovementSpeed =
-            Mathf.Lerp(MovementSpeed, InitWalkingSpeed, elapsedTime / halfCooldown);
-
+            elapsed += Time.deltaTime;
+            seucurityController.MovementSpeed = Mathf.Lerp(maxSpeed, seucurityController.InitWalkingSpeed, elapsed / halfCooldown);
             yield return null;
         }
 
-
+        // 마무리
+        EnergyDrink energyDrink = energyDrinkIdentity.GetComponent<EnergyDrink>();
         energyDrink.ResetEnergyDrinkServerRpc();
+    }
+    #endregion
 
- 
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 2. 박스 동기화 과정 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    #region 박스 동기화 부분
+
+    [Command(requiresAuthority = false)]
+    public void BoxFunction(NetworkIdentity playerNetIdentity, NetworkIdentity boxIdentity, int itemLayer)
+    {
+        //1. 호출한 클라이언트만 대상으로 TargetRpc 호출 -  - UI 삭제 및 박스 활성화 부분
+        NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
+        TargetSetSecurityBodyActiveAndUI(playerNetIdentity.netId, boxIdentity.netId, itemLayer);
+
+        //2. 모든 클라이언트 시각화
+        BoxClientRpc(playerNetIdentity);
+
+    }
+    [ClientRpc]
+    void BoxClientRpc(NetworkIdentity body)
+    {
+        GameObject securityBody = body.transform.GetChild(2).gameObject;
+        securityBody.SetActive(true); // 서버에서도 활성화 
     }
 
+    [TargetRpc]
+    void TargetSetSecurityBodyActiveAndUI(uint playerNetId, uint boxNetId, int itemLayer)
+    {
+        try
+        {
+            if (NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity) &&
+                NetworkClient.spawned.TryGetValue(boxNetId, out var boxIdentity))
+            {
+                if (playerIdentity.transform.childCount > 2)
+                {
+                    GameObject securityBody = playerIdentity.transform.GetChild(2).gameObject;
+                    securityBody.SetActive(true);
+                }
+
+                if (SecurityInGameUI.Instance != null)
+                {
+                    GameObject box = boxIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                    SecurityInGameUI.Instance.OnDestroyItemUI(box, itemLayer);
+                }
+                else
+                {
+                    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
+                }
+
+                Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TargetSetSecurityBodyActiveAndUI] Rpc 오류: {ex.Message}\n{ex.StackTrace}");
+        }
+    }
+    #endregion
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 3. 피 묻은 천 동기화 과정 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+
+    #region 피 묻은 천 동기화 부분 - 조각상 피 묻은 천 씌움
+
+    [Command(requiresAuthority = false)]
+    public void BloodCoverFunction(NetworkIdentity playerNetIdentity, NetworkIdentity bloodCoverIdentity, int itemLayer)
+    {
+
+        if (RayStatue())
+        {
+            SaveRayStaute.GetComponent<StatueInteraction>().CoverOnOffServerRpc(true, bloodCoverIdentity);
+        }
+
+        NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
+        TargetStatueBloodCover(targetConn, bloodCoverIdentity,playerNetIdentity.netId, bloodCoverIdentity.netId, itemLayer);
+
+   
+
+    }
+
+    [TargetRpc] 
+    void TargetStatueBloodCover(NetworkConnection target, NetworkIdentity bloodCoverIdentity, uint playerNetId, uint bloocCoverNetId, int itemLayer)
+    {
+        try
+        {
+            if (NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity) &&
+                NetworkClient.spawned.TryGetValue(bloocCoverNetId, out var bloodIdentity))
+            {
+                if(RayStatue())
+                {
+                    bloodCoverIdentity.GetComponent<Cover>().isCoverUsing = true;
+
+                    SaveRayStaute.GetComponent<StatueInteraction>().CoverOnOffServerRpc(true, bloodCoverIdentity);
+
+                    if (SecurityInGameUI.Instance != null)
+                    {
+                        GameObject bloodCover = bloodIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                        SecurityInGameUI.Instance.OnDestroyItemUI(bloodCover, itemLayer);
+
+                        Debug.Log("Cover UI 삭제");
+                    }
+                }
+                else
+                {
+                    Debug.Log("에임 미스");
+                }
+
+
+                Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TargetSetSecurityBodyActiveAndUI] Rpc 오류: {ex.Message}\n{ex.StackTrace}");
+        }
+    }
+
+    #endregion
+
+
+    //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 4. 구속구 동기화 과정 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    [Command(requiresAuthority = false)]
+    public void HandCuffFunction(NetworkIdentity playerNetIdentity, NetworkIdentity handCuffIdentity, int itemLayer,float minMoveSpeed, float minRushSpeed,
+        float handCuffCooltime)
+    {
+        if (RayStatue())
+        {
+            SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(handCuffIdentity, minMoveSpeed,minRushSpeed,handCuffCooltime);
+        }
+
+        NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
+        TargetStatueHandCuff(targetConn, handCuffIdentity, playerNetIdentity.netId, handCuffIdentity.netId, itemLayer,minMoveSpeed,minRushSpeed,handCuffCooltime);
+
+
+    }
+
+
+    [TargetRpc]
+    void TargetStatueHandCuff(NetworkConnection target, NetworkIdentity handCUffIdentity, uint playerNetId, uint handCuffNetId, 
+        int itemLayer, float minMoveSpeed,float minRushSpeed, float handCuffCooltime)
+    {
+        try
+        {
+            if (NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity) &&
+                NetworkClient.spawned.TryGetValue(handCuffNetId, out var handCuffIdentity))
+            {
+                if (RayStatue())
+                {
+                    handCUffIdentity.GetComponent<HandCuff>().isHandCuffUsing = true;
+
+                    SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(handCUffIdentity, minMoveSpeed, minRushSpeed, handCuffCooltime);
+
+                    if (SecurityInGameUI.Instance != null)
+                    {
+                        GameObject HandCuff = handCUffIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                        SecurityInGameUI.Instance.OnDestroyItemUI(HandCuff, itemLayer);
+
+                        Debug.Log("Cover UI 삭제");
+                    }
+                }
+                else
+                {
+                    Debug.Log("에임 미스");
+                }
+
+
+                Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"[TargetSetSecurityBodyActiveAndUI] Rpc 오류: {ex.Message}\n{ex.StackTrace}");
+        }
+    }
+
+
+    bool RayStatue()
+    {
+        if(IsStatue && SaveRayStaute != null)
+        {
+            return true;
+        }
+
+        return false;
+    }
     public void PlayFearSound(AudioClip audio)
     {
         SoundManager.Instance.PlaySfx(audio);

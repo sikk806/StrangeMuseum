@@ -55,6 +55,7 @@ public class SecurityController : PlayerController
         }
     }
 
+
     protected override void PlayerMovement()
     {
         base.PlayerMovement();
@@ -88,4 +89,11 @@ public class SecurityController : PlayerController
 
         transform.position = new Vector3(-21f, 2f, 41f);
     }
+
+
+
+
+
+   
+
 }

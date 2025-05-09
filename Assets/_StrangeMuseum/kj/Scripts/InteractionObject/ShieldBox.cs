@@ -17,162 +17,144 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     [SyncVar]
     public bool isBoxUsing;
 
-    //   public NetworkVariable<bool> isBoxUsing = new NetworkVariable<bool>
-    //(false, NetworkVariableReadPermission.Everyone, NetworkVariableWritePermission.Server); //상호작용 오브젝트 레이 충돌 여부
-
-    [SyncVar]
-    public NetworkIdentity storedBoxRef;
-
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.Box;  }
 
     public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Self; }
 
-
     [SerializeField]
     int itemLayer;
 
-
     Slots slots;
 
-    [SerializeField]
-    bool isInteract = false;
-
-    public void Interact()
+    public void Interact() //구속구 상호작용 
     {
-        if(isInteract) { return;  } //이미 해당 아이템을 상호작용 하였는데, 좌클릭을 할 경우 습득하는 경우가 있으므로 방지.
-
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
-        for (int i = 0; i < slots.slotDataList.Count; i++)
+        ItemData.ItemList itemType = ItemData.ItemList.Box;
+
+        if (slots.itemSlotIndex.TryGetValue(itemType, out Slot slot))
         {
-            if (slots.slotDataList[i].IsEmpty)
+            Debug.Log("중복 아이템 슬롯 번호" + slot);
+            AddItem(slots, slot, itemLayer);
+            return;
+        }
+
+        // 수갑이 없는 상태이므로 빈 슬롯 탐색
+        for (int i = 0; i < slots.slotList.Count; i++)
+        {
+            var data = slots.slotList[i];
+
+            Debug.Log("처음 습득 한 아이템 슬롯 번호" + i);
+            if (data.SlotData.IsEmpty && data.SlotData.itemList == ItemData.ItemList.None)
             {
-                isInteract = true;
-
-                
-
-                //슬롯에 아이템 추가하는 부분 및 슬롯 상태 부분
-                slots.slotDataList[i].SlotObj.GetComponent<Slot>().AssignedItem[i] = this.gameObject;
-
-                //UI 표시
-                if (ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box) == false) //인벤토리에 박스 아이템이 하나도 없을 떄
-                {
-
-                    Instantiate(BoxUI, slots.slotDataList[i].SlotObj.transform, false);
-
-                    itemLayer = i;
-
-                    slots.AddItem(this.gameObject, itemLayer);
-
-                }
-
-                //ItemData에 Add하는 부분
-                ItemManager.Instance.AddItem(ItemData.ItemList.Box);
-                slots.slotDataList[itemLayer].SlotObj.GetComponent<Slot>().SlotItemCount(ItemData.ItemList.Box);
-
-                break; 
+                slots.itemSlotIndex[itemType] = data; // 슬롯 인덱스 기억
+                Debug.Log(" 슬롯 인덱스 기억" + slots.itemSlotIndex[itemType]);
+                AddItem(slots, slots.itemSlotIndex[itemType], i);
+                return;
             }
         }
 
     }
 
+
+    private void AddItem(Slots slots, Slot ItemSlot, int itemLayer)
+    {
+
+        this.itemLayer = itemLayer;
+
+        // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
+
+        int availableIndex = GetItemEmptyIndex(ItemSlot);
+
+        if (availableIndex != -1)
+        {
+            this.GetComponent<NetworkItem>().CmdPickUpItem(this.gameObject);
+
+            ItemSlot.AssignedItem[availableIndex] = this.gameObject;
+
+            // UI가 없을 때만 생성
+            if (!ItemManager.Instance.inventoryDictionary.ContainsKey(ItemList.Box))
+            {
+                Debug.Log("슬롯 오브젝트 이름 2 ---- " + ItemSlot.gameObject);
+                Instantiate(BoxUI, ItemSlot.transform, false);
+                slots.AddItem(this.gameObject, ItemSlot);
+            }
+
+            ItemManager.Instance.AddItem(ItemData.ItemList.Box);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Box);
+
+        }
+    }
+    public int GetItemEmptyIndex(Slot slot)
+    {
+        for (int i = 0; i < slot.AssignedItem.Length; i++)
+        {
+            if (slot.AssignedItem[i] == null)
+            {
+                return i;
+            }
+        }
+        return -1; // 모든 인덱스가 차있으면 -1
+    }
+
+
+    void Update()
+    {
+       
+        if (Input.GetKeyDown(KeyCode.F1)) // 예를 들어 F1 키를 눌렀을 때
+        {
+            Debug.Log("현재 서버에 연결된 클라이언트들:");
+
+            foreach (var connection in NetworkServer.connections)
+            {
+                // connection.Key는 클라이언트의 ID, connection.Value는 NetworkConnectionToClient
+                Debug.Log($"Client ID: {connection.Key}, Connection Info: {connection.Value}");
+                RpcSendConnectionInfo(connection.Key);
+            }
+        }
+
+    }
+
+    [ClientRpc]
+    private void RpcSendConnectionInfo(int clientId)
+    {
+        Debug.Log("클라이언트로 전달된 서버 연결 정보: " + clientId);
+    }
 
     [Command(requiresAuthority = false)]
     public void UseServerRpc(uint clientId)
     {
-        Debug.Log("UseServerRpc 실행 " + (int)clientId);
+        Debug.Log("박스를 사용한 경비원의 아이디는 " + clientId + " 입니다");
 
-        if (NetworkServer.connections.ContainsKey((int)clientId))
+        NetworkIdentity boxNetworkIdentity = GetComponent<NetworkIdentity>();
+
+        if (NetworkServer.connections.TryGetValue((int)clientId, out NetworkConnectionToClient connection))
         {
-            Debug.Log("0");
+            NetworkIdentity playerNetObj = connection.identity;
 
-            NetworkConnectionToClient connection = NetworkServer.connections[(int)clientId];
-            NetworkIdentity playerNetObj = connection.identity;  // 클라이언트의 PlayerObject
-
-            if (playerNetObj != null)
+            if (playerNetObj == null)
             {
-                bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
-                securityDie = playerNetObj.GetComponent<SecurityDie>();
-
-                Debug.Log("1");
-
-                if (bouncerIntercation != null)
-                {
-                    Debug.Log("2");
-
-                    if (isBoxUsing == true) return;
-
-
-                    GameObject securityBody = bouncerIntercation.transform.GetChild(2).gameObject;
-                    if (securityBody != null)
-                    {
-                        Debug.Log("3");
-                        securityBody.SetActive(true);
-
-                        if (SecurityInGameUI.Instance != null)
-                        {
-                            SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
-                        }
-                    }
-
-                    NetworkIdentity objRef = GetComponent<NetworkIdentity>();
-
-                    BoxInteracted(objRef);
-                    BoxActiveClientRpc(true, clientId);
-                }
+                Debug.LogWarning("클라이언트의 PlayerObject (connection.identity)가 null입니다.");
+                return;
             }
+
+            bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
+            securityDie = playerNetObj.GetComponent<SecurityDie>();
+
+            isBoxUsing = true;
+
+            bouncerIntercation.BoxFunction(playerNetObj, boxNetworkIdentity, itemLayer);
+
+            securityDie.BoxSet(boxNetworkIdentity);
+
+         
         }
-    }
-
-    [ClientRpc]
-    private void BoxActiveClientRpc(bool isActive, uint clientId)
-    {
-      //  if (NetworkManager.Singleton.LocalClientId != clientId) return; // 해당 클라이언트에서만 실행
-
-        if (NetworkServer.connections.ContainsKey((int)clientId))
+        else
         {
-            NetworkConnectionToClient connection = NetworkServer.connections[(int)clientId];
-            NetworkIdentity playerNetObj = connection.identity;  // 클라이언트의 PlayerObject
-
-            if (playerNetObj != null)
-            {
-              
-
-                bouncerIntercation = playerNetObj.GetComponent<SecurityInteraction>();
-
-                securityDie = playerNetObj.GetComponent<SecurityDie>();
-
-                if (bouncerIntercation != null)
-                {
-                    GameObject securityBody = bouncerIntercation.transform.GetChild(2).gameObject;
-
-                    if (isActive)
-                    {
-                        if (SecurityInGameUI.Instance != null)
-                        {
-                            SecurityInGameUI.Instance.OnDestroyItemUI(this.gameObject, itemLayer);
-                        }
-                    }
-
-                    securityBody.SetActive(isActive);
-                }
-            }
+            Debug.LogWarning("이 경비원은 접속하지 않은 유저입니다");
         }
     }
 
-    public void BoxInteracted(NetworkIdentity box)
-    {
-        if (isServer == false) { return; }
-
-        isBoxUsing = true; //박스 사용 true
-
-        if (box.TryGetComponent(out NetworkIdentity networkObject))
-        {
-            BoxServerRpc(networkObject); //박스 객체 저장
-            securityDie.BoxSet(networkObject);
-        }
-
-    }
 
     public void NotifyClientBoxRemoved()
     {
@@ -180,7 +162,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         {
             Debug.Log("경비원 박스 입고 있었음");
 
-            if (NetworkClient.spawned.TryGetValue(netId,out NetworkIdentity networkObject))
+            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkObject))
             {
                 Debug.Log("결국 경비원 박스 벗음");
                 StartCoroutine(DelayBoxing()); //무적 시간
@@ -210,61 +192,11 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
 
     [Command(requiresAuthority = false)]
-    public void BoxServerRpc(NetworkIdentity boxRef)
-    {
-        if (boxRef == null) return;
-
-        storedBoxRef = boxRef;  // 서버에서 저장
-        BoxClientRpc(boxRef.netId);   // netId만 전달
-    }
-
-    [ClientRpc]
-    public void BoxClientRpc(uint netId)
-    {
-        if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity boxRef))
-        {
-            storedBoxRef = boxRef; // 클라이언트에서도 저장
-            Debug.Log($"클라이언트에서 받은 박스 오브젝트: {boxRef.name}");
-        }
-        else
-        {
-            Debug.LogWarning($"netId {netId}를 가진 오브젝트를 찾을 수 없습니다.");
-        }
-    }
-
-
-    [Command(requiresAuthority = false)]
-    private void BoxOffServerRpc()
-    {
-        if (!isServer) return;
-
-        BoxOff(); // 서버에서 BoxOff 처리
-
-        BoxOffClientRpc(); // 클라이언트에게 BoxOff 작업을 전달
-    }
-
-    [ClientRpc]
-    private void BoxOffClientRpc()
-    {
-        if (isServer) return;
-
-        BoxOff(); // 클라이언트에서 BoxOff 처리
-    }
-
-    private void BoxOff()
-    {
-        GameObject securityBody = bouncerIntercation.transform.GetChild(2).gameObject;
-        securityBody.SetActive(false);
-    }
-
-    [Command(requiresAuthority = false)]
     public void ResetInteractServerRpc()
     {
         securityDie = null;
         itemLayer = 0;
         bouncerIntercation = null;
-
-        BoxOffServerRpc();
 
         GetComponent<NetworkItem>().DestroyItem(this.gameObject);
     }

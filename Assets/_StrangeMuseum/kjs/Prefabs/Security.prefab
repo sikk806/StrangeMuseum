@@ -209,7 +209,6 @@ GameObject:
   - component: {fileID: 5788149326108332273}
   - component: {fileID: -8044183548196095195}
   - component: {fileID: 489393211912181416}
-  - component: {fileID: 6913776565164800456}
   m_Layer: 0
   m_Name: Security
   m_TagString: Untagged
@@ -387,33 +386,17 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  MovementSpeed: 5
-  JumpForce: 3
-  Gravity: 9.8
-  playerCamera: {fileID: 0}
-  MouseSensitivity: 2
-  SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
-  CharacterMesh: {fileID: 1920704410214826984}
---- !u!114 &6913776565164800456
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1869673327727865973}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 013c455c29409e84fb78452bc3fcbba9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
   ConnectionID: 0
   PlayerIdNumber: 0
   PlayerSteamId: 0
   PlayerName: 
-  Ready: 0
+  MovementSpeed: 5
+  InitWalkingSpeed: 0
+  JumpForce: 3
+  Gravity: 9.8
+  MouseSensitivity: 2
+  SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
+  CharacterMesh: {fileID: 1920704410214826984}
 --- !u!1 &1902084900125519583
 GameObject:
   m_ObjectHideFlags: 0

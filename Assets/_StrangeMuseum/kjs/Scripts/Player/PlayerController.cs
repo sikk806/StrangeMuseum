@@ -14,12 +14,18 @@ public enum PlayerState
     Freeze
 }
 
-[RequireComponent(typeof(NetworkAnimator))]
 public class PlayerController : NetworkBehaviour
 {
+    [SyncVar] public int ConnectionID;
+    [SyncVar] public int PlayerIdNumber;
+    [SyncVar] public ulong PlayerSteamId;
+    [SyncVar] public string PlayerName;
+
     //public Zone
     [Header("MovementSetting")]
+    [SyncVar]
     public float MovementSpeed = 5f;// default : 5f
+    [SyncVar]
     public float InitWalkingSpeed;// default : 5f
 
     public float JumpForce = 3f;
@@ -51,6 +57,8 @@ public class PlayerController : NetworkBehaviour
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+
+        InitWalkingSpeed = MovementSpeed;
         // PlayerInteraction 합쳐야 함.
     }
 
@@ -66,7 +74,7 @@ public class PlayerController : NetworkBehaviour
         playerCamera = Camera.main.transform;
         playerCamera.GetChild(0).gameObject.SetActive(true);
 
-        InitWalkingSpeed = MovementSpeed;
+        
 
         Debug.Log("커서 ");
         Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
