@@ -4,6 +4,7 @@ using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using static UnityEditor.Timeline.Actions.MenuPriority;
 
 public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 {
@@ -83,6 +84,8 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
         }
        // SelectSlot(0); //처음엔 0번
     }
+
+    public bool isAddItem; //첫 아이템을 추가했을 때, 일회성임
     public void AddItem(GameObject item, Slot slot)
     {
         IUsableItem usableItem = item.GetComponent<IUsableItem>();
@@ -100,10 +103,36 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
             }
 
+            if (slot == slotList[0]) //회전하는 슬롯인 슬롯 리스트의 0번째 슬롯만 사이즈 세팅
+            {
+                SlotInitSizeSet(slot);
+            }
+
+
         }
     }
 
+    private void SlotInitSizeSet(Slot slot)
+    {
+        RectTransform slotRect = slot.GetComponent<RectTransform>();
+        RectTransform child0 = slot.transform.GetChild(0).GetComponent<RectTransform>();
+        int slotChlidCount = slot.transform.childCount;
+        slotRect.sizeDelta = new Vector2(124f, 117f);
 
+        // 자식 0번째 오브젝트만 사이즈 조절
+        if (slotChlidCount > 0)
+        {
+
+            child0.anchoredPosition = new Vector2(42, -38f); // 위치 이동
+            child0.sizeDelta = new Vector2(39f, 37f);
+            if (slotChlidCount == 2)
+            {
+                RectTransform child1 = slot.transform.GetChild(1).GetComponent<RectTransform>();
+                child1.sizeDelta = new Vector2(118f, 115f);
+            }
+
+        }
+    }
     public void SelectSlot(int index)
     {
         slotList[SelectedIndex].GetComponent<Slot>().SlotDefalutImage();
@@ -199,28 +228,41 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     private void SlotSizeSet(Slot slot , RectTransform slotRect, int i)
     {
+        RectTransform child0 = slot.transform.GetChild(0).GetComponent<RectTransform>();
 
+        int slotChlidCount = slot.transform.childCount;
         if (i == 0)
         {
             slotRect.sizeDelta = new Vector2(124f, 117f);
 
             // 자식 0번째 오브젝트만 사이즈 조절
-            if (slot.transform.childCount > 0)
+            if (slotChlidCount > 0)
             {
-                RectTransform child0 = slot.transform.GetChild(0).GetComponent<RectTransform>();
+              
                 child0.anchoredPosition = new Vector2(42, -38f); // 위치 이동
                 child0.sizeDelta = new Vector2(39f, 37f);
+                if(slotChlidCount == 2)
+                {
+                    RectTransform child1 = slot.transform.GetChild(1).GetComponent<RectTransform>();
+                    child1.sizeDelta = new Vector2(118f, 115f);
+                }
+
             }
         }
         else
         {
             slotRect.sizeDelta = new Vector2(85f, 85f);
 
-            if (slot.transform.childCount > 0)
+            if (slotChlidCount > 0)
             {
-                RectTransform child0 = slot.transform.GetChild(0).GetComponent<RectTransform>();
                 child0.anchoredPosition = new Vector2(25f, -26f);
                 child0.sizeDelta = new Vector2(26f, 25f);
+                if (slotChlidCount == 2)
+                {
+                    RectTransform child1 = slot.transform.GetChild(1).GetComponent<RectTransform>();
+                    child1.sizeDelta = new Vector2(75f, 75f);
+                }
+
             }
         }
     }
