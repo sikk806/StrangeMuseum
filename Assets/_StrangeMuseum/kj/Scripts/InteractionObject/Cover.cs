@@ -2,6 +2,7 @@ using Mirror;
 using UnityEngine;
 using static ItemData;
 using UnityEngine.UIElements;
+using System.Collections;
 
 
 public class Cover : NetworkBehaviour, IInteractable, IUsableItem
@@ -25,11 +26,19 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     public bool isCoverUsing;
 
 
-    public GameObject CoverGameObject;
 
+    [SerializeField]
+    private GameObject CoverInStatue;
+
+   
+    
     Slot slot;
+
     public void Interact() //구속구 상호작용 
     {
+
+        CoverInStatue.GetComponent<CoverInStatue>().PlayMoveEffect();
+
         Slots slots = SecurityInGameUI.Instance.SlotManager;
 
         ItemData.ItemList itemType = ItemData.ItemList.Cover;
@@ -58,6 +67,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
     }
 
+ 
     private void AddItem(Slots slots, Slot ItemSlot, int itemLayer)
     {
 

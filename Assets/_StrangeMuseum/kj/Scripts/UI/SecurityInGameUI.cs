@@ -71,7 +71,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
         InteractionUI.SetActive(false);
 
-        // 모든 경비원 오브젝트를 찾고, 로컬 클라이언트 ID와 비교하여 해당 경비원의 Interaction을 가져옴
         GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
         int SecuriyCount = 0;

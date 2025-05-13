@@ -16,6 +16,7 @@ TagManager:
   - metal
   - Cover
   - Pen
+  - StauteTable
   layers:
   - Default
   - TransparentFX

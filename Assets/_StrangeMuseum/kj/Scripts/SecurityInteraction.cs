@@ -384,16 +384,8 @@ public class SecurityInteraction : NetworkBehaviour
     public void BloodCoverFunction(NetworkIdentity playerNetIdentity, NetworkIdentity bloodCoverIdentity, int itemLayer)
     {
 
-        if (RayStatue())
-        {
-            SaveRayStaute.GetComponent<StatueInteraction>().CoverOnOffServerRpc(true, bloodCoverIdentity);
-        }
-
         NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
-        TargetStatueBloodCover(targetConn, bloodCoverIdentity,playerNetIdentity.netId, bloodCoverIdentity.netId, itemLayer);
-
-   
-
+        TargetStatueBloodCover(targetConn, bloodCoverIdentity, playerNetIdentity.netId, bloodCoverIdentity.netId, itemLayer);
     }
 
     [TargetRpc] 
@@ -401,31 +393,43 @@ public class SecurityInteraction : NetworkBehaviour
     {
         try
         {
-            if (NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity) &&
-                NetworkClient.spawned.TryGetValue(bloocCoverNetId, out var bloodIdentity))
+            if (!NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity))
             {
-                if(RayStatue())
-                {
-                    bloodCoverIdentity.GetComponent<Cover>().isCoverUsing = true;
-
-                    SaveRayStaute.GetComponent<StatueInteraction>().CoverOnOffServerRpc(true, bloodCoverIdentity);
-
-                    if (SecurityInGameUI.Instance != null)
-                    {
-                        GameObject bloodCover = bloodIdentity.gameObject; //.gameObject 로 GameObject로 변환
-                        SecurityInGameUI.Instance.OnDestroyItemUI(bloodCover, itemLayer);
-
-                        Debug.Log("Cover UI 삭제");
-                    }
-                }
-                else
-                {
-                    Debug.Log("에임 미스");
-                }
-
-
-                Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
+                Debug.LogError("playerNetId로 찾은 NetworkIdentity가 없습니다.");
+                return;
             }
+
+            if (!NetworkClient.spawned.TryGetValue(bloocCoverNetId, out var bloodIdentity))
+            {
+                Debug.LogError("bloocCoverNetId로 찾은 NetworkIdentity가 없습니다.");
+                return;
+            }
+
+            var cover = bloodCoverIdentity.GetComponent<Cover>();
+            if (cover == null)
+            {
+                Debug.LogError("bloodCoverIdentity에 Cover 컴포넌트가 없습니다.");
+                return;
+            }
+            cover.isCoverUsing = true;
+
+            var statue = SaveRayStaute.GetComponent<StatueInteraction>();
+            if (statue == null)
+            {
+                Debug.LogError("SaveRayStaute에 StatueInteraction 컴포넌트가 없습니다.");
+                return;
+            }
+
+            statue.CoverOnOffServerRpc(true, bloodCoverIdentity);
+
+            if (SecurityInGameUI.Instance != null)
+            {
+                GameObject bloodCover = bloodIdentity.gameObject;
+                SecurityInGameUI.Instance.OnDestroyItemUI(bloodCover, itemLayer);
+                Debug.Log("Cover UI 삭제");
+            }
+
+            Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
         }
         catch (System.Exception ex)
         {
@@ -435,8 +439,8 @@ public class SecurityInteraction : NetworkBehaviour
 
     #endregion
 
-
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 4. 구속구 동기화 과정 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+    #region 구속구 동기화 부분
     [Command(requiresAuthority = false)]
     public void HandCuffFunction(NetworkIdentity playerNetIdentity, NetworkIdentity handCuffIdentity, int itemLayer,float minMoveSpeed, float minRushSpeed,
         float handCuffCooltime)
@@ -491,6 +495,7 @@ public class SecurityInteraction : NetworkBehaviour
         }
     }
 
+    #endregion
 
     bool RayStatue()
     {

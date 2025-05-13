@@ -68,7 +68,6 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
     private void AddItem(Slots slots, Slot ItemSlot , int itemLayer)
     {
-
         this.itemLayer = itemLayer;
 
        // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
@@ -109,7 +108,8 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
 
     [Command(requiresAuthority = false)]
     public void UseServerRpc(uint clientId)
-    {
+    {      
+
         NetworkIdentity handCuffIdentity = GetComponent<NetworkIdentity>();
 
         if (NetworkServer.connections.TryGetValue((int)clientId, out NetworkConnectionToClient connection))

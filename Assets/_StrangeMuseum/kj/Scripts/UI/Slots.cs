@@ -133,24 +133,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
         }
     }
-    public void SelectSlot(int index)
-    {
-        slotList[SelectedIndex].GetComponent<Slot>().SlotDefalutImage();
 
-        //slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotDefalutImage();
-
-        SelectedIndex = index;
-
-        slotList[SelectedIndex].GetComponent<Slot>().SlotSelectImage();
-
-       // slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
-    }
-
-
-    public SlotData GetSelectedData()
-    {
-        return slotDataList[SelectedIndex];
-    }
 
     private SecurityInteraction securityInteraction;
 
@@ -158,10 +141,6 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
     public void UseSelectedItem(uint id)
     {
        
-
-        SlotData data = GetSelectedData();
-
-        if (data.IsEmpty) return;
 
 
         Slot currentSlot = slotList[0].GetComponent<Slot>();
@@ -219,6 +198,8 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
             RectTransform slotRect = slot.GetComponent<RectTransform>();
 
+          
+
             SlotSizeSet(slot, slotRect, i);
         }
 
@@ -233,6 +214,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
         int slotChlidCount = slot.transform.childCount;
         if (i == 0)
         {
+            slot.SlotSelectImage();
             slotRect.sizeDelta = new Vector2(124f, 117f);
 
             // 자식 0번째 오브젝트만 사이즈 조절
@@ -251,6 +233,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
         }
         else
         {
+            slot.SlotDefalutImage();
             slotRect.sizeDelta = new Vector2(85f, 85f);
 
             if (slotChlidCount > 0)
