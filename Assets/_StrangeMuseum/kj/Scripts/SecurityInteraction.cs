@@ -193,57 +193,7 @@ public class SecurityInteraction : NetworkBehaviour
 
         SaveRayStaute = obj;
     }
-    #region 손전등 Light 여부에 따른 조각상 행동 제한
-    //private void LightItemRay()
-    //{
-    //    Vector3 lightPosition = transform.position + Vector3.up * 0.75f; // 손전등 위치를 조금 위로 올림
-    //    Vector3 lightDirection = transform.forward; // 손전등 방향
-    //    float lightRange = LightLayDistance; // 손전등 최대 거리
-    //    float lightAngle = Flashlight.spotAngle * 0.5f; // Spot Light 반각
 
-    //    Collider[] hitColliders = Physics.OverlapSphere(lightPosition, lightRange, LayerMask.GetMask("Statue"));
-
-    //    Debug.DrawRay(lightPosition, lightRange * lightDirection, Color.blue, 0.1f);
-
-    //    foreach (Collider col in hitColliders)
-    //    {
-    //        if (col.CompareTag("Statue") && isLight) // 손전등이 켜진 상태
-    //        {
-    //            Vector3 toStatue = (col.transform.position - lightPosition).normalized;
-    //            float distanceToStatue = Vector3.Distance(lightPosition, col.transform.position);
-    //            float angle = Vector3.Angle(lightDirection, toStatue); // 손전등 중심축과의 각도 비교
-
-
-    //            Debug.DrawRay(lightPosition, toStatue, Color.red, 0.1f);
-
-    //            if (angle < lightAngle) // 원뿔 범위 내에 있는 경우
-    //            {
-    //                if (Physics.Raycast(lightPosition, toStatue, out RaycastHit hit, distanceToStatue, LayerMask.GetMask("Default")))
-    //                {
-    //                    Debug.Log("벽에 가려짐 - Idle");
-    //                    col.GetComponent<StatueController>().SetPlayerState(PlayerState.Idle);
-    //                }
-    //                else
-    //                {
-    //                    Debug.Log("벽에 가려지지 않음 - Freeze");
-    //                    col.GetComponent<StatueController>().SetPlayerState(PlayerState.Freeze);
-    //                }
-
-    //            }
-    //            else
-    //            {
-    //                Debug.Log("Idle (각도 벗어남)");
-    //                col.GetComponent<StatueController>().SetPlayerState(PlayerState.Idle);
-    //            }
-    //        }
-    //        else if (col.CompareTag("Statue") && !isLight) // 손전등이 꺼진 상태
-    //        {
-    //            Debug.Log("손전등 꺼서 Idle");
-    //            col.GetComponent<StatueController>().SetPlayerState(PlayerState.Idle);
-    //        }
-    //    }
-    //}
-    #endregion
 
 
     //@@@@@@@@@@@@@@@@@@@@@@@@@@@@ 1. 에너지 드링크  동기화 과정@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -254,7 +204,7 @@ public class SecurityInteraction : NetworkBehaviour
     {
         //1. 호출한 클라이언트만 대상으로 TargetRpc 호출 - UI 삭제 부분
         NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
-        TargetEnergyDrinkUI(targetConn, energyDrinkIdentity.netId, itemLayer); 
+        TargetEnergyDrinkUI(targetConn, energyDrinkIdentity.netId, itemLayer);
 
         StartCoroutine(EnergyDrinkCoroutine(playerNetIdentity, energyDrinkIdentity, cooltime, maxSpeed, itemLayer));
 
@@ -289,6 +239,7 @@ public class SecurityInteraction : NetworkBehaviour
     }
     private IEnumerator EnergyDrinkCoroutine(NetworkIdentity playerNetIdentity, NetworkIdentity energyDrinkIdentity, float cooltime, float maxSpeed,int itemLayer)
     {
+
 
         SecurityController seucurityController = playerNetIdentity.GetComponent<SecurityController>();
 

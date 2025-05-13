@@ -79,7 +79,7 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             SecuriyCount++;
 
-            playerId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
+            playerId = (uint)bouncer.GetComponent<PlayerController>().ConnectionID;
 
             Debug.Log("경비원   " + SecuriyCount + "의 접속 ID" + playerId);
 
@@ -355,7 +355,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
         Transform slotTransform = SlotManager.slotDataList[slotIndex].SlotObj.transform;
 
-        Transform itemUITransform = slotTransform.GetChild(2);
+        Transform itemUITransform = slotTransform.GetChild(1);
 
         // 자식 객체가 이미 삭제되었는지 확인
         if (itemUITransform != null && itemUITransform.gameObject != null)
@@ -367,7 +367,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
             ItemManager.Instance.RemoveItem(itemList);
 
-            if (InventoryCheck(itemList)) //해당 아이템이 하나도 존재하지 않으면
+            if (InventoryCheck(itemList)) //해당 아이템이 존재한다면
             {
 
                 SlotManager.slotDataList[slotIndex].itemList = itemList;
@@ -375,7 +375,7 @@ public class SecurityInGameUI : NetworkBehaviour
                 SlotManager.slotDataList[slotIndex].IsEmpty = false; // 빈 슬롯 됨
 
             }
-            else
+            else //존재하지 않는다면
             {
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
 

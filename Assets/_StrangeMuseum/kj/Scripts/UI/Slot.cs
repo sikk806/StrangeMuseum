@@ -51,7 +51,16 @@ public class Slot : MonoBehaviour
             }
         }
 
-        ItemCountText.text = count.ToString(); // 항상 표시
+        if(ItemManager.Instance.inventoryDictionary.ContainsKey(item))
+        {
+            ItemCountText.text = count.ToString(); // 항상 표시
+        }
+        else
+        {
+            ItemCountText.text = " ";
+        }
+    
+
     }
 
 
