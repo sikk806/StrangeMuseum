@@ -24,7 +24,10 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
     {
         return ItemData.ItemUseType.Self;
     }
-
+    public int GetItemlayer()
+    {
+        return itemLayer;
+    }
     public void Interact() //구속구 상호작용 
     {
         Slots slots = SecurityInGameUI.Instance.SlotManager;
@@ -81,7 +84,7 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
-            ItemSlot.SlotItemCount(ItemData.ItemList.Pen);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Pen,true);
 
 
         }

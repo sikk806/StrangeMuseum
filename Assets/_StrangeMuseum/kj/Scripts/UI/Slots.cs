@@ -140,9 +140,6 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public void UseSelectedItem(uint id)
     {
-       
-
-
         Slot currentSlot = slotList[0].GetComponent<Slot>();
 
         // 사용 가능한 첫 번째 아이템 찾기
@@ -161,11 +158,25 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
         IUsableItem usableItem = usableObj.GetComponent<IUsableItem>();
 
+        NetworkIdentity itemIdentity = usableObj.GetComponent<NetworkIdentity>();
 
         if (usableItem != null)
         {
             Debug.Log("사용 메서드 실행 " + id);
             usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
+
+            if (SecurityInGameUI.Instance != null)
+            {
+                GameObject item = itemIdentity.gameObject; //.gameObject 로 GameObject로 변환
+
+                int itemLayer = usableItem.GetItemlayer();
+
+                SecurityInGameUI.Instance.OnDestroyItemUI(item, itemLayer);
+
+            }
+
+            currentSlot.SlotItemCount(usableItem.GetItemList(),false);
+
             currentSlot.AssignedItem[usableIndex] = null;
 
             for (int j = usableIndex; j < currentSlot.AssignedItem.Length - 1; j++)

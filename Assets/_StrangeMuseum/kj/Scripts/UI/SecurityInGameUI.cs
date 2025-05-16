@@ -352,7 +352,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public void OnDestroyItemUI(GameObject item, int slotIndex)
     {
-
         Transform slotTransform = SlotManager.slotDataList[slotIndex].SlotObj.transform;
 
         Transform itemUITransform = slotTransform.GetChild(1);
@@ -369,7 +368,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
             if (InventoryCheck(itemList)) //해당 아이템이 존재한다면
             {
-
                 SlotManager.slotDataList[slotIndex].itemList = itemList;
                 SlotManager.slotDataList[slotIndex].itemUseType = itemType;
                 SlotManager.slotDataList[slotIndex].IsEmpty = false; // 빈 슬롯 됨
@@ -379,7 +377,6 @@ public class SecurityInGameUI : NetworkBehaviour
             {
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
 
-
                 SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
                 SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;
                 SlotManager.slotDataList[slotIndex].IsEmpty = true; // 빈 슬롯 됨
@@ -387,9 +384,6 @@ public class SecurityInGameUI : NetworkBehaviour
                 SlotManager.itemSlotIndex.Remove(itemList); // 슬롯 인덱스 해제
             }
 
-            Slot slot = SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>();
-
-            slot.SlotItemCount(itemList);
         }
     
 

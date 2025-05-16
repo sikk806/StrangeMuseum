@@ -34,6 +34,10 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
         return ItemData.ItemUseType.Self;
     }
 
+    public int GetItemlayer()
+    {
+        return itemLayer;
+    }
     Slot slot;
 
     public void Interact() //구속구 상호작용 
@@ -91,7 +95,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);
-            ItemSlot.SlotItemCount(ItemData.ItemList.EnergyDrink);
+            ItemSlot.SlotItemCount(ItemData.ItemList.EnergyDrink,true);
 
 
         }

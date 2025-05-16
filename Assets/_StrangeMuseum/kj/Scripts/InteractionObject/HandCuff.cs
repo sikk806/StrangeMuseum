@@ -28,7 +28,10 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
     [SyncVar]
     public bool isHandCuffUsing;
 
-
+    public int GetItemlayer()
+    {
+        return itemLayer;
+    }
 
     public ItemData.ItemList GetItemList() { return ItemData.ItemList.HandCuff; }
    
@@ -45,7 +48,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
         if (slots.itemSlotIndex.TryGetValue(itemType, out Slot slot))
         {
             Debug.Log("중복 아이템 슬롯 번호" + slot);
-            AddItem(slots, slot, itemLayer);
+            AddItem(slots, slot);
             return;
         }
 
@@ -59,18 +62,18 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
             {
                 slots.itemSlotIndex[itemType] = data; // 슬롯 인덱스 기억
                 Debug.Log(" 슬롯 인덱스 기억" + slots.itemSlotIndex[itemType]);
-                AddItem(slots, slots.itemSlotIndex[itemType] , i);
+                AddItem(slots, slots.itemSlotIndex[itemType]);
                 return;
             }
         }
 
     }
 
-    private void AddItem(Slots slots, Slot ItemSlot , int itemLayer)
+    private void AddItem(Slots slots, Slot ItemSlot)
     {
-        this.itemLayer = itemLayer;
+        itemLayer = ItemSlot.SlotData.OriginalIndex;
 
-       // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
+        // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
 
         int availableIndex = GetItemEmptyIndex(ItemSlot);
 
@@ -89,7 +92,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
-            ItemSlot.SlotItemCount(ItemData.ItemList.HandCuff);
+            ItemSlot.SlotItemCount(ItemData.ItemList.HandCuff,true);
 
            
         }

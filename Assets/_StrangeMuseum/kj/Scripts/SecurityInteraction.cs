@@ -218,15 +218,15 @@ public class SecurityInteraction : NetworkBehaviour
             if (NetworkClient.spawned.TryGetValue(energyDrinkNetId, out var energyDrinkIdentity))
             {
 
-                if (SecurityInGameUI.Instance != null)
-                {
-                    GameObject energyDrink = energyDrinkIdentity.gameObject; //.gameObject 로 GameObject로 변환
-                    SecurityInGameUI.Instance.OnDestroyItemUI(energyDrink, itemLayer);
-                }
-                else
-                {
-                    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
-                }
+                //if (SecurityInGameUI.Instance != null)
+                //{
+                //    GameObject energyDrink = energyDrinkIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                //    SecurityInGameUI.Instance.OnDestroyItemUI(energyDrink, itemLayer);
+                //}
+                //else
+                //{
+                //    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
+                //}
 
                 Debug.Log("해당 클라이언트에서 에너지 드링크 UI 활성화 완료");
             }
@@ -307,15 +307,15 @@ public class SecurityInteraction : NetworkBehaviour
                     securityBody.SetActive(true);
                 }
 
-                if (SecurityInGameUI.Instance != null)
-                {
-                    GameObject box = boxIdentity.gameObject; //.gameObject 로 GameObject로 변환
-                    SecurityInGameUI.Instance.OnDestroyItemUI(box, itemLayer);
-                }
-                else
-                {
-                    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
-                }
+                //if (SecurityInGameUI.Instance != null)
+                //{
+                //    GameObject box = boxIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                //    SecurityInGameUI.Instance.OnDestroyItemUI(box, itemLayer);
+                //}
+                //else
+                //{
+                //    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
+                //}
 
                 Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
             }
@@ -373,12 +373,12 @@ public class SecurityInteraction : NetworkBehaviour
 
             statue.CoverOnOffServerRpc(true, bloodCoverIdentity);
 
-            if (SecurityInGameUI.Instance != null)
-            {
-                GameObject bloodCover = bloodIdentity.gameObject;
-                SecurityInGameUI.Instance.OnDestroyItemUI(bloodCover, itemLayer);
-                Debug.Log("Cover UI 삭제");
-            }
+            //if (SecurityInGameUI.Instance != null)
+            //{
+            //    GameObject bloodCover = bloodIdentity.gameObject;
+            //    SecurityInGameUI.Instance.OnDestroyItemUI(bloodCover, itemLayer);
+            //    Debug.Log("Cover UI 삭제");
+            //}
 
             Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
         }
@@ -396,15 +396,11 @@ public class SecurityInteraction : NetworkBehaviour
     public void HandCuffFunction(NetworkIdentity playerNetIdentity, NetworkIdentity handCuffIdentity, int itemLayer,float minMoveSpeed, float minRushSpeed,
         float handCuffCooltime)
     {
-        if (RayStatue())
-        {
-            SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(handCuffIdentity, minMoveSpeed,minRushSpeed,handCuffCooltime);
-        }
 
         NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
         TargetStatueHandCuff(targetConn, handCuffIdentity, playerNetIdentity.netId, handCuffIdentity.netId, itemLayer,minMoveSpeed,minRushSpeed,handCuffCooltime);
 
-
+       // SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(handCuffIdentity, minMoveSpeed, minRushSpeed, handCuffCooltime);
     }
 
 
@@ -417,25 +413,17 @@ public class SecurityInteraction : NetworkBehaviour
             if (NetworkClient.spawned.TryGetValue(playerNetId, out var playerIdentity) &&
                 NetworkClient.spawned.TryGetValue(handCuffNetId, out var handCuffIdentity))
             {
-                if (RayStatue())
-                {
-                    handCUffIdentity.GetComponent<HandCuff>().isHandCuffUsing = true;
+                handCUffIdentity.GetComponent<HandCuff>().isHandCuffUsing = true;
 
-                    SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(handCUffIdentity, minMoveSpeed, minRushSpeed, handCuffCooltime);
+                SaveRayStaute.GetComponent<StatueInteraction>().HandCuffInteracted(handCUffIdentity, minMoveSpeed, minRushSpeed, handCuffCooltime);
 
-                    if (SecurityInGameUI.Instance != null)
-                    {
-                        GameObject HandCuff = handCUffIdentity.gameObject; //.gameObject 로 GameObject로 변환
-                        SecurityInGameUI.Instance.OnDestroyItemUI(HandCuff, itemLayer);
+                //if (SecurityInGameUI.Instance != null)
+                //{
+                //    GameObject HandCuff = handCUffIdentity.gameObject; //.gameObject 로 GameObject로 변환
+                //    SecurityInGameUI.Instance.OnDestroyItemUI(HandCuff, itemLayer);
 
-                        Debug.Log("Cover UI 삭제");
-                    }
-                }
-                else
-                {
-                    Debug.Log("에임 미스");
-                }
-
+                //    Debug.Log("Cover UI 삭제");
+                //}
 
                 Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
             }

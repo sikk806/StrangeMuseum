@@ -22,6 +22,10 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
     public ItemData.ItemUseType GetItemType() { return ItemData.ItemUseType.Target; }
 
+    public int GetItemlayer()
+    {
+        return itemLayer;
+    }
     [SyncVar]
     public bool isCoverUsing;
 
@@ -46,7 +50,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
         if (slots.itemSlotIndex.TryGetValue(itemType, out Slot slot))
         {
             Debug.Log("중복 아이템 슬롯 번호" + slot);
-            AddItem(slots, slot, itemLayer);
+            AddItem(slots, slot);
             return;
         }
 
@@ -60,7 +64,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
             {
                 slots.itemSlotIndex[itemType] = data; // 슬롯 인덱스 기억
                 Debug.Log(" 슬롯 인덱스 기억" + slots.itemSlotIndex[itemType]);
-                AddItem(slots, slots.itemSlotIndex[itemType], i);
+                AddItem(slots, slots.itemSlotIndex[itemType]);
                 return;
             }
         }
@@ -68,10 +72,10 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
     }
 
  
-    private void AddItem(Slots slots, Slot ItemSlot, int itemLayer)
+    private void AddItem(Slots slots, Slot ItemSlot)
     {
 
-        this.itemLayer = itemLayer;
+        itemLayer = ItemSlot.SlotData.OriginalIndex;
 
         // Slot slot = slots.slotList[itemLayer].GetComponent<Slot>();
 
@@ -91,7 +95,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.Cover);
-            ItemSlot.SlotItemCount(ItemData.ItemList.Cover);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Cover,true);
 
         }
     }
