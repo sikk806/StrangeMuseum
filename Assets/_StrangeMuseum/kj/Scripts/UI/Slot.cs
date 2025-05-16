@@ -39,19 +39,29 @@ public class Slot : MonoBehaviour
         }
     }
 
-    public void SlotItemCount(ItemData.ItemList item)
+    public void SlotItemCount(ItemData.ItemList item,bool isAdd)
     {
         int count = 0;
 
         foreach (GameObject obj in AssignedItem)
         {
-            if (obj != null && obj.GetComponent<IUsableItem>().GetItemList() == item)
+            if (obj != null)
             {
-                count++;
+                if(isAdd && obj.GetComponent<IUsableItem>().GetItemList() == item)
+                {
+                    count++;
+                    Debug.Log(item + "의 " + count + "만큼 증가");
+                }
+                if(isAdd == false)
+                {
+                    count--;
+                    Debug.Log(item + "의 " + count + "만큼 감소");
+                }
+               
             }
         }
 
-        ItemCountText.text = count.ToString(); // 항상 표시
+        ItemCountText.text = count.ToString();
     }
 
 

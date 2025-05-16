@@ -71,7 +71,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
         InteractionUI.SetActive(false);
 
-        // 모든 경비원 오브젝트를 찾고, 로컬 클라이언트 ID와 비교하여 해당 경비원의 Interaction을 가져옴
         GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
         int SecuriyCount = 0;
@@ -80,7 +79,7 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             SecuriyCount++;
 
-            playerId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
+            playerId = (uint)bouncer.GetComponent<PlayerController>().ConnectionID;
 
             Debug.Log("경비원   " + SecuriyCount + "의 접속 ID" + playerId);
 
@@ -353,10 +352,9 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public void OnDestroyItemUI(GameObject item, int slotIndex)
     {
-
         Transform slotTransform = SlotManager.slotDataList[slotIndex].SlotObj.transform;
 
-        Transform itemUITransform = slotTransform.GetChild(2);
+        Transform itemUITransform = slotTransform.GetChild(1);
 
         // 자식 객체가 이미 삭제되었는지 확인
         if (itemUITransform != null && itemUITransform.gameObject != null)
@@ -368,18 +366,16 @@ public class SecurityInGameUI : NetworkBehaviour
 
             ItemManager.Instance.RemoveItem(itemList);
 
-            if (InventoryCheck(itemList)) //해당 아이템이 하나도 존재하지 않으면
+            if (InventoryCheck(itemList)) //해당 아이템이 존재한다면
             {
-
                 SlotManager.slotDataList[slotIndex].itemList = itemList;
                 SlotManager.slotDataList[slotIndex].itemUseType = itemType;
                 SlotManager.slotDataList[slotIndex].IsEmpty = false; // 빈 슬롯 됨
 
             }
-            else
+            else //존재하지 않는다면
             {
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
-
 
                 SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
                 SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;
@@ -388,9 +384,6 @@ public class SecurityInGameUI : NetworkBehaviour
                 SlotManager.itemSlotIndex.Remove(itemList); // 슬롯 인덱스 해제
             }
 
-            Slot slot = SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>();
-
-            slot.SlotItemCount(itemList);
         }
     
 

@@ -133,37 +133,13 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
         }
     }
-    public void SelectSlot(int index)
-    {
-        slotList[SelectedIndex].GetComponent<Slot>().SlotDefalutImage();
 
-        //slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotDefalutImage();
-
-        SelectedIndex = index;
-
-        slotList[SelectedIndex].GetComponent<Slot>().SlotSelectImage();
-
-       // slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
-    }
-
-
-    public SlotData GetSelectedData()
-    {
-        return slotDataList[SelectedIndex];
-    }
 
     private SecurityInteraction securityInteraction;
 
 
     public void UseSelectedItem(uint id)
     {
-       
-
-        SlotData data = GetSelectedData();
-
-        if (data.IsEmpty) return;
-
-
         Slot currentSlot = slotList[0].GetComponent<Slot>();
 
         // 사용 가능한 첫 번째 아이템 찾기
@@ -182,11 +158,25 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
         IUsableItem usableItem = usableObj.GetComponent<IUsableItem>();
 
+        NetworkIdentity itemIdentity = usableObj.GetComponent<NetworkIdentity>();
 
         if (usableItem != null)
         {
             Debug.Log("사용 메서드 실행 " + id);
             usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
+
+            if (SecurityInGameUI.Instance != null)
+            {
+                GameObject item = itemIdentity.gameObject; //.gameObject 로 GameObject로 변환
+
+                int itemLayer = usableItem.GetItemlayer();
+
+                SecurityInGameUI.Instance.OnDestroyItemUI(item, itemLayer);
+
+            }
+
+            currentSlot.SlotItemCount(usableItem.GetItemList(),false);
+
             currentSlot.AssignedItem[usableIndex] = null;
 
             for (int j = usableIndex; j < currentSlot.AssignedItem.Length - 1; j++)
@@ -219,6 +209,8 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
             RectTransform slotRect = slot.GetComponent<RectTransform>();
 
+          
+
             SlotSizeSet(slot, slotRect, i);
         }
 
@@ -233,6 +225,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
         int slotChlidCount = slot.transform.childCount;
         if (i == 0)
         {
+            slot.SlotSelectImage();
             slotRect.sizeDelta = new Vector2(124f, 117f);
 
             // 자식 0번째 오브젝트만 사이즈 조절
@@ -251,6 +244,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
         }
         else
         {
+            slot.SlotDefalutImage();
             slotRect.sizeDelta = new Vector2(85f, 85f);
 
             if (slotChlidCount > 0)

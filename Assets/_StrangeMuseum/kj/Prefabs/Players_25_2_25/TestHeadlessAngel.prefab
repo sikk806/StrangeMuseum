@@ -187,6 +187,7 @@ GameObject:
   - component: {fileID: 8468770253421823554}
   - component: {fileID: 5683088420834677999}
   - component: {fileID: -596041722899218139}
+  - component: {fileID: 5809237832576059063}
   m_Layer: 7
   m_Name: TestHeadlessAngel
   m_TagString: Statue
@@ -357,6 +358,25 @@ MonoBehaviour:
   initRushSpeed: 0
   MouseSensitivity: 2
   StatueCameraPosition: {x: 0, y: 1.85, z: -0.6}
+--- !u!114 &5809237832576059063
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3700023745771866719}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 779ee9db6db7d47458b30da3045f987c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  audioSource: {fileID: 0}
+  HandCuffFearSound: {fileID: 0}
+  CoverFearSound: {fileID: 0}
+  InGameUIPrefab: {fileID: 0}
 --- !u!1 &6347597832261494927
 GameObject:
   m_ObjectHideFlags: 0

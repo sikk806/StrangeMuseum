@@ -117,7 +117,7 @@ public class StatueInGameUI : NetworkBehaviour
 
         isCoverUI = false;
         BloodCover.GetComponent<Cover>().isCoverUsing = false; //한번 실행 하고 바로 FALSE. 
-        BloodCover.GetComponent<Cover>().CoverGameObject.GetComponent<Cover>().ResetInteractServerRpc();
+        BloodCover.GetComponent<Cover>().GetComponent<Cover>().ResetInteractServerRpc();
         
     }
 
