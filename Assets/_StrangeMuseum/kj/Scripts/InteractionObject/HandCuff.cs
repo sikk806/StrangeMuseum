@@ -92,7 +92,7 @@ public class HandCuff : NetworkBehaviour, IInteractable, IUsableItem //구속구
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.HandCuff);
-            ItemSlot.SlotItemCount(ItemData.ItemList.HandCuff,true);
+            ItemSlot.SlotItemCount(ItemData.ItemList.HandCuff);
 
            
         }

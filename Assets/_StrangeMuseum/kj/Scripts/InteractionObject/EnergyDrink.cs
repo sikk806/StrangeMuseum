@@ -95,7 +95,7 @@ public class EnergyDrink : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.EnergyDrink);
-            ItemSlot.SlotItemCount(ItemData.ItemList.EnergyDrink,true);
+            ItemSlot.SlotItemCount(ItemData.ItemList.EnergyDrink);
 
 
         }

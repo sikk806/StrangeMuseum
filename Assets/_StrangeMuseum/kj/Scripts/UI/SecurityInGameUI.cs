@@ -118,7 +118,15 @@ public class SecurityInGameUI : NetworkBehaviour
 
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress == false)
         {
-            SlotManager.UseSelectedItem(playerId);
+            if(SlotManager.isItemCooltime == false)
+            {
+                SlotManager.UseSelectedItem(playerId);
+            }
+            else
+            {
+                Debug.Log("아이템 사용 쿨타임 아직 안 끝남");
+            }
+           
         }
     }
 
