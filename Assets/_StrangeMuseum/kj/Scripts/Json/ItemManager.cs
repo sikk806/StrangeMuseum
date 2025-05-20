@@ -121,6 +121,7 @@ public class ItemManager : MonoBehaviour
         else //아이템 중복 처리
         {
             int currentCount = inventoryDictionary[item];
+
             int maxCount = itemDictionary[item].ItemMaxCount;
 
             if (currentCount < maxCount)
@@ -161,6 +162,7 @@ public class ItemManager : MonoBehaviour
             SaveItemData(); 
         }
     }
+
 
     public bool CountCurrentItem(ItemData.ItemList item)
     {

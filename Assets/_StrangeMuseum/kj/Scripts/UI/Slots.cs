@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
 using static UnityEditor.Timeline.Actions.MenuPriority;
+using System.Collections;
 
 public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 {
@@ -23,28 +24,21 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public Dictionary<ItemData.ItemList, Slot> itemSlotIndex = new Dictionary<ItemData.ItemList, Slot>();
 
+    private SecurityInteraction securityInteraction;
+
+    [SerializeField]
+    GameObject BlurLockImage;
+    public bool isAddItem; //첫 아이템을 추가했을 때, 일회성임
+
     public int SelectedIndex { get;  set; } = 0;
 
+    [SerializeField]
+    float ItemUsingCooltime;
+
+    public bool isItemCooltime;
 
     private void Update()
     {
-
-        //for (int i = 0; i < slotDataList.Count; i++)
-        //{
-        //    if (Input.GetKeyDown(KeyCode.Alpha1 + i)) // KeyCode.Alpha1 == 49
-        //    {
-        //        SecurityInGameUI.Instance.OnItemExplainUI(ItemData.ItemList.None); //아이템 이름 지웠다가 다시 업데이트
-        //        SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None); //아이템 이름 지웠다가 다시 업데이트
-        //        SecurityInGameUI.Instance.OnItemNameUI(ItemData.ItemList.None);
-
-        //        SelectSlot(i);
-
-        //    }
-        //    else
-        //    {
-        //        slotDataList[SelectedIndex].SlotObj.GetComponent<Slot>().SlotSelectImage();
-        //    }
-        //}
 
         // ALT키로 슬롯 회전
         if (Input.GetKeyDown(KeyCode.LeftAlt) || Input.GetKeyDown(KeyCode.RightAlt))
@@ -85,7 +79,6 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
        // SelectSlot(0); //처음엔 0번
     }
 
-    public bool isAddItem; //첫 아이템을 추가했을 때, 일회성임
     public void AddItem(GameObject item, Slot slot)
     {
         IUsableItem usableItem = item.GetComponent<IUsableItem>();
@@ -135,11 +128,12 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
     }
 
 
-    private SecurityInteraction securityInteraction;
 
 
     public void UseSelectedItem(uint id)
     {
+        StartCoroutine(ItemCooltime());
+
         Slot currentSlot = slotList[0].GetComponent<Slot>();
 
         // 사용 가능한 첫 번째 아이템 찾기
@@ -162,7 +156,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
         if (usableItem != null)
         {
-            Debug.Log("사용 메서드 실행 " + id);
+            Debug.Log("아이템 사용 메서드 실행 ");
             usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
 
             if (SecurityInGameUI.Instance != null)
@@ -172,10 +166,9 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
                 int itemLayer = usableItem.GetItemlayer();
 
                 SecurityInGameUI.Instance.OnDestroyItemUI(item, itemLayer);
-
             }
 
-            currentSlot.SlotItemCount(usableItem.GetItemList(),false);
+            currentSlot.SlotItemCount(usableItem.GetItemList());
 
             currentSlot.AssignedItem[usableIndex] = null;
 
@@ -184,6 +177,46 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
                 currentSlot.AssignedItem[j] = currentSlot.AssignedItem[j + 1];
                 currentSlot.AssignedItem[j + 1] = null;
             }
+        }
+
+    }
+
+    private IEnumerator ItemCooltime()
+    {
+        isItemCooltime = true;
+        BlurLockImage.gameObject.SetActive(true);
+        ShowCooltimeLockImage(true);
+        yield return new WaitForSeconds(ItemUsingCooltime);
+        ShowCooltimeLockImage(false);
+        yield return new WaitForSeconds(0.5f);
+        BlurLockImage.gameObject.SetActive(false);
+        isItemCooltime = false;
+    }
+
+    private void ShowCooltimeLockImage(bool isActive)
+    {
+        RectTransform LockImage = BlurLockImage.GetComponentInChildren<RectTransform>();
+
+        if (isActive)
+        {
+ 
+            LockImage.DOShakeAnchorPos(
+              duration: 1.5f,       // 흔들리는 시간
+              strength: new Vector2(15f, 0f), // 흔들림 세기 (좌우로 10만큼)
+              vibrato: 12,          // 진동 횟수
+              randomness: 90f,      // 랜덤 정도
+              snapping: false,      // 정수 위치로 스냅할지 여부
+              fadeOut: true         // 시간이 끝날수록 흔들림 줄어들지 여부
+          );
+        }
+        else
+        {
+            Sequence unlockSequence = DOTween.Sequence();
+            unlockSequence.Append(LockImage.DOShakeAnchorPos(0.5f, new Vector2(10f, 0f)))
+                          .AppendInterval(1.0f)
+                          .Append(LockImage.DORotate(new Vector3(0f, 0f, 90f), 0.3f)) // 회전
+                          .Join(LockImage.GetComponent<CanvasGroup>().DOFade(0f, 0.3f))
+                          .AppendCallback(() => LockImage.gameObject.SetActive(false));
         }
 
     }
@@ -226,18 +259,18 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
         if (i == 0)
         {
             slot.SlotSelectImage();
-            slotRect.sizeDelta = new Vector2(124f, 117f);
+            slotRect.sizeDelta = new Vector2(118f, 115f);
 
             // 자식 0번째 오브젝트만 사이즈 조절
             if (slotChlidCount > 0)
             {
               
-                child0.anchoredPosition = new Vector2(42, -38f); // 위치 이동
+                child0.anchoredPosition = new Vector2(39f, -39f); // 위치 이동
                 child0.sizeDelta = new Vector2(39f, 37f);
                 if(slotChlidCount == 2)
                 {
                     RectTransform child1 = slot.transform.GetChild(1).GetComponent<RectTransform>();
-                    child1.sizeDelta = new Vector2(118f, 115f);
+                    child1.sizeDelta = new Vector2(115f, 115f);
                 }
 
             }
@@ -249,8 +282,8 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
             if (slotChlidCount > 0)
             {
-                child0.anchoredPosition = new Vector2(25f, -26f);
-                child0.sizeDelta = new Vector2(26f, 25f);
+                child0.anchoredPosition = new Vector2(25.1f, -26.8f);
+                child0.sizeDelta = new Vector2(34, 31f);
                 if (slotChlidCount == 2)
                 {
                     RectTransform child1 = slot.transform.GetChild(1).GetComponent<RectTransform>();

@@ -84,7 +84,7 @@ public class Pen : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.Pen);
-            ItemSlot.SlotItemCount(ItemData.ItemList.Pen,true);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Pen);
 
 
         }

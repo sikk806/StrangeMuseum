@@ -95,7 +95,7 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.Cover);
-            ItemSlot.SlotItemCount(ItemData.ItemList.Cover,true);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Cover);
 
         }
     }

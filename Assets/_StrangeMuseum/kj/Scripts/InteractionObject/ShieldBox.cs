@@ -85,7 +85,7 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
             }
 
             ItemManager.Instance.AddItem(ItemData.ItemList.Box);
-            ItemSlot.SlotItemCount(ItemData.ItemList.Box,true);
+            ItemSlot.SlotItemCount(ItemData.ItemList.Box);
 
         }
     }
