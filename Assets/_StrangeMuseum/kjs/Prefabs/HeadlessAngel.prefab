@@ -271,7 +271,6 @@ GameObject:
   - component: {fileID: 5011132228836952046}
   - component: {fileID: -6546096635314550338}
   - component: {fileID: -6885678129742945211}
-  - component: {fileID: 2778849384075491095}
   - component: {fileID: -4134043358913641332}
   m_Layer: 0
   m_Name: HeadlessAngel
@@ -398,23 +397,6 @@ MonoBehaviour:
   rotationSensitivity: 0.01
   positionPrecision: 0.01
   scalePrecision: 0.01
---- !u!114 &2778849384075491095
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8841285224984753386}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7f6f3bf89aa97405989c802ba270f815, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 1
-  syncMode: 0
-  syncInterval: 0
-  clientAuthority: 0
-  animator: {fileID: 0}
 --- !u!114 &-4134043358913641332
 MonoBehaviour:
   m_ObjectHideFlags: 0
