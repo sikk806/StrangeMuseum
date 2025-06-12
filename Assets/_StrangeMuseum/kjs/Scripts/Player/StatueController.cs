@@ -1,12 +1,15 @@
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class StatueController : PlayerController
 {
     // Rush Speed 적용시키는 버전으로 업데이트 예정
-    public float RushSpeed;
+    [SyncVar]
+    public float RushSpeed = 5f;
 
     // RushSpeed와 함께 조절
+    [SyncVar]
     public float initRushSpeed;
 
     [Header("\nCameraSetting")]

@@ -86,14 +86,6 @@ public class SecurityInteraction : NetworkBehaviour
             return;
         }
 
-
-        if (isOwned)  // 내가 소유한 클라이언트라면
-        {
-            networkLight.intensity = 0;
-
-           // uiInstance = Instantiate(InGameUIPrefab);
-            Debug.Log("OnDie += HandleDie 등록");
-        }
     }
 
     void Update()
@@ -276,25 +268,25 @@ public class SecurityInteraction : NetworkBehaviour
     #region 박스 동기화 부분
 
     [Command(requiresAuthority = false)]
-    public void BoxFunction(NetworkIdentity playerNetIdentity, NetworkIdentity boxIdentity, int itemLayer)
+    public void BoxFunction(NetworkIdentity playerNetIdentity, NetworkIdentity boxIdentity, bool isActive)
     {
         //1. 호출한 클라이언트만 대상으로 TargetRpc 호출 -  - UI 삭제 및 박스 활성화 부분
         NetworkConnectionToClient targetConn = playerNetIdentity.connectionToClient;
-        TargetSetSecurityBodyActiveAndUI(playerNetIdentity.netId, boxIdentity.netId, itemLayer);
+        TargetSetSecurityBodyActiveAndUI(playerNetIdentity.netId, boxIdentity.netId, isActive);
 
         //2. 모든 클라이언트 시각화
-        BoxClientRpc(playerNetIdentity);
+        BoxClientRpc(playerNetIdentity, isActive);
 
     }
     [ClientRpc]
-    void BoxClientRpc(NetworkIdentity body)
+    void BoxClientRpc(NetworkIdentity body,bool isActive)
     {
         GameObject securityBody = body.transform.GetChild(2).gameObject;
-        securityBody.SetActive(true); // 서버에서도 활성화 
+        securityBody.SetActive(isActive);
     }
 
     [TargetRpc]
-    void TargetSetSecurityBodyActiveAndUI(uint playerNetId, uint boxNetId, int itemLayer)
+    void TargetSetSecurityBodyActiveAndUI(uint playerNetId, uint boxNetId, bool isActive)
     {
         try
         {
@@ -304,18 +296,8 @@ public class SecurityInteraction : NetworkBehaviour
                 if (playerIdentity.transform.childCount > 2)
                 {
                     GameObject securityBody = playerIdentity.transform.GetChild(2).gameObject;
-                    securityBody.SetActive(true);
+                    securityBody.SetActive(isActive);
                 }
-
-                //if (SecurityInGameUI.Instance != null)
-                //{
-                //    GameObject box = boxIdentity.gameObject; //.gameObject 로 GameObject로 변환
-                //    SecurityInGameUI.Instance.OnDestroyItemUI(box, itemLayer);
-                //}
-                //else
-                //{
-                //    Debug.LogWarning("SecurityInGameUI.Instance가 null입니다.");
-                //}
 
                 Debug.Log("해당 클라이언트에서 박스 UI 및 오브젝트 활성화 완료");
             }
@@ -371,7 +353,7 @@ public class SecurityInteraction : NetworkBehaviour
                 return;
             }
 
-            statue.CoverOnOffServerRpc(true, bloodCoverIdentity);
+            statue.CoverOnOffServerRpc(bloodCoverIdentity, true);
 
             //if (SecurityInGameUI.Instance != null)
             //{

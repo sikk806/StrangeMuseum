@@ -87,8 +87,8 @@ GameObject:
   - component: {fileID: 1509769021536730039}
   - component: {fileID: 7333259979085331140}
   - component: {fileID: 627778087418612282}
-  - component: {fileID: -4390802513265386625}
   - component: {fileID: 7385451884475167026}
+  - component: {fileID: 6199952545716292784}
   m_Layer: 5
   m_Name: Statue_Canvas
   m_TagString: Untagged
@@ -181,31 +181,6 @@ MonoBehaviour:
   m_BlockingMask:
     serializedVersion: 2
     m_Bits: 4294967295
---- !u!114 &-4390802513265386625
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5488760936724127876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 604692217
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!114 &7385451884475167026
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -218,10 +193,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b5862fb4b536bc44a616aea692dcd13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   FreezeTmp: {fileID: 2404371510986852806}
   CoverCooltime: 10
   isCoverUI: 0
+--- !u!114 &6199952545716292784
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5488760936724127876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1627103905
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7499182058988587909
 GameObject:
   m_ObjectHideFlags: 0
@@ -362,7 +356,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "!!! \uACBD\uBE44\uC6D0 \uC190\uC804\uB4F1 \uAC10\uC9C0 \uC911!!!"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8eac8666fad41b247b25b85a8327fa11, type: 2}
   m_sharedMaterial: {fileID: -3364014776298257740, guid: 8eac8666fad41b247b25b85a8327fa11, type: 2}

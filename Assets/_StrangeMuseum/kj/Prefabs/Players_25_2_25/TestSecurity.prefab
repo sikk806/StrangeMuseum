@@ -761,7 +761,6 @@ MonoBehaviour:
   SaveRayStaute: {fileID: 0}
   isInteracted: 0
   IsStatue: 0
-  securityBody: {fileID: 7148736106507618845}
 --- !u!114 &-5139576709211526103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -796,8 +795,14 @@ MonoBehaviour:
   isSecurityDie: 0
   isStatueCollider: 0
   currentSecurityBox: {fileID: 0}
-  bloodPrefab: {fileID: 0}
-  fragmentPrefabs: []
+  bloodPrefab: {fileID: 100000, guid: 735e8fb306bbd5f4dbbe850d4799c075, type: 3}
+  fragmentPrefabs:
+  - {fileID: 2118553550903347206, guid: a34581171627c214287f36e747dc42a3, type: 3}
+  - {fileID: 275219252555841642, guid: 39c6d87d013f2fd4fb2687d91d8897db, type: 3}
+  - {fileID: 8980452312396880376, guid: 834201b556d02ea48ac2df00365cc1fa, type: 3}
+  - {fileID: 6602946325242862002, guid: 7096a06c929111342a94af444101b3d4, type: 3}
+  - {fileID: 6241395249922770310, guid: dc0e108815ad8344788ca1dc2ba09236, type: 3}
+  - {fileID: 9100657107869444683, guid: 92f968d8c316a894696fedd87be47ef2, type: 3}
 --- !u!114 &1872208728460040252
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -884,6 +889,10 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
+  ConnectionID: 0
+  PlayerIdNumber: 0
+  PlayerSteamId: 0
+  PlayerName: 
   MovementSpeed: 5
   InitWalkingSpeed: 0
   JumpForce: 3
