@@ -1,5 +1,6 @@
 using Mirror;
 using System.Collections;
+using System.Xml.Linq;
 using UnityEngine;
 using UnityEngine.UIElements;
 using static ItemData;
@@ -128,6 +129,8 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
     [Command(requiresAuthority = false)]
     public void UseServerRpc(uint clientId)
     {
+        NetworkServer.Spawn(this.gameObject);
+
         Debug.Log("박스를 사용한 경비원의 아이디는 " + clientId + " 입니다");
 
         NetworkIdentity boxNetworkIdentity = GetComponent<NetworkIdentity>();
@@ -147,9 +150,9 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
 
             isBoxUsing = true;
 
-            bouncerIntercation.BoxFunction(playerNetObj, boxNetworkIdentity, itemLayer);
+            bouncerIntercation.BoxFunction(playerNetObj, boxNetworkIdentity, true);
 
-            securityDie.BoxSet(boxNetworkIdentity);
+            securityDie.BoxSetClientRpc(boxNetworkIdentity.netId); //아이템을 습득할 때 비활성화 하고 접근하려면 netId를 넘겨야 함. 단, NetworkServer.Spawn()이 되어 있어야 함
 
          
         }
@@ -159,40 +162,6 @@ public class ShieldBox : NetworkBehaviour, IInteractable, IUsableItem
         }
     }
 
-
-    public void NotifyClientBoxRemoved()
-    {
-        if (isBoxUsing == true)
-        {
-            Debug.Log("경비원 박스 입고 있었음");
-
-            if (NetworkClient.spawned.TryGetValue(netId, out NetworkIdentity networkObject))
-            {
-                Debug.Log("결국 경비원 박스 벗음");
-                StartCoroutine(DelayBoxing()); //무적 시간
-
-                ResetInteractServerRpc(); //박스 기능 초기화(박스 벗겨짐)
-
-                return;
-            }
-        }
-
-        if (isBoxUsing == false)
-        {
-            if (isOwned)
-            {
-                Debug.Log("IsOwner 이고, 경비원 박스 입지 않으므로 경비원 죽음"); //여기까지는 호출 잘 됨
-                GetComponent<SecurityDie>().SecurityDieServerRpc(); //죽음 기능 다른 스크립트에서 처리 하고 나서 ㄱㄱ
-            }
-
-        }
-    }
-
-    IEnumerator DelayBoxing()
-    {
-        yield return new WaitForSeconds(boxInvincibilityTime);
-        isBoxUsing = false;
-    }
 
 
     [Command(requiresAuthority = false)]

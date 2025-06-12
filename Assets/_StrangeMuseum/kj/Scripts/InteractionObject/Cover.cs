@@ -128,6 +128,8 @@ public class Cover : NetworkBehaviour, IInteractable, IUsableItem
 
             bouncerInteraction = playerNetObj.GetComponent<SecurityInteraction>();
 
+            isCoverUsing = true;
+
             bouncerInteraction.BloodCoverFunction(playerNetObj, bloodCoverIdentity, itemLayer);
 
         }

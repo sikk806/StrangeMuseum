@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
@@ -12,81 +14,6 @@ public class SecurityDie : NetworkBehaviour
     [SyncVar]
     public bool isStatueCollider;
 
-    [Command(requiresAuthority = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsBrokenServerRpc(bool value)
-    {
-        isSecurityDie = value;
-    }
-
-
-    [Command(requiresAuthority = false)] // 클라이언트도 요청할 수 있도록 설정
-    public void SetIsStatueColliderServerRpc(bool value)
-    {
-        isStatueCollider = value;
-    }
-
-    [SerializeField]
-    NetworkIdentity currentSecurityBox; //경비원이 현재 입은 박스
-    public void BoxSet(NetworkIdentity box)
-    {
-        if (!isOwned) { return; }
-
-        if (box.TryGetComponent(out NetworkIdentity networkObject))
-        {
-            currentSecurityBox = box;
-        }
-    }
-    private void Update()
-    {
-        if (!isOwned) { return; } 
-       
-        if (isStatueCollider == true)
-        {
-            currentSecurityBox.GetComponent<ShieldBox>().NotifyClientBoxRemoved();
-            SetIsStatueColliderServerRpc(false);
-        }
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-
-        if (other.gameObject.CompareTag("Statue") && isStatueCollider == false)
-        {
-            SetIsStatueColliderServerRpc(true);
-
-            if (isOwned || isServer)
-            {
-                Debug.Log("----------------------------In1");
-                GameManager.Instance.UpdatePlayerCountServerRpc(true, -1);
-                GameManager.Instance.UpdatePlayerCountServerRpc(false, 1);
-              
-                //GameManager.Instance.PlayerStat.Value[OwnerClientId] = "Statue"; //정식님이 역할 배정 구현 후 얘기 나누기.
-            }
-        }
-    }
-
-    private void HandleDie()
-    {
-        SetIsBrokenServerRpc(true);
-    }
-
-    [Command(requiresAuthority = false)]
-    public void SecurityDieServerRpc()
-    {
-        if (OnDie != null)
-        {
-            OnDie?.Invoke(this);  // OnDie 델리게이트 호출
-
-            SpawnBloodServerRpc(); //피 웅덩이
-
-            SpawnFragmentServerRpc(); //시체 조각
-        }
-        else
-        {
-            Debug.LogWarning("OnDie null 이므로 델리게이트 호출 x");
-        }
-
-    }
-
 
     [SerializeField]
     private GameObject bloodPrefab; // 피 프리팹
@@ -98,25 +25,79 @@ public class SecurityDie : NetworkBehaviour
     private float explosionForce = 5f; // 튀는 힘
     private float explosionRadius = 3f; // 폭발 반경
 
-    [Command(requiresAuthority = false)]
-    public void SpawnBloodServerRpc()
+    [SerializeField]
+    NetworkIdentity currentSecurityBox; //경비원이 현재 입은 박스
+
+    [ClientRpc]
+    public void BoxSetClientRpc(uint boxNetId)
     {
-        if (!isServer) return;
+        if (NetworkClient.spawned.TryGetValue(boxNetId, out var boxIdentity))
+        {
+            currentSecurityBox = boxIdentity;
+            Debug.Log($"Box 이름: {currentSecurityBox.name} / 활성 상태: {currentSecurityBox.gameObject.activeSelf}");
+        }
+    }
 
-        Debug.Log("SpawnBloodServerRpc() - IsServer = true");
 
-        SpawnBlood();  // 서버에서 피 생성
+    public void NotifyClientBoxRemoved()
+    {
+        NetworkIdentity playerIdentity = this.GetComponent<NetworkIdentity>();
+
+        this.GetComponent<SecurityInteraction>().BoxFunction(playerIdentity, currentSecurityBox, false);
+
+        StartCoroutine(DelayBoxing()); //무적 시간
+    }
+
+
+
+    IEnumerator DelayBoxing()
+    {
+        yield return new WaitForSeconds(2.0f);
+        currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing = false;
+        Debug.Log("isBoxUsing = false");
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Statue"))
+        {
+            if (currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing)
+            {
+                NotifyClientBoxRemoved();
+            }
+            else if(currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing == false)
+            {
+                //if(! isOwned == false)
+                DieFunctionServerRPc();
+                currentSecurityBox.GetComponent<ShieldBox>().ResetInteractServerRpc(); //박스 기능 초기화(박스 벗겨짐)
+            }
+        }
+    }
+
+    [Command(requiresAuthority = false)]
+    private void DieFunctionServerRPc()
+    {
+        SpawnBloodClientRpc(); //피 웅덩이
+
+        SpawnFragmentClientRpc(); //시체 조각
+
+        //if (OnDie != null)
+        //{
+        //    OnDie?.Invoke(this);  // OnDie 델리게이트 호출
+        //}
+        //else
+        //{
+        //    Debug.LogWarning("OnDie null 이므로 델리게이트 호출 x");
+        //}
 
     }
 
+
+    #region 피 웅덩이
     [ClientRpc]
-    void SpawnBloodClientRpc(Vector3 bloodPosition)
+    private void SpawnBloodClientRpc()
     {
-        if (isServer) return;
-
-        Debug.Log("SpawnBloodClientRpc() - IsServer = false");
-
-        SpawnBlood(bloodPosition);  // 클라이언트에서 피 생성
+        SpawnBlood();
     }
 
     private void SpawnBlood(Vector3 bloodPosition = default)
@@ -129,37 +110,19 @@ public class SecurityDie : NetworkBehaviour
 
         GameObject blood = Instantiate(bloodPrefab, bloodPosition, Quaternion.identity);
 
-        // 네트워크에서 피 객체를 Spawn
-
-        // 클라이언트에서는 SpawnBloodClientRpc() 호출, 서버에서는 로컬로 처리
         if (isServer)
         {
             NetworkServer.Spawn(blood);
-            SpawnBloodClientRpc(bloodPosition);
         }
-
-        // 피 객체는 일정 시간이 지나면 제거
-        Destroy(blood, 5f);
+   
+        Destroy(blood, 5f); //5초 뒤 제거
     }
+    #endregion
 
-    [Command(requiresAuthority = false)]
-    public void SpawnFragmentServerRpc()
-    {
-        if (!isServer) return;
-
-        Debug.Log("SpawnFragmentServerRpc - IsServer = true");
-
-        SpawnFragments(); // 서버에서 조각 생성
-        SpawnFragmentClientRpc();
-    }
-
+    #region 시체 조각
     [ClientRpc]
     private void SpawnFragmentClientRpc()
     {
-        if (isServer) return;
-
-        Debug.Log("SpawnFragmentClientRpc - IsServer = false");
-
         SpawnFragments(); // 클라이언트에서 조각 생성
     }
 
@@ -169,7 +132,7 @@ public class SecurityDie : NetworkBehaviour
         {
             if (fragmentPrefabs.Length > 0)
             {
-                // 랜덤한 조각 선택
+                // 랜덤한 조각 
                 GameObject fragment = Instantiate(
                     fragmentPrefabs[UnityEngine.Random.Range(0, fragmentPrefabs.Length)],
                     transform.position,
@@ -187,8 +150,9 @@ public class SecurityDie : NetworkBehaviour
                     rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0, ForceMode.Impulse);
                 }
 
-                Destroy(fragment, 10f);
+                Destroy(fragment, 10f); //10초 뒤 제거
             }
         }
     }
+    #endregion
 }
