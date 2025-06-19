@@ -1997,6 +1997,7 @@ MonoBehaviour:
   - {fileID: 6602946325242862002, guid: 7096a06c929111342a94af444101b3d4, type: 3}
   - {fileID: 6241395249922770310, guid: dc0e108815ad8344788ca1dc2ba09236, type: 3}
   - {fileID: 9100657107869444683, guid: 92f968d8c316a894696fedd87be47ef2, type: 3}
+  - {fileID: 8295328894330905862, guid: 06280fe7492cd0c478693857161e18d5, type: 3}
   exceptionsDisconnect: 1
   snapshotSettings:
     bufferTimeMultiplier: 2

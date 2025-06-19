@@ -61,16 +61,20 @@ public class SecurityDie : NetworkBehaviour
     {
         if (other.gameObject.CompareTag("Statue"))
         {
-            if (currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing)
+            if(currentSecurityBox != null)
             {
-                NotifyClientBoxRemoved();
+                if (currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing)
+                {
+                    NotifyClientBoxRemoved();
+                }
+                else if (currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing == false)
+                {
+                    //if(! isOwned == false)
+                    DieFunctionServerRPc();
+                    currentSecurityBox.GetComponent<ShieldBox>().ResetInteractServerRpc(); //박스 기능 초기화(박스 벗겨짐)
+                }
             }
-            else if(currentSecurityBox.GetComponent<ShieldBox>().isBoxUsing == false)
-            {
-                //if(! isOwned == false)
-                DieFunctionServerRPc();
-                currentSecurityBox.GetComponent<ShieldBox>().ResetInteractServerRpc(); //박스 기능 초기화(박스 벗겨짐)
-            }
+          
         }
     }
 
@@ -128,7 +132,7 @@ public class SecurityDie : NetworkBehaviour
 
     private void SpawnFragments()
     {
-        for (int i = 0; i < 20; i++)
+        for (int i = 0; i < 5; i++)
         {
             if (fragmentPrefabs.Length > 0)
             {
@@ -150,7 +154,7 @@ public class SecurityDie : NetworkBehaviour
                     rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0, ForceMode.Impulse);
                 }
 
-                Destroy(fragment, 10f); //10초 뒤 제거
+                Destroy(fragment, 5f); //10초 뒤 제거
             }
         }
     }

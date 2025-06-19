@@ -69,10 +69,10 @@ MonoBehaviour:
   maxSlot: 3
   slotDataList: []
   slotList: []
+  BlurLockImage: {fileID: 2420354229567239124}
+  isAddItem: 0
   ItemUsingCooltime: 5
   isItemCooltime: 0
-  isAddItem: 0
-  BlurLockImage: {fileID: 2420354229567239124}
 --- !u!114 &6409226775994294008
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -511,7 +511,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0, g: 0, b: 0, a: 0.8862745}
+  m_Color: {r: 0, g: 0, b: 0, a: 0.9019608}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1

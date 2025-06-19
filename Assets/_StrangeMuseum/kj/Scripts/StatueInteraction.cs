@@ -13,7 +13,6 @@ public class StatueInteraction : PlayerController
  
 
     private StatueController statueController;
-    private StatueAttack statueAttack;
 
     [SerializeField]
     private AudioSource audioSource; // 오디오 소스 컴포넌트
@@ -33,8 +32,6 @@ public class StatueInteraction : PlayerController
     private void Start()
     {
         statueController = GetComponent<StatueController>();
-        statueAttack = GetComponent<StatueAttack>();
-
     }
 
     [SerializeField]

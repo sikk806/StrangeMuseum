@@ -198,7 +198,6 @@ MonoBehaviour:
   syncInterval: 0
   FreezeTmp: {fileID: 2404371510986852806}
   CoverCooltime: 10
-  isCoverUI: 0
 --- !u!114 &6199952545716292784
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -325,7 +324,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -84, y: 412}
+  m_AnchoredPosition: {x: -80, y: 412}
   m_SizeDelta: {x: 558.186, y: 95.0698}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &6617689895985854458
@@ -356,7 +355,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 
+  m_text: "\uACBD\uBE44\uC6D0 \uC190\uC804\uB4F1 "
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8eac8666fad41b247b25b85a8327fa11, type: 2}
   m_sharedMaterial: {fileID: -3364014776298257740, guid: 8eac8666fad41b247b25b85a8327fa11, type: 2}

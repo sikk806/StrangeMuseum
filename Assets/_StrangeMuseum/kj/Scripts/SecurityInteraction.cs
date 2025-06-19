@@ -53,7 +53,9 @@ public class SecurityInteraction : NetworkBehaviour
     public bool isInteracted;
     [SyncVar]
     public bool IsStatue;
-    
+
+
+    OldLever oldLever;
 
     public override void OnStartLocalPlayer()
     {
@@ -97,21 +99,28 @@ public class SecurityInteraction : NetworkBehaviour
 
         BouncerInteractionRay();
 
-        BouncerInteracted();
+        SecurityItemInteraction();
 
     }
 
-    private void BouncerInteracted()
+    private void SecurityItemInteraction()
     {
-        if (interactableItem == null) { return; }      
-
-        if (Input.GetMouseButtonDown(0) && isInteracted == true && interactableItem != null)
+        if (Input.GetMouseButtonDown(0) && oldLever != null)
         {
+            oldLever.OldLeverFunction();
+        }
+
+
+        if (interactableItem == null) { return; }
+
+       
+        if (Input.GetMouseButtonDown(0) && isInteracted == true && interactableItem != null )
+        {
+            if (SecurityInGameUI.Instance.SlotManager.isItemCooltime) { return; } //현재 아이템 쿨타임 진행 중이라면 return 하고 습득 못하게.
+
             SaveRayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
 
             interactableItem.Interact();
-
-
 
             SecurityInGameUI.Instance.OnInteractionUI(InteractionType.None);
 
@@ -120,7 +129,8 @@ public class SecurityInteraction : NetworkBehaviour
             if (SaveRayItem.gameObject.tag == "Cover")
             {
                 PlayFearSound(CoverFearSound);
-            }    
+            }
+
         }
     }
     private void BouncerInteractionRay() //상호작용 여부
@@ -130,6 +140,11 @@ public class SecurityInteraction : NetworkBehaviour
 
         if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("Interaction", "Statue")))
         {
+            if (hit.collider.CompareTag("OldLever"))
+            {
+                oldLever = hit.collider.GetComponent<OldLever>();
+            }
+
             if (hit.collider.CompareTag("HandCuff") || hit.collider.CompareTag("EnergyDrink")
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
                 || hit.collider.CompareTag("Pen"))
@@ -148,7 +163,6 @@ public class SecurityInteraction : NetworkBehaviour
                     }
                 }
 
-
                 bool isInteractedNow = interactableItem != null;
 
                 isInteracted = true;
@@ -160,6 +174,7 @@ public class SecurityInteraction : NetworkBehaviour
                 IsStatue = true;
                 StatueSave(hit.collider.gameObject);
             }
+
         }
         else
         {

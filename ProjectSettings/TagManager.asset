@@ -17,6 +17,7 @@ TagManager:
   - Cover
   - Pen
   - StauteTable
+  - OldLever
   layers:
   - Default
   - TransparentFX

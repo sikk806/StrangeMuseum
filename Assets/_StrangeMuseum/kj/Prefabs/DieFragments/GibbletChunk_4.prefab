@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3200798743293295020}
   - component: {fileID: 3432512054254065609}
   - component: {fileID: -39071685348757194}
+  - component: {fileID: -6957788523863633452}
   m_Layer: 22
   m_Name: GibbletChunk_4
   m_TagString: Untagged
@@ -132,3 +133,24 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!65 &-6957788523863633452
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6602946325242862002}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 53.8016, y: 28.705004, z: 73.75359}
+  m_Center: {x: 0, y: 12.722802, z: 0}
