@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Unity.Burst.CompilerServices;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.UIElements;
@@ -54,8 +55,11 @@ public class SecurityInteraction : NetworkBehaviour
     [SyncVar]
     public bool IsStatue;
 
+    //고장난레버
+    private MissionProgressBarUI progressBarUI;
+    private Camera mainCam;
+    private IHoldInteractable currentTarget;
 
-    OldLever oldLever;
 
     public override void OnStartLocalPlayer()
     {
@@ -88,6 +92,7 @@ public class SecurityInteraction : NetworkBehaviour
             return;
         }
 
+        progressBarUI = SecurityInGameUI.Instance.GetComponent<MissionProgressBarUI>();
     }
 
     void Update()
@@ -105,10 +110,28 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void SecurityItemInteraction()
     {
-        if (Input.GetMouseButtonDown(0) && oldLever != null)
+        if (Input.GetMouseButtonDown(0) && currentTarget != null)
         {
-            oldLever.OldLeverFunction();
+            if (currentTarget.IsCompleted()) return;
+
+            currentTarget.StartHold();   // 눌렀다 시작
+            progressBarUI.Show();
+            Debug.Log("Hold 시작");
         }
+        else if (Input.GetMouseButton(0) && currentTarget != null )
+        {
+            currentTarget.StartHolding(Time.deltaTime); // 누르는 중 갱신
+            progressBarUI.UpdateProgress(currentTarget.CurrentHoldTime / currentTarget.HoldDuration);
+
+            Debug.Log("Hold 중");
+        }
+        else if (Input.GetMouseButtonUp(0) && currentTarget != null)
+        {
+            currentTarget.StopHold();    // 뗐을 때 되감기 시작
+            progressBarUI.Hide();
+            Debug.Log("Hold 끝");
+        }
+
 
 
         if (interactableItem == null) { return; }
@@ -138,12 +161,23 @@ public class SecurityInteraction : NetworkBehaviour
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("Interaction", "Statue")))
+        if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("MissionInteraction")))
         {
             if (hit.collider.CompareTag("OldLever"))
             {
-                oldLever = hit.collider.GetComponent<OldLever>();
+                currentTarget = hit.collider.GetComponent<IHoldInteractable>();
             }
+        }
+        else 
+        {
+            currentTarget = null;
+
+            progressBarUI.Hide(); //미션 UI 가리기
+            currentTarget.StopHold();
+        }
+
+        if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("Interaction", "Statue")))
+        {
 
             if (hit.collider.CompareTag("HandCuff") || hit.collider.CompareTag("EnergyDrink")
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
@@ -188,6 +222,7 @@ public class SecurityInteraction : NetworkBehaviour
             }
             StatueSave(null);
         }
+
 
     }
     private void ItemSave(GameObject obj = null)
