@@ -26,7 +26,10 @@ public class SecurityInteraction : NetworkBehaviour
 
 
     [SerializeField]
-    private AudioClip pickUpSound; // 구속구 공포 효과음
+    private AudioClip pickUpSound; // 상호작용 효과음
+
+    [SerializeField]
+    private AudioClip LeverPullDownSound; // 레버 내리는 효과음
 
     [SerializeField]
     public GameObject InGameUIPrefab;
@@ -48,10 +51,16 @@ public class SecurityInteraction : NetworkBehaviour
 
     public GameObject SaveRayItem; //바라본 아이템 저장 
 
+    public GameObject SaveRayObject; //바라본 오브젝트 저장 
+
     public GameObject SaveRayStaute; //바라본 조각상 저장
 
     [SyncVar]
-    public bool isInteracted;
+    public bool isItemInteracted;
+
+    [SyncVar]
+    public bool isObjectInteracted;
+
     [SyncVar]
     public bool IsStatue;
 
@@ -102,26 +111,35 @@ public class SecurityInteraction : NetworkBehaviour
             return;
         }
 
-        BouncerInteractionRay();
+        SecurityInteractionRay();
 
         SecurityItemInteraction();
 
+        SercurityObjectInteraction();
+
     }
 
-    private void SecurityItemInteraction()
+    private void SercurityObjectInteraction() //1. 오래된 레버 ( 아이템 x , 일반적인 상호작용 오브젝트 ) 상호작용 후  기능 호출 부분
     {
+        if (isObjectInteracted == false) { return; }
+
+        if (currentTarget.IsCompleted()) return;
+
         if (Input.GetMouseButtonDown(0) && currentTarget != null)
         {
-            if (currentTarget.IsCompleted()) return;
-
             currentTarget.StartHold();   // 눌렀다 시작
             progressBarUI.Show();
             Debug.Log("Hold 시작");
         }
-        else if (Input.GetMouseButton(0) && currentTarget != null )
+        else if (Input.GetMouseButton(0) && currentTarget != null)
         {
             currentTarget.StartHolding(Time.deltaTime); // 누르는 중 갱신
-            progressBarUI.UpdateProgress(currentTarget.CurrentHoldTime / currentTarget.HoldDuration);
+            progressBarUI.UpdateProgress(currentTarget.HoldTime / currentTarget.HoldDuration);
+
+            if(SaveRayObject.GetComponent<OldLever>().IsSoundInStatue())
+            {
+                SoundManager.Instance.PlayerAtPointSfx("LeverPullDown", SaveRayObject);
+            }
 
             Debug.Log("Hold 중");
         }
@@ -132,16 +150,14 @@ public class SecurityInteraction : NetworkBehaviour
             Debug.Log("Hold 끝");
         }
 
+    }
+    private void SecurityItemInteraction() // 2. 아이템들과 상호작용 후 아이템 기능 호출 부분
+    {
+        
 
-
-        if (interactableItem == null) { return; }
-
-       
-        if (Input.GetMouseButtonDown(0) && isInteracted == true && interactableItem != null )
+        if (Input.GetMouseButtonDown(0) && isItemInteracted == true && interactableItem != null )
         {
             if (SecurityInGameUI.Instance.SlotManager.isItemCooltime) { return; } //현재 아이템 쿨타임 진행 중이라면 return 하고 습득 못하게.
-
-            SaveRayItem.GetComponent<Collider>().enabled = false; //false하지 않으면 좌클릭 할 때마다 아이템이 인 게임 화면 중앙으로 이동함. 이동은 1번만.
 
             interactableItem.Interact();
 
@@ -156,7 +172,7 @@ public class SecurityInteraction : NetworkBehaviour
 
         }
     }
-    private void BouncerInteractionRay() //상호작용 여부
+    private void SecurityInteractionRay() //아이템 및 오브젝트 상호작용 여부
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
@@ -165,18 +181,25 @@ public class SecurityInteraction : NetworkBehaviour
         {
             if (hit.collider.CompareTag("OldLever"))
             {
+                isObjectInteracted = true;
+
+                ObjectSave(hit.collider.gameObject);
+
                 currentTarget = hit.collider.GetComponent<IHoldInteractable>();
             }
         }
         else 
         {
+            isObjectInteracted = false;
+
             currentTarget = null;
 
             progressBarUI.Hide(); //미션 UI 가리기
-            currentTarget.StopHold();
+
+            ObjectSave(null);
         }
 
-        if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("Interaction", "Statue")))
+        if (Physics.Raycast(ray, out hit, LayDistance * 1.5f, LayerMask.GetMask("Interaction", "Statue")))
         {
 
             if (hit.collider.CompareTag("HandCuff") || hit.collider.CompareTag("EnergyDrink")
@@ -199,7 +222,7 @@ public class SecurityInteraction : NetworkBehaviour
 
                 bool isInteractedNow = interactableItem != null;
 
-                isInteracted = true;
+                isItemInteracted = true;
 
                 ItemSave(hit.collider.gameObject);
             }
@@ -213,13 +236,14 @@ public class SecurityInteraction : NetworkBehaviour
         else
         {
             interactableItem = null;
-            isInteracted = false;
+            isItemInteracted = false;
             IsStatue = false;
 
-            if (isInteracted) // 값이 이미 false라면 다시 호출하지 않음
+            if (isItemInteracted) // 값이 이미 false라면 다시 호출하지 않음
             {
-                isInteracted = false;
+                isItemInteracted = false;
             }
+
             StatueSave(null);
         }
 
@@ -229,7 +253,10 @@ public class SecurityInteraction : NetworkBehaviour
     {
         SaveRayItem = obj;
     }
-
+    private void ObjectSave(GameObject obj = null)
+    {
+        SaveRayObject = obj;
+    }
     private void StatueSave(GameObject obj = null)
     {
 

@@ -99,4 +99,5 @@ public class StatueController : PlayerController
         playerCamera.localRotation = Quaternion.Euler(20f, yaw, 0f);
         playerCamera.position = transform.position + transform.rotation * StatueCameraPosition;
     }
+
 }
