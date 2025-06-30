@@ -39,7 +39,7 @@ public class SMNetworkManager : NetworkManager
     {
         if (SceneManager.GetActiveScene().name == "NetworkTest")
         {
-            PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
+            PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab); 
             GamePlayerInstance.transform.position = Vector3.zero;
 
             GamePlayerInstance.ConnectionID = conn.connectionId;

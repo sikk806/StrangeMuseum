@@ -132,7 +132,8 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
 
     public void UseSelectedItem(uint id)
     {
-        StartCoroutine(ItemCooltime());
+        
+        if(slotList[0] == null) { return;}
 
         Slot currentSlot = slotList[0].GetComponent<Slot>();
 
@@ -150,14 +151,16 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
             }
         }
 
-        IUsableItem usableItem = usableObj.GetComponent<IUsableItem>();
-
-        NetworkIdentity itemIdentity = usableObj.GetComponent<NetworkIdentity>();
-
-        if (usableItem != null)
+        if(usableObj != null)
         {
+            IUsableItem usableItem = usableObj.GetComponent<IUsableItem>();
+
+            NetworkIdentity itemIdentity = usableObj.GetComponent<NetworkIdentity>();
+
             Debug.Log("아이템 사용 메서드 실행 ");
             usableItem.UseServerRpc(id); //아이템 기능 메서드 호출 부분
+
+            StartCoroutine(ItemCooltime());
 
             if (SecurityInGameUI.Instance != null)
             {
@@ -166,6 +169,7 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
                 int itemLayer = usableItem.GetItemlayer();
 
                 SecurityInGameUI.Instance.OnDestroyItemUI(item, itemLayer);
+
             }
 
             currentSlot.SlotItemCount(usableItem.GetItemList());
@@ -179,23 +183,29 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
             }
         }
 
+  
+
     }
 
     private IEnumerator ItemCooltime()
     {
         isItemCooltime = true;
+
         BlurLockImage.gameObject.SetActive(true);
         ShowCooltimeLockImage(true);
+
         yield return new WaitForSeconds(ItemUsingCooltime);
+
         ShowCooltimeLockImage(false);
         yield return new WaitForSeconds(0.5f);
         BlurLockImage.gameObject.SetActive(false);
+
         isItemCooltime = false;
     }
 
     private void ShowCooltimeLockImage(bool isActive)
     {
-        RectTransform LockImage = BlurLockImage.GetComponentInChildren<RectTransform>();
+        RectTransform LockImage = BlurLockImage.transform.GetChild(0).GetComponent<RectTransform>();
 
         if (isActive)
         {
@@ -214,9 +224,9 @@ public class Slots : NetworkBehaviour //슬롯들의 부모 오브젝트(Slots)
             Sequence unlockSequence = DOTween.Sequence();
             unlockSequence.Append(LockImage.DOShakeAnchorPos(0.5f, new Vector2(10f, 0f)))
                           .AppendInterval(1.0f)
-                          .Append(LockImage.DORotate(new Vector3(0f, 0f, 90f), 0.3f)) // 회전
-                          .Join(LockImage.GetComponent<CanvasGroup>().DOFade(0f, 0.3f))
-                          .AppendCallback(() => LockImage.gameObject.SetActive(false));
+                          .Append(LockImage.DORotate(new Vector3(0f, 0f, 0f), 0.3f)) // 회전
+                          .Join(LockImage.GetComponent<CanvasGroup>().DOFade(0f, 0.3f));
+                          
         }
 
     }

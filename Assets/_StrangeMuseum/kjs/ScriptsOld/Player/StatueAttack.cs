@@ -1,15 +1,16 @@
+using Mirror;
 using System.Collections;
-using Unity.Netcode;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 // 석상 돌진 스킬과 관련된 클래스
 public class StatueAttack : NetworkBehaviour
 {
     [Header("AttackSetting")]
-    public float RushSpeed = 50f;  // default : 50f
+    //public float RushSpeed = 50f;  // default : 50f
 
-    public float InitRushSpeed;
+   // public float InitRushSpeed;
     public float RushDuration = 0.2f;
 
     public GameObject DashVisualEffect;
@@ -17,24 +18,36 @@ public class StatueAttack : NetworkBehaviour
     private bool isRush = false;
     Transform playerCamera;
 
-    void Start()
+    PlayerController playerController;
+
+    private  void Start()
     {
-        InitRushSpeed = RushSpeed;
-        playerCamera = Camera.main.transform;
+        //initRushSpeed = RushSpeed;
+        //playerCamera = Camera.main.transform;
+
+        playerController = GetComponentInParent<StatueController>();
+        playerCamera = playerController.GetPlayerCamera();
+
+  
     }
 
     // Update is called once per frame
-    void Update()
+    private  void Update()
     {
-        if(!IsOwner) return;
+   
+        if(!isOwned) return;
         //if(GetComponent<StatueController>().playerState.Value == PlayerState.Freeze) { return; }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isRush)
         {
             // Move, View Fix
-            isRush = true;
+            
             //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Attack);
-            StartCoroutine("Attack");
+            StartCoroutine(Attack());
+
+            isRush = true;
+
+            Debug.Log("Statue Rush - Attack");
         }
     }
 
@@ -51,7 +64,7 @@ public class StatueAttack : NetworkBehaviour
         go.transform.LookAt(playerCamera);
         while (elapseTime < RushDuration)
         {
-            characterController.Move(rushDirection * RushSpeed * Time.deltaTime);
+            characterController.Move(rushDirection * GetComponent<StatueController>().RushSpeed * Time.deltaTime);
             elapseTime += Time.deltaTime;
 
             playerCamera.position = transform.position + transform.rotation * GetComponent<StatueController>().StatueCameraPosition;
@@ -63,4 +76,6 @@ public class StatueAttack : NetworkBehaviour
 
         //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
     }
+
+
 }

@@ -12,10 +12,10 @@ GameObject:
   - component: {fileID: 8331690156415271370}
   - component: {fileID: -7452286959756524396}
   - component: {fileID: 4437010309211007462}
+  - component: {fileID: -8885158688267702160}
   - component: {fileID: 5880679984037344405}
   - component: {fileID: 4340024490984339822}
   - component: {fileID: 2491447804398688224}
-  - component: {fileID: -8885158688267702160}
   m_Layer: 6
   m_Name: ThrowPen
   m_TagString: Pen
@@ -100,6 +100,31 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   voiceUsingCoolTime: 2
+--- !u!114 &-8885158688267702160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4348367422877181876}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1781315646
+  InScenePlacedSourceGlobalObjectIdHash: 0
+  DeferredDespawnTick: 0
+  Ownership: 1
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
+  SyncOwnerTransformWhenParented: 1
+  AllowOwnerToParent: 0
 --- !u!114 &5880679984037344405
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -113,7 +138,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ShowTopMostFoldoutHeaderGroup: 1
-  PenDrinkUI: {fileID: 7083497462365922944, guid: a74040b3bc647a7488328065164b1504, type: 3}
+  PenUI: {fileID: 0}
   itemLayer: 0
 --- !u!114 &4340024490984339822
 MonoBehaviour:
@@ -148,31 +173,6 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
---- !u!114 &-8885158688267702160
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4348367422877181876}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 0
-  InScenePlacedSourceGlobalObjectIdHash: 0
-  DeferredDespawnTick: 0
-  Ownership: 1
-  AlwaysReplicateAsRoot: 0
-  SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
-  SceneMigrationSynchronization: 1
-  SpawnWithObservers: 1
-  DontDestroyWithOwner: 0
-  AutoObjectParentSync: 1
-  SyncOwnerTransformWhenParented: 1
-  AllowOwnerToParent: 0
 --- !u!1 &5055812860148179848
 GameObject:
   m_ObjectHideFlags: 0

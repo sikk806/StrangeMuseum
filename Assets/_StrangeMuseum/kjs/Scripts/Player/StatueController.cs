@@ -24,13 +24,21 @@ public class StatueController : PlayerController
 
     //private PlayerState playerState;
 
+    public override void OnStartLocalPlayer()
+    {
+        if (!isOwned) return;
+
+        base.OnStartLocalPlayer();
+
+        initRushSpeed = RushSpeed;
+    }
     protected override void Start()
     {
         if(!isOwned) return;
 
         base.Start();
 
-        initRushSpeed = RushSpeed;
+        
     }
 
     // Update is called once per frame
@@ -91,4 +99,5 @@ public class StatueController : PlayerController
         playerCamera.localRotation = Quaternion.Euler(20f, yaw, 0f);
         playerCamera.position = transform.position + transform.rotation * StatueCameraPosition;
     }
+
 }

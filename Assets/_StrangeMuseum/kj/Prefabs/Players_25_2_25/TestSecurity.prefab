@@ -749,17 +749,20 @@ MonoBehaviour:
   syncDirection: 0
   syncMode: 0
   syncInterval: 0
-  LayDistance: 3
+  LayDistance: 1.5
   LightLayDistance: 30
   pickUpSound: {fileID: 8300000, guid: 23a7f6dc317754d41bf076e4c5114f70, type: 3}
+  LeverPullDownSound: {fileID: 8300000, guid: a54a94626a7875c4b953211ce295a7eb, type: 3}
   InGameUIPrefab: {fileID: 4316314992766219179, guid: d5bc758d6de495e4299a66d99cab9a84, type: 3}
   isLight: 0
   DashVisualEffect: {fileID: 8514267958666413135, guid: 4c8b45890ead24d428e312e60163efa7, type: 3}
   networkLight: {fileID: 3654421511120650158}
   CoverFearSound: {fileID: 8300000, guid: 3e8a633eed110b849aa1782fca358097, type: 3}
   SaveRayItem: {fileID: 0}
+  SaveRayObject: {fileID: 0}
   SaveRayStaute: {fileID: 0}
-  isInteracted: 0
+  isItemInteracted: 0
+  isObjectInteracted: 0
   IsStatue: 0
 --- !u!114 &-5139576709211526103
 MonoBehaviour:
@@ -794,7 +797,6 @@ MonoBehaviour:
   syncInterval: 0
   isSecurityDie: 0
   isStatueCollider: 0
-  currentSecurityBox: {fileID: 0}
   bloodPrefab: {fileID: 100000, guid: 735e8fb306bbd5f4dbbe850d4799c075, type: 3}
   fragmentPrefabs:
   - {fileID: 2118553550903347206, guid: a34581171627c214287f36e747dc42a3, type: 3}
@@ -803,6 +805,7 @@ MonoBehaviour:
   - {fileID: 6602946325242862002, guid: 7096a06c929111342a94af444101b3d4, type: 3}
   - {fileID: 6241395249922770310, guid: dc0e108815ad8344788ca1dc2ba09236, type: 3}
   - {fileID: 9100657107869444683, guid: 92f968d8c316a894696fedd87be47ef2, type: 3}
+  currentSecurityBox: {fileID: 0}
 --- !u!114 &1872208728460040252
 MonoBehaviour:
   m_ObjectHideFlags: 0
