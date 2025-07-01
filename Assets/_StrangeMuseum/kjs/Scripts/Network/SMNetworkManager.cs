@@ -74,8 +74,6 @@ public class SMNetworkManager : NetworkManager
                         playerObj = Instantiate(statuePrefab);
                         GameResultManager.Instance.StatueCount += 1;
                     }
-
-                    //GameResultManager.Instance.SetCharacterCount(0, 1);
                 }
                 else
                 {
@@ -89,8 +87,6 @@ public class SMNetworkManager : NetworkManager
                         playerObj = Instantiate(securityPrefab);
                         GameResultManager.Instance.SecurityCount += 1;
                     }
-
-                    //GameResultManager.Instance.SetCharacterCount(1, 0);
                 }
 
                 if (GamePlayerInstance.connectionToClient == null)

@@ -5348,6 +5348,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d8b4282dce9415845a07ef9b96919c09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   bgmAudioSource: {fileID: 1142569676}
   sfxAudioSources:
   - {fileID: 2130324088}
