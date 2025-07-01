@@ -41,17 +41,18 @@ public class Slot : MonoBehaviour
 
     public void SlotItemCount(ItemData.ItemList item)
     {
-        int count = 0;
-
-        foreach (GameObject obj in AssignedItem)
+        if(ItemManager.Instance.inventoryDictionary.ContainsKey(item))
         {
-            if (obj != null && obj.GetComponent<IUsableItem>().GetItemList() == item)
+            if (ItemManager.Instance.inventoryDictionary.TryGetValue(item, out int itemCount))
             {
-                count++;
+                ItemCountText.text = itemCount.ToString();
             }
         }
+        else
+        {
+            ItemCountText.text = " ";
+        }
 
-        ItemCountText.text = count.ToString(); // 항상 표시
     }
 
 

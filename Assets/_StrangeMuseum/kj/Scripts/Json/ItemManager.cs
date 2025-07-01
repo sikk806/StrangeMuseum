@@ -7,9 +7,26 @@ using Unity.Services.CloudSave.Models;
 using UnityEngine;
 
 
+[System.Serializable]
+public class ObjectData //상호작용 오브젝트 Data
+{
+    public enum ObjectList
+    {
+        None,OldLever,
+    }
+
+    public string ObjectName;
+    public string ObjectExplain;
+
+    public ObjectData(string objectName, string objectExplain)
+    {
+        this.ObjectName = objectName;
+        this.ObjectExplain = objectExplain;
+    }
+}
 public enum InteractionType //유동적으로 바뀌기 때문에 ItemData에 추가하지 않음.
 {
-    None, PickUp, Used, Self, Target
+    None, PickUp, Used, Self, Target , Hold
 }
 
 [System.Serializable]
@@ -35,8 +52,6 @@ public class ItemData
         this.ItemExplain = itemExplain;
         this.ItemMaxCount = itemCount;
     }
-
-
 }
 
 
@@ -68,43 +83,68 @@ public class ItemManager : MonoBehaviour
         }
     }
 
+    public Dictionary<ObjectData.ObjectList, ObjectData> ObjectDictionary = new Dictionary<ObjectData.ObjectList, ObjectData>();
+
     public Dictionary<ItemData.ItemList, ItemData> itemDictionary = new Dictionary<ItemData.ItemList, ItemData>();
 
     public Dictionary<ItemData.ItemList, int> inventoryDictionary = new Dictionary<ItemData.ItemList, int>();
 
-    private string filePath;
+    private string itemFilePath;
+    private string objectFilePath;
 
     public ItemData ItemData;
 
     void Start()
     {
-        filePath = Application.dataPath + "/_StrangeMuseum/Json/ItemFile.json";
+        itemFilePath = Application.dataPath + "/_StrangeMuseum/Json/ItemFile.json";
+        objectFilePath = Application.dataPath + "/_StrangeMuseum/Json/ObjectFile.json";
 
         itemDictionary = new Dictionary<ItemData.ItemList, ItemData>
-            {
+        {
                  { ItemData.ItemList.HandCuff, new ItemData("구속구", "조각상에게 사용 시, 조각상의 이동속도 및 돌진속도 감소",5) },
                  { ItemData.ItemList.EnergyDrink, new ItemData("에너지 드링크", "사용 시, 이동속도 증가",3) },
                  { ItemData.ItemList.Box, new ItemData("박스", "사용 시, 조각상의 공격으로 부터 1회 방어",2) },
                  { ItemData.ItemList.Cover, new ItemData("피 묻은 천", "조각상에게 사용 시, 조각상의 시야 기능 제한",2) },
                  { ItemData.ItemList.Pen, new ItemData("만년필", "조각상 적중 시, 조각상의 보이스 챗 기능 제한",4) }
-            };
+        };
+
+        ObjectDictionary = new Dictionary<ObjectData.ObjectList, ObjectData>
+        {
+            {ObjectData.ObjectList.OldLever,new ObjectData("오래된 레버", "레버를 완전히 내릴 시, 조각상의 이동속도 제한") }
+        };
 
         SaveItemData();
 
+        SaveObjectData();
+
         inventoryDictionary.Clear(); //인벤토리 초기화
 
+    }
+
+    public void SaveObjectData()
+    {
+        string objectData = JsonConvert.SerializeObject(ObjectDictionary, Formatting.Indented);
+
+        File.WriteAllText(objectFilePath, objectData);
+    }
+    public void LoadObjectData()
+    {
+        string objectData = File.ReadAllText(objectFilePath);
+
+        ObjectDictionary = JsonConvert.DeserializeObject<Dictionary<ObjectData.ObjectList, ObjectData>>(objectData);
     }
 
     public void SaveItemData()
     {
         string itemData = JsonConvert.SerializeObject(itemDictionary, Formatting.Indented); //Json 파일로 변환, Formatting.Indented 사용 시 잘 들여쓰기 됨
 
-        File.WriteAllText(filePath, itemData); //읽을 수 있게
+       
+        File.WriteAllText(itemFilePath, itemData); //읽을 수 있게
     }
 
     public void LoadItemData()
     {
-        string itemData = File.ReadAllText(filePath);
+        string itemData = File.ReadAllText(itemFilePath);
 
         itemDictionary = JsonConvert.DeserializeObject<Dictionary<ItemData.ItemList, ItemData>>(itemData);
 
@@ -121,6 +161,7 @@ public class ItemManager : MonoBehaviour
         else //아이템 중복 처리
         {
             int currentCount = inventoryDictionary[item];
+
             int maxCount = itemDictionary[item].ItemMaxCount;
 
             if (currentCount < maxCount)
@@ -162,7 +203,8 @@ public class ItemManager : MonoBehaviour
         }
     }
 
-    public bool CountCurrentItem(ItemData.ItemList item)
+
+    public bool CountCurrentItem(ItemData.ItemList item) //현재 딕셔너리에 저장된 아이템 갯수
     {
         if (inventoryDictionary.ContainsKey(item))
         {

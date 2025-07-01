@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using static ItemData;
 using System.Collections.Generic;
+using static ObjectData;
 
 public class SecurityInGameUI : NetworkBehaviour
 {
@@ -25,6 +26,8 @@ public class SecurityInGameUI : NetworkBehaviour
     private Sprite UsingIcon;
     [SerializeField] 
     private Sprite PickUpIcon;
+    [SerializeField]
+    private Sprite HoldIcon;
     [SerializeField] 
     private TextMeshProUGUI ItemExplain;
     public TextMeshProUGUI itemObjectName;
@@ -71,7 +74,6 @@ public class SecurityInGameUI : NetworkBehaviour
 
         InteractionUI.SetActive(false);
 
-        // 모든 경비원 오브젝트를 찾고, 로컬 클라이언트 ID와 비교하여 해당 경비원의 Interaction을 가져옴
         GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Bouncer");
 
         int SecuriyCount = 0;
@@ -80,7 +82,7 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             SecuriyCount++;
 
-            playerId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
+            playerId = (uint)bouncer.GetComponent<PlayerController>().ConnectionID;
 
             Debug.Log("경비원   " + SecuriyCount + "의 접속 ID" + playerId);
 
@@ -99,36 +101,58 @@ public class SecurityInGameUI : NetworkBehaviour
     {
         SecurityInteractionUI();
 
-        if (Input.GetKeyDown(KeyCode.I))
-        {
-            Debug.Log("현재 기준 이 스크립트를 갖고 있는 경비원 ID" + playerId);
-
-            if(ItemManager.Instance.inventoryDictionary.Count > 0)
-            {
-                foreach (var item in ItemManager.Instance.inventoryDictionary)
-                {
-                    int itemCount = item.Value;
-                    ItemData.ItemList items = item.Key;
-
-                    Debug.Log("아이템 : " + items + " 갯수 : " + itemCount);
-
-                }
-            }
-        }
-
-
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress == false)
         {
-            SlotManager.UseSelectedItem(playerId);
+            if(SlotManager.isItemCooltime == false)
+            {
+                SlotManager.UseSelectedItem(playerId);
+            }
+            else
+            {
+                Debug.Log("아이템 사용 쿨타임 아직 안 끝남");
+            }
+           
         }
     }
 
     private void SecurityInteractionUI()
     {
+        //오브젝트 관련
+
+        if(securityInteraction.isObjectInteracted == true)
+        {
+            if(securityInteraction.SaveRayObject.GetComponent<IHoldInteractable>().IsCompleted()) 
+            {
+                OnObjectInteractionUnview();
+
+                return; 
+            } 
+            //오브젝트 상호작용 후 오브젝트의 기능 정상 작동 되면 UI 보여주지 않음
+
+            if (securityInteraction.SaveRayObject != null)
+            {
+                ObjectData.ObjectList objectList = securityInteraction.SaveRayObject.GetComponent<IHoldInteractable>().GetObjectList();
+
+                OnInteractionUI(InteractionType.Hold);
+
+                OnObjectNameUI(objectList);
+
+                OnObjectExplainUI(objectList);
+            }
+        }
+        else
+        {
+            OnObjectInteractionUnview();
+        }
+
+
+        if(securityInteraction.isObjectInteracted == true) { return; } //오브젝트와 상호작용 중이라면 아이템 상호작용 관련 UI 작동 X
+
+        // 아이템 관련
         //1. 비어 있을 때 와 비어 있지 않을 때 
         // 2. 아이템을 쳐다 볼 때와 쳐다보지 않을 때 
 
-        if (securityInteraction.isInteracted == true) //아이템 쳐다 볼 때
+        if (securityInteraction.isItemInteracted == true) //아이템 쳐다 볼 때
         {
             if(securityInteraction.SaveRayItem != null)
             {
@@ -188,6 +212,17 @@ public class SecurityInGameUI : NetworkBehaviour
                 }
                
             }
+            else
+            {
+
+                Debug.Log("아이템 상호작용 UI - X");
+
+                OnItemNameUI(ItemList.None);
+
+                OnItemExplainUI(ItemList.None);
+
+                OnInteractionUI(InteractionType.None);
+            }
           
         }
 
@@ -198,7 +233,7 @@ public class SecurityInGameUI : NetworkBehaviour
         switch (itemType)
         {
             case ItemUseType.Self: //자기 자신에게 사용하는 아이템을 든 상태 . 박스, 에너지 드링크, 볼펜
-                if (securityInteraction.isInteracted == true) //다른 아이템 바라볼 경우
+                if (securityInteraction.isItemInteracted == true) //다른 아이템 바라볼 경우
                 {
                     OnInteractionUI(InteractionType.PickUp); //픽업 ui 보여주고
                 }
@@ -209,7 +244,7 @@ public class SecurityInGameUI : NetworkBehaviour
                 break;
             case ItemUseType.Target: //상대에게 사용하는 아이템을 든 상태 . 피 묻은 천, 구속구
 
-                if (securityInteraction.isInteracted == true) //다른 아이템 바라볼 경우
+                if (securityInteraction.isItemInteracted == true) //다른 아이템 바라볼 경우
                 {
                     OnInteractionUI(InteractionType.PickUp); //픽업 ui 보여주고
                 }
@@ -251,16 +286,19 @@ public class SecurityInGameUI : NetworkBehaviour
             {
                 case InteractionType.PickUp:
                     uiImage.sprite = PickUpIcon; // 아이템 줍기 아이콘
-                    text.text = " 줍기";
+                    text.text = "상호작용";
                     break;
                 case InteractionType.Self:
                     uiImage.sprite = UsingIcon; // 아이템 줍기 아이콘
                     text.text = "자신에게 사용";
                     break;
                 case InteractionType.Target:
-
                     uiImage.sprite = UsingIcon; // 아이템 줍기 아이콘
                     text.text = "대상에게 사용";
+                    break;
+                case InteractionType.Hold:
+                    uiImage.sprite = PickUpIcon; // 아이템 줍기 아이콘
+                    text.text = "상호작용";
                     break;
             }
         }
@@ -269,7 +307,51 @@ public class SecurityInGameUI : NetworkBehaviour
 
     }
 
-    public void OnItemNameUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
+    public void OnObjectInteractionUnview()
+    {
+
+        Debug.Log("오브젝트 UI 가리기");
+
+        OnInteractionUI(InteractionType.None);
+
+        OnObjectNameUI(ObjectData.ObjectList.None);
+
+        OnObjectExplainUI(ObjectData.ObjectList.None);
+    }
+
+    private void OnObjectNameUI(ObjectData.ObjectList objectKey = ObjectData.ObjectList.None)
+    {
+        if(ItemManager.Instance.ObjectDictionary.TryGetValue(objectKey,out var value))
+        {
+            switch(objectKey)
+            {
+                case ObjectData.ObjectList.OldLever:
+                    itemObjectName.text = value.ObjectName;
+                    break;
+                case ObjectData.ObjectList.None:
+                    itemObjectName.text = "";
+                    break;
+            }
+        }
+    }
+    private void OnObjectExplainUI(ObjectData.ObjectList objectKey = ObjectData.ObjectList.None)
+    {
+        if (ItemManager.Instance.ObjectDictionary.TryGetValue(objectKey, out var value))
+        {
+            switch (objectKey)
+            {
+                case ObjectData.ObjectList.OldLever:
+                    ItemExplain.text = value.ObjectExplain;
+                    break;
+                case ObjectData.ObjectList.None:
+                    ItemExplain.text = "";
+                    break;
+            }
+        }
+    }
+
+
+    private void OnItemNameUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
     {
         if (Interaction.isMissionProgress == true )
         {
@@ -309,7 +391,7 @@ public class SecurityInGameUI : NetworkBehaviour
         }
     }
 
-    public void OnItemExplainUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
+    private void OnItemExplainUI(ItemData.ItemList itemKey = ItemData.ItemList.None)
     {
 
         if (Interaction.isMissionProgress == true)
@@ -353,10 +435,9 @@ public class SecurityInGameUI : NetworkBehaviour
 
     public void OnDestroyItemUI(GameObject item, int slotIndex)
     {
-
         Transform slotTransform = SlotManager.slotDataList[slotIndex].SlotObj.transform;
 
-        Transform itemUITransform = slotTransform.GetChild(2);
+        Transform itemUITransform = slotTransform.GetChild(1);
 
         // 자식 객체가 이미 삭제되었는지 확인
         if (itemUITransform != null && itemUITransform.gameObject != null)
@@ -368,18 +449,16 @@ public class SecurityInGameUI : NetworkBehaviour
 
             ItemManager.Instance.RemoveItem(itemList);
 
-            if (InventoryCheck(itemList)) //해당 아이템이 하나도 존재하지 않으면
+            if (InventoryCheck(itemList)) //해당 아이템이 존재한다면
             {
-
                 SlotManager.slotDataList[slotIndex].itemList = itemList;
                 SlotManager.slotDataList[slotIndex].itemUseType = itemType;
                 SlotManager.slotDataList[slotIndex].IsEmpty = false; // 빈 슬롯 됨
 
             }
-            else
+            else //존재하지 않는다면
             {
                 Destroy(itemUITransform.gameObject); // 해당 자식 객체 삭제
-
 
                 SlotManager.slotDataList[slotIndex].itemList = ItemList.None;
                 SlotManager.slotDataList[slotIndex].itemUseType = ItemUseType.None;
@@ -388,9 +467,6 @@ public class SecurityInGameUI : NetworkBehaviour
                 SlotManager.itemSlotIndex.Remove(itemList); // 슬롯 인덱스 해제
             }
 
-            Slot slot = SlotManager.slotDataList[slotIndex].SlotObj.GetComponent<Slot>();
-
-            slot.SlotItemCount(itemList);
         }
     
 

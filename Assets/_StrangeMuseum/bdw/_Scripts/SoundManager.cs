@@ -1,6 +1,7 @@
+using Mirror;
 using UnityEngine;
 
-public class SoundManager : MonoBehaviour
+public class SoundManager : NetworkBehaviour
 {
     public static SoundManager Instance { get; private set; }
 
@@ -33,6 +34,37 @@ public class SoundManager : MonoBehaviour
                 return;
             }
         }
+
+    }
+
+    [Command(requiresAuthority = false)]
+    private void CmdPlaySound(string clipName, Vector3 point)
+    {
+        PlayPointSoundClientRpc(clipName, point); // 모든 클라이언트에 전달
+    }
+    [ClientRpc]
+    private void PlayPointSoundClientRpc(string clipName, Vector3 point)
+    {
+        AudioClip clip = Resources.Load<AudioClip>("SFX/" + clipName);
+
+        foreach (AudioSource audio in sfxAudioSources)
+        {
+            if (!audio.isPlaying)
+            {
+                audio.volume = PlayerPrefs.GetFloat("SfxVolume", 0.5f);
+
+                AudioSource.PlayClipAtPoint(clip, point);
+
+                return;
+            }
+        }
+    }
+    public void PlayerAtPointSfx(string clipName, GameObject objectPoint)
+    {
+        Vector3 point = objectPoint.transform.position;
+        CmdPlaySound(clipName, point);
+
+  
     }
 
     public void ApplyBgmVolume()

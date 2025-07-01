@@ -8,12 +8,11 @@ using UnityEngine.Audio;
 using UnityEngine.UI;
 using static UnityEditor.ShaderGraph.Internal.KeywordDependentCollection;
 
-public class StatueInteraction : NetworkBehaviour
+public class StatueInteraction : PlayerController
 {
  
 
     private StatueController statueController;
-    private StatueAttack statueAttack;
 
     [SerializeField]
     private AudioSource audioSource; // 오디오 소스 컴포넌트
@@ -33,10 +32,6 @@ public class StatueInteraction : NetworkBehaviour
     private void Start()
     {
         statueController = GetComponent<StatueController>();
-        statueAttack = GetComponent<StatueAttack>();
-
-        Instantiate(InGameUIPrefab); //임시 - 조각상 생성 후 삭제
-
     }
 
     [SerializeField]
@@ -50,6 +45,7 @@ public class StatueInteraction : NetworkBehaviour
         if (isOwned)  // 내가 소유한 클라이언트라면
         {
            Instantiate(InGameUIPrefab);
+            Debug.Log("조각상 UI 호출");
 
         }
     }
@@ -67,7 +63,7 @@ public class StatueInteraction : NetworkBehaviour
 
     private IEnumerator HandStuffFunc(NetworkIdentity handCuffIdentity, float minMoveSpeed, float minRushSpeed, float handCuffCooltime)
     {
-        TestHeadlessAngel testHeadlessAngel = GetComponent<TestHeadlessAngel>();
+        StatueController stauteController = GetComponent<StatueController>();
         handCuffIdentity.GetComponent<HandCuff>().isHandCuffUsing = true;
 
         //감소 시간 - handCuffCooltime / 2 = 1.5초
@@ -76,8 +72,8 @@ public class StatueInteraction : NetworkBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            testHeadlessAngel.MoveSpeed = Mathf.Lerp(testHeadlessAngel.initMoveSpeed, minMoveSpeed, elapsedTime / handCuffCooltime); //
-            testHeadlessAngel.RushSpeed = Mathf.Lerp(testHeadlessAngel.initRushSpeed, minRushSpeed, elapsedTime / handCuffCooltime); //1.5
+            stauteController.MovementSpeed = Mathf.Lerp(stauteController.MovementSpeed, minMoveSpeed, elapsedTime / handCuffCooltime); //
+            stauteController.RushSpeed = Mathf.Lerp(stauteController.initRushSpeed, minRushSpeed, elapsedTime / handCuffCooltime); //1.5
 
             yield return null;
         }
@@ -90,8 +86,8 @@ public class StatueInteraction : NetworkBehaviour
         {
             elapsedTime += Time.deltaTime;
 
-            testHeadlessAngel.MoveSpeed = Mathf.Lerp(minMoveSpeed, testHeadlessAngel.initMoveSpeed, elapsedTime / handCuffCooltime);
-            testHeadlessAngel.RushSpeed = Mathf.Lerp(minRushSpeed, testHeadlessAngel.initRushSpeed, elapsedTime / handCuffCooltime);
+            stauteController.MovementSpeed = Mathf.Lerp(minMoveSpeed, stauteController.InitWalkingSpeed, elapsedTime / handCuffCooltime);
+            stauteController.RushSpeed = Mathf.Lerp(minRushSpeed, stauteController.initRushSpeed, elapsedTime / handCuffCooltime);
 
             yield return null;
         }
@@ -113,11 +109,15 @@ public class StatueInteraction : NetworkBehaviour
     }
 
     [Command(requiresAuthority = false)]
-    public void CoverOnOffServerRpc(bool value, NetworkIdentity BloodCover)
+    public void CoverOnOffServerRpc(NetworkIdentity BloodCover , bool value)
     {
         transform.GetChild(4).gameObject.SetActive(value);
 
-        StatueInGameUI.Instance.CoverUI(BloodCover);
+        Debug.Log("CoverUI 호출");
+
+        NetworkIdentity statue = this.GetComponent<NetworkIdentity>();
+
+        StatueInGameUI.Instance.CoverUI(BloodCover, statue);
 
         CoverOnOffClientRpc(value);
     }
@@ -127,6 +127,7 @@ public class StatueInteraction : NetworkBehaviour
     {
         transform.GetChild(4).gameObject.SetActive(value);
     }
+
 
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  3. 던지는 볼펜  @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.

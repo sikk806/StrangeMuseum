@@ -1,12 +1,15 @@
+using Mirror;
 using Unity.VisualScripting;
 using UnityEngine;
 
 public class StatueController : PlayerController
 {
     // Rush Speed 적용시키는 버전으로 업데이트 예정
-    public float RushSpeed;
+    [SyncVar]
+    public float RushSpeed = 5f;
 
     // RushSpeed와 함께 조절
+    [SyncVar]
     public float initRushSpeed;
 
     [Header("\nCameraSetting")]
@@ -21,13 +24,21 @@ public class StatueController : PlayerController
 
     //private PlayerState playerState;
 
+    public override void OnStartLocalPlayer()
+    {
+        if (!isOwned) return;
+
+        base.OnStartLocalPlayer();
+
+        initRushSpeed = RushSpeed;
+    }
     protected override void Start()
     {
         if(!isOwned) return;
 
         base.Start();
 
-        initRushSpeed = RushSpeed;
+        
     }
 
     // Update is called once per frame
@@ -88,4 +99,5 @@ public class StatueController : PlayerController
         playerCamera.localRotation = Quaternion.Euler(20f, yaw, 0f);
         playerCamera.position = transform.position + transform.rotation * StatueCameraPosition;
     }
+
 }

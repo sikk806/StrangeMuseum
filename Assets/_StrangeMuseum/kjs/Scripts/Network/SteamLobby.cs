@@ -17,6 +17,9 @@ public class SteamLobby : MonoBehaviour
     private const string HostAddressKey = "HostAddress";
 
     [SerializeField]
+    private bool forceLocalMode = true; // 스팀 사용 아닐 떄 끄기.
+
+    [SerializeField]
     private bool isSteamAvailable; // 혼자 작업할 때 필요한 것.
 
     private void Start()
@@ -24,23 +27,16 @@ public class SteamLobby : MonoBehaviour
         networkManager = GetComponent<SMNetworkManager>();
         if (!Instance) { Instance = this; }
 
-        if (!SteamManager.Initialized)
-        {
-            // Steam을 사용ㅇ하지 않는 경우 TelepathyTransport로 넘겨주기 위함
-            var fallback = FindObjectOfType<TelepathyTransport>();
-            if (fallback != null)
-                Transport.active = fallback;
-        }
-
-        isSteamAvailable = SteamManager.Initialized;
+        isSteamAvailable = SteamManager.Initialized && !forceLocalMode;
 
         if (!isSteamAvailable)
         {
-            Debug.Log("Steam is NOT initialized. Running in LOCAL TEST MODE.");
+            // Steam을 사용하지 않는 경우 TelepathyTransport로 넘겨주기 위함
+            Transport.active = FindAnyObjectByType<TelepathyTransport>();
+
+            Debug.Log("Steam Status : LOGOUT.");
             return; // Steam 콜백 등록 생략
         }
-
-        isSteamAvailable = false;
 
         lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
         gameLobbyJoinRequested = Callback<GameLobbyJoinRequested_t>.Create(OnGameLobbyJoinRequested);
@@ -49,14 +45,11 @@ public class SteamLobby : MonoBehaviour
 
     public void HostLobby()
     {
-        //HostButton.SetActive(false);
-
         if (!isSteamAvailable)
         {
-            Debug.Log("Local host started (no Steam)");
+            Debug.Log("Local host started.... (NOT Steam)");
             networkManager.networkAddress = "localhost";
             networkManager.StartHost();
-
             return;
         }
 
@@ -67,7 +60,7 @@ public class SteamLobby : MonoBehaviour
     {
         if (!isSteamAvailable)
         {
-            Debug.Log("Local host started (no Steam)");
+            Debug.Log("Local client started.... (NOT Steam)");
             networkManager.networkAddress = "localhost";
             networkManager.StartClient();
             return;

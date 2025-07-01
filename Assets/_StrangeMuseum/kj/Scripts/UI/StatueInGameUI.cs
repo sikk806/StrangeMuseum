@@ -41,25 +41,28 @@ public class StatueInGameUI : NetworkBehaviour
 
         }
 
+    }
+
+    public override void OnStartLocalPlayer()
+    {
         base.OnStartLocalPlayer();
 
-
         // 모든 경비원 오브젝트를 찾고, 로컬 클라이언트 ID와 비교하여 해당 경비원의 Interaction을 가져옴
-        GameObject[] bouncers = GameObject.FindGameObjectsWithTag("Statue");
+        GameObject[] Status = GameObject.FindGameObjectsWithTag("Statue");
 
         int statueCount = 0;
 
-        // foreach (var bouncer in bouncers)
-        // {
-        //     statueCount++;
+        foreach (var statue in Status)
+        {
+            statueCount++;
 
-          //  statueId = (uint)bouncer.GetComponent<PlayerLobbyController>().ConnectionID;
+            statueId = (uint)statue.GetComponent<PlayerLobbyController>().ConnectionID;
 
-        //     Debug.Log("조각상   " + statueCount + "의 접속 ID" + statueId);
+            Debug.Log("조각상   " + statueCount + "의 접속 ID" + statueId);
 
-        //     statueInteraction = bouncer.GetComponent<StatueInteraction>();
+            statueInteraction = statue.GetComponent<StatueInteraction>();
 
-        // }
+        }
 
     }
 
@@ -88,36 +91,38 @@ public class StatueInGameUI : NetworkBehaviour
     private float CoverCooltime;
 
 
-    public void CoverUI(NetworkIdentity BloodCover)
+    public void CoverUI(NetworkIdentity BloodCover,NetworkIdentity Statue)
     {
         if (BloodCover.GetComponent<Cover>().isCoverUsing == false)
         {
             return;
         }
 
-        if(isCoverUI) { Debug.Log("이미 시야 차단 UI 실행 중");  return; }
+        statueInteraction = Statue.GetComponent<StatueInteraction>();
 
-        StartCoroutine(CoverFunc(CoverCooltime,BloodCover));
+        StartCoroutine(CoverFunc(BloodCover, CoverCooltime));
+
 
     }
 
-    [SerializeField]
-    bool isCoverUI;
-    public IEnumerator CoverFunc(float Cooltime, NetworkIdentity BloodCover)
+    public IEnumerator CoverFunc(NetworkIdentity BloodCover, float Cooltime)
     {
-        isCoverUI = true;
-
+        Debug.Log("가리기");
         StartCoroutine(ChangeAlpha(1f)); // 알파값을 1로 증가
 
         yield return new WaitForSeconds(Cooltime);
-
+        Debug.Log("보이기");
         StartCoroutine(ChangeAlpha(0f)); // 알파값을 0으로 감소
 
-        statueInteraction.CoverOnOffServerRpc(false, BloodCover);
+        if(statueInteraction == null)
+        {
+            Debug.LogWarning("statueInteraction - null");
+        }
+        statueInteraction.CoverOnOffServerRpc(BloodCover, false);
 
-        isCoverUI = false;
+
         BloodCover.GetComponent<Cover>().isCoverUsing = false; //한번 실행 하고 바로 FALSE. 
-        BloodCover.GetComponent<Cover>().CoverGameObject.GetComponent<Cover>().ResetInteractServerRpc();
+        BloodCover.GetComponent<Cover>().GetComponent<Cover>().ResetInteractServerRpc();
         
     }
 
