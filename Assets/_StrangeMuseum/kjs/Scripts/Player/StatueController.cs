@@ -22,8 +22,14 @@ public class StatueController : PlayerController
     private bool voiceOn = true;
     private bool canMove = true;
 
-    //private PlayerState playerState;
+    public Transform GetPlayerCamera() { return playerCamera; }
 
+    // 상속을 위한 변수들
+
+    [SerializeField]
+    GameObject StauteCamera;
+
+    GameObject cam;
     public override void OnStartLocalPlayer()
     {
         if (!isOwned) return;
@@ -38,7 +44,7 @@ public class StatueController : PlayerController
 
         base.Start();
 
-        
+        cam = Instantiate(StauteCamera, transform.position, Quaternion.identity);
     }
 
     // Update is called once per frame
@@ -92,12 +98,12 @@ public class StatueController : PlayerController
         mouseX = Input.GetAxis("Mouse X") * MouseSensitivity; // RightLeft
 
         transform.Rotate(Vector3.up * mouseX);
-        playerCamera.Rotate(Vector3.up * mouseX);
+        cam.transform.Rotate(Vector3.up * mouseX);
 
         yaw += mouseX;
 
-        playerCamera.localRotation = Quaternion.Euler(20f, yaw, 0f);
-        playerCamera.position = transform.position + transform.rotation * StatueCameraPosition;
+        cam.transform.localRotation = Quaternion.Euler(20f, yaw, 0f);
+        cam.transform.position = transform.position + transform.rotation * StatueCameraPosition;
     }
 
 }

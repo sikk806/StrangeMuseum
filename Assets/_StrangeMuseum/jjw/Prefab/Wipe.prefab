@@ -388,7 +388,7 @@ GameObject:
   - component: {fileID: 6360588015492415150}
   - component: {fileID: 981405249982150706}
   m_Layer: 0
-  m_Name: Clicker 1
+  m_Name: Wipe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

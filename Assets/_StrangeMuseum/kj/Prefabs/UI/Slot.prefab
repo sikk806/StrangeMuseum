@@ -304,8 +304,8 @@ MonoBehaviour:
   SlotNumber: 2
   SlotData:
     IsEmpty: 0
-    SlotItemNumber: 0
     SlotObj: {fileID: 0}
+    OriginalIndex: 0
     itemUseType: 0
     itemList: 0
   selectImage: {fileID: 21300000, guid: e466468e92ffc5549bb6f8ee2198183f, type: 3}

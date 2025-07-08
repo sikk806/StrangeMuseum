@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static CopyStatueCotroller;
 
 // 석상 돌진 스킬과 관련된 클래스
 public class StatueAttack : NetworkBehaviour
@@ -10,7 +11,7 @@ public class StatueAttack : NetworkBehaviour
     [Header("AttackSetting")]
     //public float RushSpeed = 50f;  // default : 50f
 
-   // public float InitRushSpeed;
+    // public float InitRushSpeed;
     public float RushDuration = 0.2f;
 
     public GameObject DashVisualEffect;
@@ -18,30 +19,52 @@ public class StatueAttack : NetworkBehaviour
     private bool isRush = false;
     Transform playerCamera;
 
-    PlayerController playerController;
+    StatueController playerController;
 
-    private  void Start()
+    private SMNetworkManager manager;
+
+    private SMNetworkManager Manager
+    {
+        get
+        {
+            if (manager)
+            {
+                return manager;
+            }
+            return manager = SMNetworkManager.singleton as SMNetworkManager;
+        }
+    }
+
+    private void Start()
     {
         //initRushSpeed = RushSpeed;
         //playerCamera = Camera.main.transform;
 
-        playerController = GetComponentInParent<StatueController>();
+        playerController = GetComponent<StatueController>();
+
         playerCamera = playerController.GetPlayerCamera();
 
-  
+        //playerCamera = playerController.GetPlayerCamera();
+
+
     }
 
     // Update is called once per frame
-    private  void Update()
+
+    [SerializeField]
+    [SyncVar]
+    bool isCopyStatue;
+
+    private void Update()
     {
-   
-        if(!isOwned) return;
+
+        if (!isOwned) return;
         //if(GetComponent<StatueController>().playerState.Value == PlayerState.Freeze) { return; }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && !isRush)
         {
             // Move, View Fix
-            
+
             //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Attack);
             StartCoroutine(Attack());
 
@@ -49,7 +72,45 @@ public class StatueAttack : NetworkBehaviour
 
             Debug.Log("Statue Rush - Attack");
         }
+
+        if(Input.GetKeyDown(KeyCode.Q) && isCopyStatue == false)
+        {
+            CopyStatueFunction();
+        }
     }
+
+    private void CopyStatueFunction()
+    {
+        CopyStatueCmd();
+    }
+
+    [SerializeField]
+    GameObject CopyStatue;
+
+    [Command(requiresAuthority = false)]
+    private void CopyStatueCmd()
+    {
+
+        GameObject copyStatue = Instantiate(CopyStatue, transform.position, Quaternion.identity);
+
+        NetworkServer.Spawn(copyStatue,connectionToClient);
+        isCopyStatue = true;
+    }
+
+ 
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (!isOwned) return;
+        if (other.GetComponent<SecurityController>() != null && isRush)
+        {
+            NetworkIdentity networkIdentity = other.GetComponent<NetworkIdentity>();
+            CmdRequestReplace(networkIdentity);
+            Debug.Log("HIT!!!!!!!");
+        }
+    }
+
+
 
     IEnumerator Attack()
     {
@@ -77,5 +138,28 @@ public class StatueAttack : NetworkBehaviour
         //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
     }
 
+    [Command]
+    private void CmdRequestReplace(NetworkIdentity target)
+    {
+        NetworkConnectionToClient conn = target.connectionToClient;
+
+        // 현재 PlayerController
+        PlayerController playerController = target.GetComponent<PlayerController>();
+
+        // 바뀔 PlayerController
+        GameObject playerObj = null;
+        playerObj = Instantiate(Manager.GetStatuePrefab());
+        PlayerController newPlayerController = playerObj.GetComponent<PlayerController>();
+
+        NetworkServer.ReplacePlayerForConnection(conn, playerObj, ReplacePlayerOptions.KeepAuthority);
+
+        newPlayerController.ConnectionID = playerController.ConnectionID;
+        newPlayerController.PlayerIdNumber = playerController.PlayerIdNumber;
+        newPlayerController.PlayerSteamId = playerController.PlayerSteamId;
+        newPlayerController.PlayerName = playerController.PlayerName;
+
+        NetworkServer.Destroy(playerController.gameObject);
+        GameResultManager.Instance.SetCharacterCount(-1, 1);
+    }
 
 }

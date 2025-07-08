@@ -119,17 +119,15 @@ public class SecurityInGameUI : NetworkBehaviour
     {
         //오브젝트 관련
 
-        if(securityInteraction.isObjectInteracted == true)
+        if (securityInteraction.SaveRayObject != null)
         {
-            if(securityInteraction.SaveRayObject.GetComponent<IHoldInteractable>().IsCompleted()) 
+            if (securityInteraction.SaveRayObject.GetComponent<IHoldInteractable>().IsCompleted())
             {
                 OnObjectInteractionUnview();
 
-                return; 
-            } 
-            //오브젝트 상호작용 후 오브젝트의 기능 정상 작동 되면 UI 보여주지 않음
-
-            if (securityInteraction.SaveRayObject != null)
+                return;
+            }
+            else
             {
                 ObjectData.ObjectList objectList = securityInteraction.SaveRayObject.GetComponent<IHoldInteractable>().GetObjectList();
 
@@ -139,6 +137,7 @@ public class SecurityInGameUI : NetworkBehaviour
 
                 OnObjectExplainUI(objectList);
             }
+
         }
         else
         {
@@ -321,6 +320,11 @@ public class SecurityInGameUI : NetworkBehaviour
 
     private void OnObjectNameUI(ObjectData.ObjectList objectKey = ObjectData.ObjectList.None)
     {
+        if(objectKey == ObjectData.ObjectList.None)
+        {
+            itemObjectName.text = "";
+        }
+
         if(ItemManager.Instance.ObjectDictionary.TryGetValue(objectKey,out var value))
         {
             switch(objectKey)
@@ -336,6 +340,10 @@ public class SecurityInGameUI : NetworkBehaviour
     }
     private void OnObjectExplainUI(ObjectData.ObjectList objectKey = ObjectData.ObjectList.None)
     {
+        if (objectKey == ObjectData.ObjectList.None)
+        {
+            ItemExplain.text = "";
+        }
         if (ItemManager.Instance.ObjectDictionary.TryGetValue(objectKey, out var value))
         {
             switch (objectKey)

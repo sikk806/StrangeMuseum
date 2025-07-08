@@ -374,6 +374,7 @@ MonoBehaviour:
   initRushSpeed: 0
   MouseSensitivity: 2
   StatueCameraPosition: {x: 0, y: 1.85, z: -0.6}
+  StauteCamera: {fileID: 2506118257369708674, guid: 6e8a972c4a822ab40bff3632793688f5, type: 3}
 --- !u!114 &5809237832576059063
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -418,6 +419,8 @@ MonoBehaviour:
   syncInterval: 0
   RushDuration: 0.2
   DashVisualEffect: {fileID: 8514267958666413135, guid: 4c8b45890ead24d428e312e60163efa7, type: 3}
+  isCopyStatue: 0
+  CopyStatue: {fileID: 3700023745771866719, guid: 5580aa7847f0444419ac1538490a5909, type: 3}
 --- !u!1 &6347597832261494927
 GameObject:
   m_ObjectHideFlags: 0

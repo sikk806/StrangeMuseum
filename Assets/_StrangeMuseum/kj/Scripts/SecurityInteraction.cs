@@ -58,8 +58,6 @@ public class SecurityInteraction : NetworkBehaviour
     [SyncVar]
     public bool isItemInteracted;
 
-    [SyncVar]
-    public bool isObjectInteracted;
 
     [SyncVar]
     public bool IsStatue;
@@ -111,6 +109,8 @@ public class SecurityInteraction : NetworkBehaviour
             return;
         }
 
+        Debug.Log("isOwned - true");
+
         SecurityInteractionRay();
 
         SecurityItemInteraction();
@@ -121,9 +121,6 @@ public class SecurityInteraction : NetworkBehaviour
 
     private void SercurityObjectInteraction() //1. 오래된 레버 ( 아이템 x , 일반적인 상호작용 오브젝트 ) 상호작용 후  기능 호출 부분
     {
-        if (isObjectInteracted == false) { return; }
-
-        if (currentTarget.IsCompleted()) return;
 
         if (Input.GetMouseButtonDown(0) && currentTarget != null)
         {
@@ -133,6 +130,12 @@ public class SecurityInteraction : NetworkBehaviour
         }
         else if (Input.GetMouseButton(0) && currentTarget != null)
         {
+            if(currentTarget.IsCompleted())
+            {
+                progressBarUI.Hide();
+
+                return;
+            }
             currentTarget.StartHolding(Time.deltaTime); // 누르는 중 갱신
             progressBarUI.UpdateProgress(currentTarget.HoldTime / currentTarget.HoldDuration);
 
@@ -151,6 +154,8 @@ public class SecurityInteraction : NetworkBehaviour
         }
 
     }
+
+    public bool isObjectInteracted;
     private void SecurityItemInteraction() // 2. 아이템들과 상호작용 후 아이템 기능 호출 부분
     {
         
@@ -176,14 +181,16 @@ public class SecurityInteraction : NetworkBehaviour
     {
         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
         RaycastHit hit;
-
+        Debug.Log("SecurityInteractionRay 중");
         if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("MissionInteraction")))
         {
             if (hit.collider.CompareTag("OldLever"))
             {
-                isObjectInteracted = true;
+                Debug.Log("OldLever 중");
 
                 ObjectSave(hit.collider.gameObject);
+
+                isObjectInteracted = true;
 
                 currentTarget = hit.collider.GetComponent<IHoldInteractable>();
             }
@@ -206,6 +213,8 @@ public class SecurityInteraction : NetworkBehaviour
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
                 || hit.collider.CompareTag("Pen"))
             {
+                Debug.Log("Item 중");
+
                 interactableItem = hit.collider.GetComponent<IInteractable>();
                 iusableItem = hit.collider.GetComponent<IUsableItem>();
 

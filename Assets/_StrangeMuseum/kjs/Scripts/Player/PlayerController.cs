@@ -34,7 +34,6 @@ public class PlayerController : NetworkBehaviour
     public void SetPlayerState(PlayerState state) { playerState = state; }
     public PlayerState GetPlayerState() { return playerState; }
 
-    public Transform GetPlayerCamera() { return playerCamera; }
 
     // 이 부분은 플레이어가 스폰 됐을 때 사용할 것으로 예상. 필요 없다면 과감히 지울 것.
     // public static Action<SecurityController> OnPlayerSpawn;
@@ -69,11 +68,6 @@ public class PlayerController : NetworkBehaviour
         // Player 기본 상태 세팅
         playerState = PlayerState.Idle;
         transform.Rotate(Vector3.zero);
-
-        // Player 카메라 가져오기.
-        playerCamera = Camera.main.transform;
-        playerCamera.GetChild(0).gameObject.SetActive(true);
-
         
 
         Debug.Log("커서 ");

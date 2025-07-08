@@ -17,6 +17,8 @@ public class SMNetworkManager : NetworkManager
     [SerializeField]
     private bool forceLocalMode = true; // 스팀 사용 아닐 떄 켜기.
 
+    public GameObject GetStatuePrefab() { return statuePrefab;  }
+
     public override void Awake()
     {
         base.Awake();
@@ -30,11 +32,9 @@ public class SMNetworkManager : NetworkManager
 
     public override void Start()
     {
-        //SceneManager.sceneLoaded += OnSceneLoaded;
+
     }
 
-    // 스팀에 로그인 되어있는 경우에만 사용 가능.
-    // 스팀에 로그아웃 되어있는 경우에 테스트 할 것 구현 필요
     public override void OnServerAddPlayer(NetworkConnectionToClient conn)
     {
         if (SceneManager.GetActiveScene().name == "NetworkTest")
@@ -44,7 +44,6 @@ public class SMNetworkManager : NetworkManager
 
             GamePlayerInstance.ConnectionID = conn.connectionId;
             GamePlayerInstance.PlayerIdNumber = GamePlayers.Count + 1;
-            //GamePlayerInstance.PlayerSteamId = (ulong)SteamMatchmaking.GetLobbyMemberByIndex((CSteamID)SteamLobby.Instance.CurrentLobbyID, GamePlayers.Count);
 
             if (SteamManager.Initialized && SteamLobby.Instance != null)
             {
@@ -62,14 +61,32 @@ public class SMNetworkManager : NetworkManager
             {
                 GameObject playerObj = null;
 
-                int randomPrefab = Random.Range(0, 1);
-                if (GamePlayerInstance.PlayerIdNumber-1 == 0)
+                int randomPrefab = Random.Range(0, 2);
+                if (randomPrefab == 0)
                 {
-                    playerObj = Instantiate(statuePrefab);
+                    if (GameResultManager.Instance.StatueCount == 2)
+                    {
+                        playerObj = Instantiate(securityPrefab);
+                        GameResultManager.Instance.SecurityCount += 1;
+                    }
+                    else
+                    {
+                        playerObj = Instantiate(statuePrefab);
+                        GameResultManager.Instance.StatueCount += 1;
+                    }
                 }
-                else if (GamePlayerInstance.PlayerIdNumber-1 == 1)
+                else
                 {
-                    playerObj = Instantiate(securityPrefab);
+                    if (GameResultManager.Instance.SecurityCount == 2)
+                    {
+                        playerObj = Instantiate(statuePrefab);
+                        GameResultManager.Instance.StatueCount += 1;
+                    }
+                    else
+                    {
+                        playerObj = Instantiate(securityPrefab);
+                        GameResultManager.Instance.SecurityCount += 1;
+                    }
                 }
 
                 if (GamePlayerInstance.connectionToClient == null)
@@ -95,78 +112,5 @@ public class SMNetworkManager : NetworkManager
     public void StartGame(string sceneName)
     {
         ServerChangeScene(sceneName);
-    }
-
-    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        Debug.Log("Enter The Scene Loaded Function");
-        if (scene.name == "NetworkTest")
-        {
-            StartCoroutine(WaitLoad(mode));
-            return;
-            foreach (var player in GamePlayers)
-            {
-                Debug.Log("Player : " + player.name);
-                NetworkServer.DestroyPlayerForConnection(player.connectionToClient);
-                GameObject playerObj = null;
-
-                int randomPrefab = Random.Range(1, 2);
-                if (randomPrefab == 0)
-                {
-                    playerObj = Instantiate(statuePrefab);
-                }
-                else if (randomPrefab == 1)
-                {
-                    playerObj = Instantiate(securityPrefab);
-                }
-                NetworkServer.AddPlayerForConnection(player.connectionToClient, playerObj);
-
-                PlayerController playerController = playerObj.GetComponent<PlayerController>();
-
-                playerController.ConnectionID = player.ConnectionID;
-                playerController.PlayerIdNumber = player.PlayerIdNumber;
-                playerController.PlayerSteamId = player.PlayerSteamId;
-                playerController.PlayerName = player.PlayerName;
-            }
-        }
-    }
-
-    IEnumerator WaitLoad(LoadSceneMode mode)
-    {
-        yield return new WaitForSeconds(1.0f);
-
-        int i = 0;
-        foreach (var player in GamePlayers)
-        {
-            Debug.Log("i : " + i);
-            Debug.Log("Player : " + player.PlayerIdNumber);
-            GameObject playerObj = null;
-
-            int randomPrefab = Random.Range(0, 1);
-            if (randomPrefab == 0)
-            {
-                playerObj = Instantiate(statuePrefab);
-            }
-            else if (randomPrefab == 1)
-            {
-                playerObj = Instantiate(securityPrefab);
-            }
-
-            if (player.connectionToClient == null)
-            {
-                Debug.LogWarning($"[WaitLoad] player.connectionToClient is null for player ID {player.PlayerIdNumber}");
-                continue;
-            }
-
-            NetworkServer.ReplacePlayerForConnection(player.connectionToClient, playerObj, ReplacePlayerOptions.KeepAuthority);
-
-            PlayerController playerController = playerObj.GetComponent<PlayerController>();
-
-            playerController.ConnectionID = player.ConnectionID;
-            playerController.PlayerIdNumber = player.PlayerIdNumber;
-            playerController.PlayerSteamId = player.PlayerSteamId;
-            playerController.PlayerName = player.PlayerName;
-        }
-        Debug.Log("GamePlayers : " + GamePlayers.Count);
     }
 }

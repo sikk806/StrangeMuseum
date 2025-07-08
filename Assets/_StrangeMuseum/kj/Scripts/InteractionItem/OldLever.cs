@@ -44,8 +44,6 @@ public class OldLever : NetworkBehaviour , IHoldInteractable
     [SyncVar]
     private bool isComplete; //Hold 후 완료 여부
 
-    private MissionProgressBarUI progressBarUI;
-
     public ObjectData.ObjectList GetObjectList()
     {
         return ObjectData.ObjectList.OldLever;
@@ -54,11 +52,6 @@ public class OldLever : NetworkBehaviour , IHoldInteractable
     GameObject SparkEffectPrefab;
     void Start()
     {
-        if(SecurityInGameUI.Instance != null)
-        {
-            progressBarUI = SecurityInGameUI.Instance.GetComponent<MissionProgressBarUI>();
-        }
-      
 
         AnimSet();
 
@@ -148,10 +141,6 @@ public class OldLever : NetworkBehaviour , IHoldInteractable
             if(isComplete == false)
             {
                 isComplete = true;
-
-                SecurityInGameUI.Instance.OnObjectInteractionUnview();
-
-                progressBarUI.Hide();
 
                 CmdNotifyHoldCompleted();
             }

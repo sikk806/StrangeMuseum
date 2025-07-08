@@ -520,7 +520,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1da137e3f29a2de499d6e26d3170dcee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  loginButton: {fileID: 243681937}
 --- !u!4 &1011899103
 Transform:
   m_ObjectHideFlags: 0
@@ -665,7 +664,8 @@ MonoBehaviour:
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2cd97fc8b9a240245bcc4c5e84266cef, type: 2}
   m_sharedMaterial: {fileID: 7837987490672201552, guid: 2cd97fc8b9a240245bcc4c5e84266cef, type: 2}
-  m_fontSharedMaterials: []
+  m_fontSharedMaterials:
+  - {fileID: 7837987490672201552, guid: 2cd97fc8b9a240245bcc4c5e84266cef, type: 2}
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
   m_fontColor32:
