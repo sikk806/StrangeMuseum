@@ -35,7 +35,7 @@ public class GameResultManager : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!isServer) return;
+        //if (!isServer) return;
         if (SecurityCount == 0) gameEnd = true;
         if (gameEnd == true && StatueCount > 1)
         {

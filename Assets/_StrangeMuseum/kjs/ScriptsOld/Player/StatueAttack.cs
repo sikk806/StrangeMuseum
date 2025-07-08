@@ -3,6 +3,7 @@ using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
+using static CopyStatueCotroller;
 
 // 석상 돌진 스킬과 관련된 클래스
 public class StatueAttack : NetworkBehaviour
@@ -18,7 +19,7 @@ public class StatueAttack : NetworkBehaviour
     private bool isRush = false;
     Transform playerCamera;
 
-    PlayerController playerController;
+    StatueController playerController;
 
     private SMNetworkManager manager;
 
@@ -39,13 +40,21 @@ public class StatueAttack : NetworkBehaviour
         //initRushSpeed = RushSpeed;
         //playerCamera = Camera.main.transform;
 
-        playerController = GetComponentInParent<StatueController>();
+        playerController = GetComponent<StatueController>();
+
         playerCamera = playerController.GetPlayerCamera();
+
+        //playerCamera = playerController.GetPlayerCamera();
 
 
     }
 
     // Update is called once per frame
+
+    [SerializeField]
+    [SyncVar]
+    bool isCopyStatue;
+
     private void Update()
     {
 
@@ -63,7 +72,32 @@ public class StatueAttack : NetworkBehaviour
 
             Debug.Log("Statue Rush - Attack");
         }
+
+        if(Input.GetKeyDown(KeyCode.Q) && isCopyStatue == false)
+        {
+            CopyStatueFunction();
+        }
     }
+
+    private void CopyStatueFunction()
+    {
+        CopyStatueCmd();
+    }
+
+    [SerializeField]
+    GameObject CopyStatue;
+
+    [Command(requiresAuthority = false)]
+    private void CopyStatueCmd()
+    {
+
+        GameObject copyStatue = Instantiate(CopyStatue, transform.position, Quaternion.identity);
+
+        NetworkServer.Spawn(copyStatue,connectionToClient);
+        isCopyStatue = true;
+    }
+
+ 
 
     private void OnTriggerEnter(Collider other)
     {
@@ -75,6 +109,8 @@ public class StatueAttack : NetworkBehaviour
             Debug.Log("HIT!!!!!!!");
         }
     }
+
+
 
     IEnumerator Attack()
     {

@@ -20,6 +20,12 @@ public class SecurityController : PlayerController
     private SkinnedMeshRenderer skinnedMeshRenderer; // CharacterMesh 설정을 위함.
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    [SerializeField]
+    GameObject SeucrityCamera;
+
+    GameObject cam;
+
     protected override void Start()
     {
         if(!isOwned) return;
@@ -29,7 +35,11 @@ public class SecurityController : PlayerController
 
         base.Start();
 
+        cam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
+
         SceneManager.sceneLoaded += InitPlayerPosition;
+
+        
         Debug.Log("SetDelegate");
 
         // 자신의 스킨은 볼 수 없도록. (그림자만 존재하도록)
@@ -65,14 +75,14 @@ public class SecurityController : PlayerController
         mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
 
         transform.Rotate(Vector3.up * mouseX);
-        playerCamera.Rotate(Vector3.up * mouseX);
+        cam.transform.Rotate(Vector3.up * mouseX);
 
         yaw += mouseX;
         pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, -30f, 30f);
 
-        playerCamera.localRotation = Quaternion.Euler(pitch, yaw, 0f);
-        playerCamera.position = transform.position + transform.rotation * SecurityCameraPosition;
+        cam.transform.localRotation = Quaternion.Euler(pitch, yaw, 0f);
+        cam.transform.position = transform.position + transform.rotation * SecurityCameraPosition;
     }
 
     protected void InitPlayerPosition(Scene scene, LoadSceneMode mode)
