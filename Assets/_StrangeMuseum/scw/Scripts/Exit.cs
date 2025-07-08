@@ -6,7 +6,8 @@ public class Exit : MonoBehaviour
     {
         if(other.gameObject.CompareTag("Bouncer"))
         {
-            GameManager.Instance.GameResult.ShowPopup(Winner.Security);
+            Debug.Log("경비원 탈출 성공");
+           // GameManager.Instance.GameResult.ShowPopup(Winner.Security);
         }
     }
 }

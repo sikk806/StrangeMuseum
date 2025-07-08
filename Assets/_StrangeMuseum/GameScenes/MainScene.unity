@@ -6611,7 +6611,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 37422f4dc8c9284449d5d80305293a5d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  settingPopup: {fileID: 38186624}
   Sculptures:
   - {fileID: 1561117432100173274}
   - {fileID: 6026941558515364451}
