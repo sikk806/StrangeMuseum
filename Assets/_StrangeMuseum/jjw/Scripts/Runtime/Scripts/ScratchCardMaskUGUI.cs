@@ -11,10 +11,6 @@ namespace ScratchCard
         //  ----- 완료 이벤트 추가 -----
        
         public event System.Action OnWipeComplete;
-
-        private float wipeProgress = 0f;
-        private const float RequiredWipeProgress = 0.9f; // 90% 닦으면 완료
-
         private bool isComplete = false; // 수행 여부 체크
 
         // 완료 팝업
@@ -25,8 +21,7 @@ namespace ScratchCard
         {
             if (grid.Valid)
             {
-                wipeProgress = GetRevealProgress(); //  닦은 진행도 업데이트
-                if (wipeProgress >= RequiredWipeProgress)
+                if (GetRevealProgress() >= 1.0f) // 완전히 닦였을 때만 완료 처리
                 {
                     CompleteMission();
                 }
