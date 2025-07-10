@@ -18,6 +18,7 @@ TagManager:
   - Pen
   - StauteTable
   - OldLever
+  - ChatWindow
   layers:
   - Default
   - TransparentFX
@@ -42,7 +43,7 @@ TagManager:
   - 
   - -------scw
   - Fragment
-  - 
+  - Mission
   - 
   - -------jjw
   - Outline

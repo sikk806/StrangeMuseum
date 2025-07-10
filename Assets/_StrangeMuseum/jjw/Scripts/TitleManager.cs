@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class TitleManager : MonoBehaviour
 {
     //옵션창 받아오기
-    public SettingManager settingPopup;
+   // public SettingManager settingPopup;
 
     //연출을 위해 없어지는 오브젝트 받아오기
     public List<GameObject> Sculptures;
@@ -145,6 +145,6 @@ public class TitleManager : MonoBehaviour
     {
         // 옵션창 관련
         SoundManager.Instance.PlaySfx(ButtonSfx);
-        settingPopup.gameObject.SetActive(true);
+       // settingPopup.gameObject.SetActive(true);
     }
 }

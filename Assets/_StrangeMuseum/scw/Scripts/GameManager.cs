@@ -27,7 +27,7 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<int> StatueCount = new NetworkVariable<int>(0); // 석상 수        
     public NetworkVariable<bool> IsAllConnected = new NetworkVariable<bool>(false); // 모든 플레이어가 연결되었는지 여부
 
-    public GameResult GameResult;
+   // public GameResult GameResult;
 
     private void Awake()
     {
@@ -63,11 +63,11 @@ public class GameManager : NetworkBehaviour
         return;
 
        
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            SettingManager.Instance.gameObject.SetActive(
-                !SettingManager.Instance.gameObject.activeSelf);
-        }
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        //{
+        //    SettingManager.Instance.gameObject.SetActive(
+        //        !SettingManager.Instance.gameObject.activeSelf);
+        //}
 
     }
 
@@ -234,7 +234,7 @@ public class GameManager : NetworkBehaviour
         if (IsServer && SecurityCount.Value <= 0 && IsAllConnected.Value)
         {
             Debug.Log(SecurityCount.Value);
-            GameResult.ShowPopup(Winner.HeadlessAngel);
+           // GameResult.ShowPopup(Winner.HeadlessAngel);
         }
     }
 
@@ -243,7 +243,7 @@ public class GameManager : NetworkBehaviour
         if (IsServer && StatueCount.Value <= 0 && IsAllConnected.Value)
         {
             Debug.Log(StatueCount.Value);
-            GameResult.ShowPopup(Winner.Security);
+          //  GameResult.ShowPopup(Winner.Security);
         }
     }
 
