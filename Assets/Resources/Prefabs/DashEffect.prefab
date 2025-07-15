@@ -124,6 +124,7 @@ GameObject:
   m_Component:
   - component: {fileID: 465298548335099600}
   - component: {fileID: 3321112132782207783}
+  - component: {fileID: 7270963362447549978}
   m_Layer: 0
   m_Name: DashEffect
   m_TagString: Untagged
@@ -164,3 +165,16 @@ MonoBehaviour:
   serverOnly: 0
   visibility: 0
   hasSpawned: 0
+--- !u!114 &7270963362447549978
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8514267958666413135}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e14ff91c0360c594584adf223a789aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isUsing: 0

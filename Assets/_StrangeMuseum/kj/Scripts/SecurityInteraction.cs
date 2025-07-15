@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 
 //네트워크 관련 아이템 변수들은 각 아이템 스크립트에서 관리 -> 시도 해보기
 
-public class SecurityInteraction : NetworkBehaviour
+public class SecurityInteraction : SecurityController
 {
     public float LayDistance; //상호작용 레이
 
@@ -64,10 +64,12 @@ public class SecurityInteraction : NetworkBehaviour
 
     //고장난레버
     private MissionProgressBarUI progressBarUI;
+
     private Camera mainCam;
+
     private IHoldInteractable currentTarget;
 
-
+ 
     public override void OnStartLocalPlayer()
     {
         base.OnStartLocalPlayer();
@@ -76,8 +78,10 @@ public class SecurityInteraction : NetworkBehaviour
         {
             uiInstance = Instantiate(InGameUIPrefab);
 
+
         }
     }
+
     public override void OnStopLocalPlayer()
     {
         base.OnStopLocalPlayer();
@@ -177,9 +181,14 @@ public class SecurityInteraction : NetworkBehaviour
 
         }
     }
+ 
+
     private void SecurityInteractionRay() //아이템 및 오브젝트 상호작용 여부
     {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+
+   
+
         RaycastHit hit;
         Debug.Log("SecurityInteractionRay 중");
         if (Physics.Raycast(ray, out hit, LayDistance, LayerMask.GetMask("MissionInteraction")))

@@ -22,7 +22,7 @@ public class StatueController : PlayerController
     private bool voiceOn = true;
     private bool canMove = true;
 
-    public Transform GetPlayerCamera() { return playerCamera; }
+    public GameObject GetPlayerCamera() { return cam; }
 
     // 상속을 위한 변수들
 

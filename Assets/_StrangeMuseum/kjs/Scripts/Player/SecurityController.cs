@@ -21,30 +21,50 @@ public class SecurityController : PlayerController
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
+    public GameObject GetPlayerCamera()
+    {
+        if (cam == null)
+        {
+            Debug.LogWarning("cam is null in GetPlayerCamera(), 재시도");
+
+            cam = GameObject.FindWithTag("MainCamera"); // 또는 다른 로직으로 복구
+            return cam;
+        }
+
+        return cam;
+    }
+
     [SerializeField]
     GameObject SeucrityCamera;
 
-    GameObject cam;
+    private GameObject cam;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        if(!isOwned) return;
-        DontDestroyOnLoad(gameObject);
+        base.Awake();
 
-        Debug.Log("Start()");
+        if (!isOwned) return;
 
-        base.Start();
-
-        cam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
+        Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
 
         SceneManager.sceneLoaded += InitPlayerPosition;
 
+        DontDestroyOnLoad(gameObject);
+
+        Debug.Log("Start()");
         
-        Debug.Log("SetDelegate");
+    }
+
+    private void Start()
+    {
+        if (!isOwned) return;
+
+        cam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
 
         // 자신의 스킨은 볼 수 없도록. (그림자만 존재하도록)
         skinnedMeshRenderer = CharacterMesh.GetComponent<SkinnedMeshRenderer>();
         skinnedMeshRenderer.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+
     }
 
     // Update is called once per frame

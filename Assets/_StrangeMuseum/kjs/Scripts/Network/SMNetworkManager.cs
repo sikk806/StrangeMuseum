@@ -64,7 +64,7 @@ public class SMNetworkManager : NetworkManager
                 int randomPrefab = Random.Range(0, 2);
                 if (randomPrefab == 0)
                 {
-                    if (GameResultManager.Instance.StatueCount == 2)
+                    if (GameResultManager.Instance.StatueCount == 1)
                     {
                         playerObj = Instantiate(securityPrefab);
                         GameResultManager.Instance.SecurityCount += 1;
@@ -77,7 +77,7 @@ public class SMNetworkManager : NetworkManager
                 }
                 else
                 {
-                    if (GameResultManager.Instance.SecurityCount == 2)
+                    if (GameResultManager.Instance.SecurityCount == 1)
                     {
                         playerObj = Instantiate(statuePrefab);
                         GameResultManager.Instance.StatueCount += 1;
