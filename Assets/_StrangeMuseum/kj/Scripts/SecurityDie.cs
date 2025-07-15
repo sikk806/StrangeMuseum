@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Resources;
 using Mirror;
 using UnityEngine;
 
@@ -74,6 +75,11 @@ public class SecurityDie : NetworkBehaviour
                     currentSecurityBox.GetComponent<ShieldBox>().ResetInteractServerRpc(); //박스 기능 초기화(박스 벗겨짐)
                 }
             }
+            else
+            {
+                Debug.Log("경비원 박스 입지 않은 채 부딪혀서 사망");
+                DieFunctionServerRPc();
+            }
           
         }
     }
@@ -109,7 +115,8 @@ public class SecurityDie : NetworkBehaviour
         // 피 위치가 지정되지 않으면 기본 위치로 설정
         if (bloodPosition == default)
         {
-            bloodPosition = transform.position + Vector3.up * 0.05f;
+            // bloodPosition = transform.position + Vector3.up * 0.05f;
+            bloodPosition = transform.position;
         }
 
         GameObject blood = Instantiate(bloodPrefab, bloodPosition, Quaternion.identity);
@@ -134,29 +141,28 @@ public class SecurityDie : NetworkBehaviour
     {
         for (int i = 0; i < 5; i++)
         {
-            if (fragmentPrefabs.Length > 0)
+            string prefabName = $"GibbletChunk_{i + 1}"; // 예: Fragment_1, Fragment_2 ...
+            GameObject obj = ResourceManager.Instance.Instantiate(prefabName,null,transform);
+
+            if (isServer)
             {
-                // 랜덤한 조각 
-                GameObject fragment = Instantiate(
-                    fragmentPrefabs[UnityEngine.Random.Range(0, fragmentPrefabs.Length)],
-                    transform.position,
-                    UnityEngine.Random.rotation
-                );
-
-                if (isServer)
-                {
-                    NetworkServer.Spawn(fragment);
-                }
-
-                Rigidbody rb = fragment.GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0, ForceMode.Impulse);
-                }
-
-                Destroy(fragment, 5f); //10초 뒤 제거
+                NetworkServer.Spawn(obj);
             }
+
+            Rigidbody rb = obj.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0, ForceMode.Impulse);
+            }
+
+            StartCoroutine(DelaySpawnFragments(obj));
         }
+    }
+
+    IEnumerator DelaySpawnFragments(GameObject obj)
+    {
+        yield return new WaitForSeconds(3.0f);
+        ResourceManager.Instance.Destroy(obj); //10초 뒤 제거
     }
     #endregion
 }

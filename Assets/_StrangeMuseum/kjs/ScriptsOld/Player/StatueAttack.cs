@@ -1,9 +1,10 @@
+using DG.Tweening;
 using Mirror;
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UIElements;
-using static CopyStatueCotroller;
+using static MiraController;
 
 // 석상 돌진 스킬과 관련된 클래스
 public class StatueAttack : NetworkBehaviour
@@ -17,9 +18,9 @@ public class StatueAttack : NetworkBehaviour
     public GameObject DashVisualEffect;
 
     private bool isRush = false;
-    Transform playerCamera;
+    GameObject playerCamera;
 
-    StatueController playerController;
+    StatueController statueController;
 
     private SMNetworkManager manager;
 
@@ -40,9 +41,9 @@ public class StatueAttack : NetworkBehaviour
         //initRushSpeed = RushSpeed;
         //playerCamera = Camera.main.transform;
 
-        playerController = GetComponent<StatueController>();
+        statueController = GetComponent<StatueController>();
 
-        playerCamera = playerController.GetPlayerCamera();
+        playerCamera = statueController.GetPlayerCamera();
 
         //playerCamera = playerController.GetPlayerCamera();
 
@@ -90,10 +91,9 @@ public class StatueAttack : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CopyStatueCmd()
     {
+        GameObject Mira =  ResourceManager.Instance.Instantiate("Mira",null,transform);
 
-        GameObject copyStatue = Instantiate(CopyStatue, transform.position, Quaternion.identity);
-
-        NetworkServer.Spawn(copyStatue,connectionToClient);
+        NetworkServer.Spawn(Mira, connectionToClient);
         isCopyStatue = true;
     }
 
@@ -120,19 +120,20 @@ public class StatueAttack : NetworkBehaviour
 
 
         yield return new WaitForSeconds(0.1f);
-        GameObject go = Instantiate(DashVisualEffect);
+
+        GameObject go = ResourceManager.Instance.Instantiate("DashEffect", null, transform);
         go.transform.position = playerCamera.transform.position + playerCamera.transform.forward;
-        go.transform.LookAt(playerCamera);
+        go.transform.LookAt(playerCamera.transform);
         while (elapseTime < RushDuration)
         {
             characterController.Move(rushDirection * GetComponent<StatueController>().RushSpeed * Time.deltaTime);
             elapseTime += Time.deltaTime;
 
-            playerCamera.position = transform.position + transform.rotation * GetComponent<StatueController>().StatueCameraPosition;
+            playerCamera.transform.position = transform.position + transform.rotation * GetComponent<StatueController>().StatueCameraPosition;
             go.transform.position = playerCamera.transform.position + playerCamera.transform.forward + playerCamera.transform.up * 0.1f;
             yield return null;
         }
-        Destroy(go);
+        ResourceManager.Instance.Destroy(go);
         isRush = false;
 
         //GetComponent<StatueController>().SetPlayerStateServerRpc(PlayerState.Idle);
