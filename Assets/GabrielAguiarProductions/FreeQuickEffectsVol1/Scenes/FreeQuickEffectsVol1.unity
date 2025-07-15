@@ -1361,6 +1361,18 @@ PrefabInstance:
       propertyPath: m_Name
       value: vfx_Smoke_01
       objectReference: {fileID: 0}
+    - target: {fileID: 5299146926960630741, guid: 57970c6bb711ec24b8d98424b1806f3b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 5299146926960630741, guid: 57970c6bb711ec24b8d98424b1806f3b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 0.9811321
+      objectReference: {fileID: 0}
+    - target: {fileID: 5299146926960630741, guid: 57970c6bb711ec24b8d98424b1806f3b, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 0.9811321
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

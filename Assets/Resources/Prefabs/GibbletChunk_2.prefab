@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 2042094387206479219}
   - component: {fileID: 8869049727722660653}
   - component: {fileID: 2470750997826918887}
+  - component: {fileID: -6452215570807241391}
   m_Layer: 22
   m_Name: GibbletChunk_2
   m_TagString: Untagged
@@ -148,9 +149,22 @@ BoxCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
   m_Size: {x: 53.7632, y: 21.239101, z: 74.42379}
   m_Center: {x: 0, y: 10.315651, z: 0}
+--- !u!114 &-6452215570807241391
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 275219252555841642}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e14ff91c0360c594584adf223a789aeb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isUsing: 0

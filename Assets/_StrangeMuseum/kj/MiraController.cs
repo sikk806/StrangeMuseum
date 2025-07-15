@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
-using static CopyStatueCotroller;
+using static MiraController;
 using static UnityEditor.VersionControl.Message;
 
-public class CopyStatueCotroller : NetworkBehaviour
+public class MiraController : NetworkBehaviour
 {
     public enum CopyState 
     {
@@ -28,6 +28,7 @@ public class CopyStatueCotroller : NetworkBehaviour
     [SerializeField]
     bool isPath = false;
 
+    [SerializeField]
     CopyState copystate;
 
     public CopyState State
@@ -62,14 +63,16 @@ public class CopyStatueCotroller : NetworkBehaviour
 
     void Start()
     {
+      
         agent = GetComponent<NavMeshAgent>();
         agent.autoBraking = false; //균일한 속도로 이동
+        
 
         var group = GameObject.Find("AIPatrolPoint");
 
         if (group != null)
         {
-            group.GetComponentsInChildren<Transform>(WayPoint);
+            WayPoint = group.GetComponentsInChildren<Transform>().ToList();
             WayPoint.RemoveAt(0);
 
             copystate = CopyState.Idle;
@@ -83,7 +86,8 @@ public class CopyStatueCotroller : NetworkBehaviour
         switch (copystate)
         {
             case CopyState.Idle:
-                StartCoroutine(UpdateIdle());
+                if (!isIdleRunning)
+                    StartCoroutine(UpdateIdle());
                 break;
             case CopyState.Walk:
                 UpdateWalk();
@@ -103,11 +107,17 @@ public class CopyStatueCotroller : NetworkBehaviour
                 break;
         }
     }
-
+    private bool isIdleRunning = false;
     IEnumerator UpdateIdle()
     {
+        if (isIdleRunning) yield break; // 중복 실행 방지
+        isIdleRunning = true;
+
         agent.isStopped = true;
         yield return new WaitForSeconds(2.0f);
+
+        isIdleRunning = false;
+
         State = CopyState.Walk;
         agent.isStopped = false;
     }
@@ -118,26 +128,33 @@ public class CopyStatueCotroller : NetworkBehaviour
 
         if (agent.velocity.sqrMagnitude >= 0.2f * 0.2f && agent.remainingDistance <= 0.5f) //현재 속도가 0.04 보다 크면서, 현재 지점이 0.5 보다 작을경우 => 목적지와 가까워짐
         {
+            Debug.Log("목적지 도착 후 Idle 상태");
             State = CopyState.Idle;
 
             int previousIndex = nextIndex;
 
             nextIndex = Random.Range(0, WayPoint.Count);
 
-            if (nextIndex == previousIndex)
+            if (WayPoint.Count > 1 && nextIndex == previousIndex)
             {
-                nextIndex = (nextIndex - 1) % WayPoint.Count;
+                nextIndex = (nextIndex - 1 + WayPoint.Count) % WayPoint.Count;
             }
         }
 
+        Debug.Log($"Setting destination: {WayPoint[nextIndex].position}");
         agent.destination = WayPoint[nextIndex].position;
         agent.isStopped = false;
 
         RaySecurity();
     }
 
-    [SerializeField]
     GameObject targetSecurity;
+
+    [SerializeField]
+    LayerMask securityLayer;
+
+    [SerializeField]
+    float sphereRadius = 1.5f; // 반경 조절 가능
     private void RaySecurity()
     {
         float rayDistance = 10f;
@@ -147,36 +164,40 @@ public class CopyStatueCotroller : NetworkBehaviour
         Ray ray = new Ray(origin, direction);
         RaycastHit hit;
 
-        Vector3 endPoint = origin + direction * rayDistance;
-
-        if (Physics.Raycast(ray, out hit, rayDistance))
+        if (Physics.SphereCast(ray, sphereRadius, out hit, rayDistance, securityLayer))
         {
-            endPoint = hit.point;
-
-            if (hit.collider.TryGetComponent<SecurityController>(out var security))
+            if (hit.collider.CompareTag("Bouncer"))
             {
                 StopAllCoroutines(); // Idle 대기 중이면 중단
 
                 agent.isStopped = false;
 
-                targetSecurity = hit.collider.gameObject;
+                targetSecurity  = hit.collider.gameObject;
 
+                OutlineAddMaterial(targetSecurity);
+                 
                 State = CopyState.Follow;
+           
                 // 기타 로직
             }
         }
 
     }
 
+    [SerializeField]
+    Material outLine;
+
     private void UpdateFollow()
     {
+
+
         agent.speed = 6f; // 추격 속도
         agent.SetDestination(targetSecurity.transform.position);
 
     }
 
     [SerializeField]
-    GameObject[] BreakbleRocks;
+    GameObject FireEffect;
 
     private float explosionForce = 5f; // 튀는 힘
     private float explosionRadius = 3f; // 폭발 반경
@@ -184,6 +205,7 @@ public class CopyStatueCotroller : NetworkBehaviour
     [Command(requiresAuthority = false)]
     private void CopyStatueDie()
     {
+
         SpawnBreakbleLock();
 
     }
@@ -197,29 +219,71 @@ public class CopyStatueCotroller : NetworkBehaviour
 
     private void UpdateDie()
     {
-        for (int i = 0; i < 5; i++)
+        // 랜덤한 조각 
+
+        GameObject fragment = ResourceManager.Instance.Instantiate("vfx_Flames_01", null, transform);
+
+        if (isServer)
         {
-            if (BreakbleRocks.Length > 0)
+            NetworkServer.Spawn(fragment);
+        }
+
+       // Destroy(fragment, 5f); //10초 뒤 제거
+    }
+
+    IEnumerator DelayFlamesEffectDestroy(GameObject flamesEffect)
+    {
+        yield return new WaitForSeconds(3.0f);
+
+        ResourceManager.Instance.Destroy(flamesEffect);
+        ResourceManager.Instance.Destroy(this.gameObject);
+    }
+
+    private void OutlineAddMaterial(GameObject security)
+    {
+        if(security == null) { return; }
+
+        Transform securityMesh = security.transform.GetChild(1);
+        SkinnedMeshRenderer smr = securityMesh.GetComponent<SkinnedMeshRenderer>();
+
+        if (smr != null)
+        {
+            Material[] mats = smr.materials;
+
+            if (!mats.Contains(outLine))
             {
-                // 랜덤한 조각 
-                GameObject fragment = Instantiate(
-                    BreakbleRocks[UnityEngine.Random.Range(0, BreakbleRocks.Length)],
-                    transform.position,
-                    UnityEngine.Random.rotation
-                );
+                Material[] newMats = new Material[mats.Length + 1];
 
-                if (isServer)
+                for (int i = 0; i < mats.Length; i++)
                 {
-                    NetworkServer.Spawn(fragment);
+                    newMats[i] = mats[i];
                 }
+                newMats[mats.Length] = outLine;
 
-                Rigidbody rb = fragment.GetComponent<Rigidbody>();
-                if (rb != null)
-                {
-                    rb.AddExplosionForce(explosionForce, transform.position, explosionRadius, 0, ForceMode.Impulse);
-                }
+                smr.materials = newMats;
+            }
+        }
 
-                Destroy(fragment, 5f); //10초 뒤 제거
+    }
+
+    private void OutlineRemoveMaterial(GameObject security)
+    {
+        if (security == null) return;
+
+        Transform child = security.transform.GetChild(1); // 두 번째 자식
+        SkinnedMeshRenderer smr = child.GetComponent<SkinnedMeshRenderer>();
+
+        if (smr != null)
+        {
+            Material[] mats = smr.materials;
+
+            // outLine 마테리얼이 포함되어 있다면 제거
+            if (mats.Contains(outLine))
+            {
+                Debug.Log("마테리얼 제거");
+                List<Material> matList = new List<Material>(mats);
+                matList.Remove(outLine);
+                smr.materials = matList.ToArray();
             }
         }
     }
@@ -230,7 +294,29 @@ public class CopyStatueCotroller : NetworkBehaviour
     {
         if(other.CompareTag("Bouncer") && isDie == false)
         {
+            OutlineRemoveMaterial(other.gameObject);
             State = CopyState.Die;
         }
+    }
+
+    private void OnDrawGizmos()
+    {
+
+
+        Vector3 origin = transform.position + Vector3.up * 1.0f;
+        Vector3 direction = transform.forward;
+
+        // 감지 범위 시각화: 전방 구체 캐스트
+        Gizmos.color = Color.cyan;
+
+        // 방향 벡터 끝점 계산
+        Vector3 endPoint = origin + direction.normalized * 10f;
+
+        // 선 그리기 (방향 표시)
+        Gizmos.DrawLine(origin, endPoint);
+
+        // 구체 감지 범위 시각화 (시작점 + 끝점에 구 그리기)
+        Gizmos.DrawWireSphere(origin, sphereRadius);
+        Gizmos.DrawWireSphere(endPoint, sphereRadius);
     }
 }

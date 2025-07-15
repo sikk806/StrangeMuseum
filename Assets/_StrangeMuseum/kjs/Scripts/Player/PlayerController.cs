@@ -50,7 +50,7 @@ public class PlayerController : NetworkBehaviour
 
     // 상속을 위한 변수들
     protected PlayerState playerState;
-    protected Transform playerCamera;
+
 
     protected virtual void Awake()
     {
@@ -63,7 +63,8 @@ public class PlayerController : NetworkBehaviour
 
     protected virtual void Start()
     {
-        SceneManager.sceneLoaded += SettingCamera;
+        //SceneManager.sceneLoaded += SettingCamera;
+        
         Debug.Log("SetDelegate");
         // Player 기본 상태 세팅
         playerState = PlayerState.Idle;
@@ -137,15 +138,15 @@ public class PlayerController : NetworkBehaviour
         characterController.Move(moveVector * Time.deltaTime);
     }
 
-    private void SettingCamera(Scene scene, LoadSceneMode mode)
-    {
-        // Player 카메라 가져오기.
-        playerCamera = Camera.main.transform;
-        playerCamera.GetChild(0).gameObject.SetActive(true);
+    //private void SettingCamera(Scene scene, LoadSceneMode mode)
+    //{
+    //    // Player 카메라 가져오기.
+    //    playerCamera = Camera.main.transform;
+    //    playerCamera.GetChild(0).gameObject.SetActive(true);
 
-        Debug.Log("ConnectionID : " + GetComponent<PlayerLobbyController>().ConnectionID);
+    //    Debug.Log("ConnectionID : " + GetComponent<PlayerLobbyController>().ConnectionID);
 
-    }
+    //}
 
     public void SetAnimTrigger(string Value)
     {
