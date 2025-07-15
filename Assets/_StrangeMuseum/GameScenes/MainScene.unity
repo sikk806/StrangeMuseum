@@ -4976,6 +4976,12 @@ MonoBehaviour:
   GamePlayerPrefab: {fileID: 2029663946312191239, guid: e3bf8bd1c81649d4ba84360ac8d5b8e3, type: 3}
   securityPrefab: {fileID: 6042096211448569219, guid: 4498b11b8407c3c4a9981da127b9e220, type: 3}
   statuePrefab: {fileID: 3700023745771866719, guid: 3ee7994b8ffe34648be10d3a7b3ee87d, type: 3}
+  SecurityPos:
+  - {x: -5, y: 9, z: 51}
+  - {x: -32, y: 15, z: 29}
+  StatuePos:
+  - {x: -18.5, y: 3, z: 77.5}
+  - {x: -53.9, y: -1.34, z: 109.5}
   forceLocalMode: 1
 --- !u!114 &1443950042
 MonoBehaviour:

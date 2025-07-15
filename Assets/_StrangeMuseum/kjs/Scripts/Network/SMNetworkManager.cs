@@ -12,12 +12,18 @@ public class SMNetworkManager : NetworkManager
     [SerializeField] private GameObject securityPrefab;
     [SerializeField] private GameObject statuePrefab;
 
+    [SerializeField] public Vector3[] SecurityPos = new Vector3[2];
+    [SerializeField] public Vector3[] StatuePos = new Vector3[2];
+
+    private int[] checkSecPos = new int[2];
+    private int[] checkStaPos = new int[2];
+
     public List<PlayerLobbyController> GamePlayers { get; } = new List<PlayerLobbyController>(); // Info of Players
 
     [SerializeField]
     private bool forceLocalMode = true; // 스팀 사용 아닐 떄 켜기.
 
-    public GameObject GetStatuePrefab() { return statuePrefab;  }
+    public GameObject GetStatuePrefab() { return statuePrefab; }
 
     public override void Awake()
     {
@@ -39,7 +45,7 @@ public class SMNetworkManager : NetworkManager
     {
         if (SceneManager.GetActiveScene().name == "NetworkTest")
         {
-            PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab); 
+            PlayerLobbyController GamePlayerInstance = Instantiate(GamePlayerPrefab);
             GamePlayerInstance.transform.position = Vector3.zero;
 
             GamePlayerInstance.ConnectionID = conn.connectionId;
@@ -68,11 +74,23 @@ public class SMNetworkManager : NetworkManager
                     {
                         playerObj = Instantiate(securityPrefab);
                         GameResultManager.Instance.SecurityCount += 1;
+                        int num = Random.Range(0, 2);
+                        while (checkSecPos[num] == 1)
+                        {
+                            num = Random.Range(0, 2);
+                        }
+                        playerObj.transform.position = SecurityPos[num];
                     }
                     else
                     {
                         playerObj = Instantiate(statuePrefab);
                         GameResultManager.Instance.StatueCount += 1;
+                        int num = Random.Range(0, 2);
+                        while (checkStaPos[num] == 1)
+                        {
+                            num = Random.Range(0, 2);
+                        }
+                        playerObj.transform.position = StatuePos[num];
                     }
                 }
                 else
@@ -81,11 +99,23 @@ public class SMNetworkManager : NetworkManager
                     {
                         playerObj = Instantiate(statuePrefab);
                         GameResultManager.Instance.StatueCount += 1;
+                        int num = Random.Range(0, 2);
+                        while (checkStaPos[num] == 1)
+                        {
+                            num = Random.Range(0, 2);
+                        }
+                        playerObj.transform.position = StatuePos[num];
                     }
                     else
                     {
                         playerObj = Instantiate(securityPrefab);
                         GameResultManager.Instance.SecurityCount += 1;
+                        int num = Random.Range(0, 2);
+                        while (checkSecPos[num] == 1)
+                        {
+                            num = Random.Range(0, 2);
+                        }
+                        playerObj.transform.position = SecurityPos[num];
                     }
                 }
 
