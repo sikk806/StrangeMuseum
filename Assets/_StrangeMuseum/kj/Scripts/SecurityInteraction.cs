@@ -103,6 +103,9 @@ public class SecurityInteraction : SecurityController
             return;
         }
 
+        UnityEngine.Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
+
+
         progressBarUI = SecurityInGameUI.Instance.GetComponent<MissionProgressBarUI>();
     }
 

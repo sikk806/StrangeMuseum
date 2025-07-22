@@ -19,6 +19,8 @@ TagManager:
   - StauteTable
   - OldLever
   - ChatWindow
+  - Mira
+  - StatueCamera
   layers:
   - Default
   - TransparentFX
@@ -29,10 +31,10 @@ TagManager:
   - Interaction
   - Statue
   - 
-  - -------bdw
-  - 
-  - 
   - -------kj
+  - 
+  - 
+  - Wall
   - MissionInteraction
   - Projectile
   - TaskList

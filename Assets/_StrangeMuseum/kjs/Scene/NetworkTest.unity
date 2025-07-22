@@ -54405,7 +54405,7 @@ GameObject:
   - component: {fileID: 1855185893}
   - component: {fileID: 1855185892}
   - component: {fileID: 1855185891}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: Archi_Annexes_Murs
   m_TagString: wall_brick
   m_Icon: {fileID: 0}
