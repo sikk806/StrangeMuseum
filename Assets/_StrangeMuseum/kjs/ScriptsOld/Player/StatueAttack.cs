@@ -94,7 +94,8 @@ public class StatueAttack : NetworkBehaviour
         GameObject Mira =  ResourceManager.Instance.Instantiate("Mira",null,transform);
 
         NetworkServer.Spawn(Mira, connectionToClient);
-        isCopyStatue = true;
+
+        //isCopyStatue = true; //원활한 테스트를 위해 잠시 주석
     }
 
  

@@ -28,27 +28,8 @@ public class ResourceManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        SceneManager.sceneLoaded += MainCameraDelete;
     }
 
-
-    private void MainCameraDelete(Scene scene,LoadSceneMode mode)
-    {
-        if(scene.name == "NetworkTest")
-        {
-            Debug.Log("임시 카메라 삭제");
-            if(Camera.main != null)
-            {
-                Destroy(cam.gameObject);
-            }
-      
-        }
-        else
-        {
-            DontDestroyOnLoad(cam);
-            Debug.LogWarning("씬이 다르므로 임시 카메라 삭제 안됨");
-        }
-    }
 
     public T Load<T>(string path) where T : Object
     {

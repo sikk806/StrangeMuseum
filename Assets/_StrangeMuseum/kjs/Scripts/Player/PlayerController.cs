@@ -11,7 +11,8 @@ public enum PlayerState
     Jump,
     Die,
     Attack,
-    Freeze
+    Freeze,
+    Faint, //기절 상태
 }
 
 public class PlayerController : NetworkBehaviour
@@ -49,6 +50,8 @@ public class PlayerController : NetworkBehaviour
     //private PlayerInteraction playerInteraction; // 임무 오브젝트와 상호작용 기능 추가 > 합칠것
 
     // 상속을 위한 변수들
+
+    [SerializeField]
     protected PlayerState playerState;
 
 
@@ -64,7 +67,9 @@ public class PlayerController : NetworkBehaviour
     protected virtual void Start()
     {
         //SceneManager.sceneLoaded += SettingCamera;
-        
+
+        if (!isOwned) return;
+
         Debug.Log("SetDelegate");
         // Player 기본 상태 세팅
         playerState = PlayerState.Idle;

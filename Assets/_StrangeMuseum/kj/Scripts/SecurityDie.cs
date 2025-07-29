@@ -125,8 +125,8 @@ public class SecurityDie : NetworkBehaviour
         {
             NetworkServer.Spawn(blood);
         }
-   
-        Destroy(blood, 5f); //5檬 第 力芭
+
+        StartCoroutine(DelaySpawnFragments(blood));
     }
     #endregion
 
@@ -161,8 +161,8 @@ public class SecurityDie : NetworkBehaviour
 
     IEnumerator DelaySpawnFragments(GameObject obj)
     {
-        yield return new WaitForSeconds(3.0f);
-        ResourceManager.Instance.Destroy(obj); //10檬 第 力芭
+        yield return new WaitForSeconds(2.0f);
+        ResourceManager.Instance.Destroy(obj); //
     }
     #endregion
 }

@@ -370,6 +370,7 @@ MonoBehaviour:
   InitWalkingSpeed: 0
   JumpForce: 3
   Gravity: 9.8
+  playerState: 0
   RushSpeed: 5
   initRushSpeed: 0
   MouseSensitivity: 2
@@ -398,6 +399,7 @@ MonoBehaviour:
   InitWalkingSpeed: 0
   JumpForce: 3
   Gravity: 9.8
+  playerState: 0
   audioSource: {fileID: 0}
   HandCuffFearSound: {fileID: 0}
   CoverFearSound: {fileID: 0}
