@@ -40,11 +40,16 @@ public class StatueController : PlayerController
     }
     protected override void Start()
     {
-        if(!isOwned) return;
+        if (!isOwned) return;
 
         base.Start();
-
-        cam = Instantiate(StauteCamera, transform.position, Quaternion.identity);
+        cam = GameObject.FindWithTag("MainCamera");
+        //cam = Instantiate(StauteCamera, transform.position, Quaternion.identity);
+        foreach (Transform child in cam.transform)
+        {
+            child.gameObject.SetActive(false);
+        }
+        
     }
 
     // Update is called once per frame
