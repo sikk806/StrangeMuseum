@@ -99,11 +99,9 @@ public class SecurityInGameUI : NetworkBehaviour
 
     private void Update() 
     {
-        SecurityInteractionUI();
-
         if (Input.GetKeyDown(KeyCode.E) && Interaction.isMissionProgress == false)
         {
-            if(SlotManager.isItemCooltime == false)
+            if (SlotManager.isItemCooltime == false)
             {
                 SlotManager.UseSelectedItem(playerId);
             }
@@ -111,14 +109,19 @@ public class SecurityInGameUI : NetworkBehaviour
             {
                 Debug.Log("아이템 사용 쿨타임 아직 안 끝남");
             }
-           
+
         }
+
+        SecurityObjectInteractionUI();
+
+        if (securityInteraction.isObjectInteracted == true) { return; } //오브젝트와 상호작용 중이라면 아이템 상호작용 관련 UI 작동 X
+
+        SecurityItemInteractionUI();
+
     }
 
-    private void SecurityInteractionUI()
+    private void SecurityObjectInteractionUI()
     {
-        //오브젝트 관련
-
         if (securityInteraction.SaveRayObject != null)
         {
             if (securityInteraction.SaveRayObject.GetComponent<IHoldInteractable>().IsCompleted())
@@ -143,9 +146,10 @@ public class SecurityInGameUI : NetworkBehaviour
         {
             OnObjectInteractionUnview();
         }
+    }
 
-
-        if(securityInteraction.isObjectInteracted == true) { return; } //오브젝트와 상호작용 중이라면 아이템 상호작용 관련 UI 작동 X
+    private void SecurityItemInteractionUI()
+    {
 
         // 아이템 관련
         //1. 비어 있을 때 와 비어 있지 않을 때 
@@ -213,8 +217,6 @@ public class SecurityInGameUI : NetworkBehaviour
             }
             else
             {
-
-                Debug.Log("아이템 상호작용 UI - X");
 
                 OnItemNameUI(ItemList.None);
 
