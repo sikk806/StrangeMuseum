@@ -118,11 +118,14 @@ public class SecurityController : PlayerController
         transform.position = new Vector3(-21f, 2f, 41f);
     }
 
+    [SerializeField]
+    GameObject FingerLight;
 
-    private IEnumerator ShakeCoroutine(float duration, float magnitude,MiraController mira)
+    private IEnumerator ShakeCoroutine(float duration, float magnitude, MiraController mira)
     {
         
         MainCam.transform.GetChild(0).gameObject.SetActive(false); //손과 손전등 비활성화
+        FingerLight.gameObject.SetActive(false);
 
         float elapsed = 0.0f;
 
@@ -133,7 +136,7 @@ public class SecurityController : PlayerController
             float offsetX = Random.Range(-1f, 1f) * magnitude;
             float offsetY = Random.Range(-1f, 1f) * magnitude;
 
-            MainCam.transform.localPosition = camPos + new Vector3(offsetX, offsetY, 0f);
+            MainCam.transform.position = camPos + new Vector3(offsetX, offsetY, 0f);
 
             elapsed += Time.deltaTime;
             yield return null;
@@ -142,8 +145,9 @@ public class SecurityController : PlayerController
         Debug.Log("카메라 흔들리지 않음");
 
         MainCam.transform.GetChild(0).gameObject.SetActive(true);
+        FingerLight.gameObject.SetActive(true);
 
-        MainCam.transform.localPosition = originalPos; //> 충돌 전 마지막 카메라 위치로 돌아감
+        MainCam.transform.position = originalPos; //> 충돌 전 마지막 카메라 위치로 돌아감
 
         SetPlayerState(PlayerState.Idle); //1. 기본 상태 변경 
 
@@ -159,93 +163,53 @@ public class SecurityController : PlayerController
     bool isMiraCollider;
 
 
-    //private void OnTriggerEnter(Collider other)
-    //{
-    //    if(other.gameObject.CompareTag("Mira") && !isMiraCollider)
-    //    {
-    //        if (!isOwned) { return; }
-
-    //        Debug.LogWarning("미라와 충돌 (경비원 스크립트) ");
-
-    //        SetPlayerState(PlayerState.Faint); //1. 기절 상태 변경
-
-    //        miraController = other.GetComponent<MiraController>();
-
-    //        if(MainCam == null)
-    //        {
-    //            MainCam = FindFirstObjectByType<Camera>().gameObject;
-    //        }
-
-    //        Debug.Log(MainCam != null);
-
-    //        originalPos = MainCam.transform.localPosition;
-
-    //        Transform mirahead = miraController.transform.GetChild(1);
-
-    //        if (mirahead != null)
-    //        {
-    //            Debug.Log(mirahead.gameObject.name);
-
-    //            // 카메라를 머리 기준으로 살짝 앞쪽에 배치 (예: 0.2m 앞, 0.1m 아래)
-    //            Vector3 offset = mirahead.forward * 1.5f + Vector3.down * 0.1f;
-
-    //            MainCam.transform.position = mirahead.transform.position + offset; //카메라 위치 = 미라 머리 + 미라 머리 앞쪽 및 아래 배치
-
-    //            camPos = MainCam.transform.position; //campos에 설정한 카메라 위치로 저장
-
-    //            MainCam.transform.LookAt(mirahead); //카메라를 미라 머리를 바라보게.
-    //        }
-    //        else
-    //        {
-    //            Debug.Log("mirahead null");
-    //        }
-
-    //        StartCoroutine(ShakeCoroutine(0.8f, 0.25f));
-
-    //    }
-    //}  
-
-
-    public void TestMira(MiraController mira,Transform miraHead)
+    private void OnTriggerEnter(Collider other)
     {
-        Debug.LogWarning("미라와 충돌 - IsOwned = faslse (경비원 스크립트) ");
-
-        if (!isOwned) { return; }
-
-        Debug.LogWarning("미라와 충돌 - IsOwned = true (경비원 스크립트) ");
-
-        SetPlayerState(PlayerState.Faint); //1. 기절 상태 변경
-
-        if (MainCam == null)
+        if (other.gameObject.CompareTag("Mira") && !isMiraCollider)
         {
-            MainCam = FindFirstObjectByType<Camera>().gameObject;
+            if (!isOwned) { return; }
+
+            Debug.LogWarning("미라와 충돌 (경비원 스크립트) ");
+
+            SetPlayerState(PlayerState.Faint); //1. 기절 상태 변경
+
+            MiraController miraController = other.GetComponent<MiraController>();
+
+           
+
+            if (MainCam == null)
+            {
+                MainCam = FindFirstObjectByType<Camera>().gameObject;
+            }
+
+            Debug.Log(MainCam != null);
+
+            originalPos = MainCam.transform.localPosition;
+
+            Transform mirahead = miraController.transform.GetChild(1);
+
+            if (mirahead != null)
+            {
+                Debug.Log(mirahead.gameObject.name);
+
+                // 카메라를 머리 기준으로 살짝 앞쪽에 배치 (예: 0.2m 앞, 0.1m 아래)
+                Vector3 offset = mirahead.forward * 1.5f + Vector3.down * 0.1f;
+
+                MainCam.transform.position = mirahead.transform.position + offset; //카메라 위치 = 미라 머리 + 미라 머리 앞쪽 및 아래 배치
+
+                camPos = MainCam.transform.position; //campos에 설정한 카메라 위치로 저장
+
+                MainCam.transform.LookAt(mirahead); //카메라를 미라 머리를 바라보게.
+            }
+            else
+            {
+                Debug.Log("mirahead null");
+            }
+
+            StartCoroutine(ShakeCoroutine(0.8f, 0.25f, miraController));
+
         }
-
-        Debug.Log(MainCam != null);
-
-        originalPos = MainCam.transform.localPosition;
-
-        if (miraHead != null)
-        {
-            Debug.Log(miraHead.gameObject.name);
-
-            MainCam.transform.position = miraHead.transform.position;
-
-            // 카메라를 머리 기준으로 살짝 앞쪽에 배치 (예: 0.2m 앞, 0.1m 아래)
-            //Vector3 offset = miraHead.forward * 1.5f + Vector3.down * 0.1f;
-
-            // MainCam.transform.position = miraHead.transform.position + offset; //카메라 위치 = 미라 머리 + 미라 머리 앞쪽 및 아래 배치
-
-            camPos = MainCam.transform.position; //campos에 설정한 카메라 위치로 저장
-
-            MainCam.transform.LookAt(miraHead); //카메라를 미라 머리를 바라보게.
-        }
-        else
-        {
-            Debug.Log("mirahead null");
-        }
-
-        StartCoroutine(ShakeCoroutine(0.8f, 0.25f, mira));
-
     }
+
+
 }

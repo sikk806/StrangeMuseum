@@ -370,12 +370,12 @@ public class MiraController : NetworkBehaviour
                 isCollider = true;
 
             }
-            else //조각상이 아닌 시점
-            {
-                Transform mirahead = transform.GetChild(1);
-                other.GetComponent<SecurityController>().TestMira(this, mirahead);
-                Debug.LogWarning("경비원과 충돌 - isOwned = false (미라 스크립트) ");
-            }
+            //else //조각상이 아닌 시점
+            //{
+            //    Transform mirahead = transform.GetChild(1);
+            //    other.GetComponent<SecurityController>().TestMira(this, mirahead);
+            //    Debug.LogWarning("경비원과 충돌 - isOwned = false (미라 스크립트) ");
+            //}
                           
 
         }
