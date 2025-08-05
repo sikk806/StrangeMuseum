@@ -334,6 +334,7 @@ GameObject:
   - component: {fileID: 8980282896388757800}
   - component: {fileID: 1111261889339493178}
   - component: {fileID: 5202679410038128011}
+  - component: {fileID: -6621107180312818471}
   m_Layer: 0
   m_Name: Painting
   m_TagString: InspectableObject
@@ -420,6 +421,23 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: 081f365b7c4e28f41a19494efff99d6d, type: 2}
   audioClip: {fileID: 8300000, guid: bf4b1a4076b6961489a88364e66548da, type: 3}
+--- !u!114 &-6621107180312818471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6834881909096108546}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1873997988
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7383831394805484236
 GameObject:
   m_ObjectHideFlags: 0

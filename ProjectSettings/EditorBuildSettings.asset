@@ -27,6 +27,9 @@ EditorBuildSettings:
     path: Assets/_StrangeMuseum/kjs/Scene/NetworkTest.unity
     guid: 043a1f868df23234c8fdf57403f9e215
   - enabled: 1
+    path: Assets/_StrangeMuseum/scw/NetworkTest_scw.unity
+    guid: 0fc00dc6177366e489b6485aee799599
+  - enabled: 1
     path: Assets/_StrangeMuseum/kjs/Scene/SteamNetworkTestScene.unity
     guid: 98c1430e1337c8a41ba4e854f80ab36f
   m_configObjects: {}

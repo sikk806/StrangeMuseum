@@ -46,6 +46,7 @@ GameObject:
   - component: {fileID: 7183884675777581700}
   - component: {fileID: -3179471871749891420}
   - component: {fileID: 3774670148524497461}
+  - component: {fileID: -2141498557647623580}
   m_Layer: 0
   m_Name: Mummy
   m_TagString: InspectableObject
@@ -187,6 +188,23 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: b675cd230754aba41ab1ead530d440a4, type: 2}
   audioClip: {fileID: 8300000, guid: e884b1815d0d7cd468cd967502e7e5da, type: 3}
+--- !u!114 &-2141498557647623580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4145978108652930786}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2890237423
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &5826295070117106933
 GameObject:
   m_ObjectHideFlags: 0

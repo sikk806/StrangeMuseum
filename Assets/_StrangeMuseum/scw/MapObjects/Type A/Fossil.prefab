@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 100000, guid: 8e08d2ad901a8b24f92b219b627789e6, type: 3}
+      propertyPath: m_Name
+      value: Fossil
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 8e08d2ad901a8b24f92b219b627789e6, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
@@ -81,6 +85,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 8e08d2ad901a8b24f92b219b627789e6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 9030669481418644521}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8e08d2ad901a8b24f92b219b627789e6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -252462524379491870}
   m_SourcePrefab: {fileID: 100100000, guid: 8e08d2ad901a8b24f92b219b627789e6, type: 3}
 --- !u!1 &4603557531527246256 stripped
 GameObject:
@@ -120,7 +127,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1597226936
+  GlobalObjectIdHash: 2646833950
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -133,6 +140,23 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &-252462524379491870
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4603557531527246256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1809942394
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!4 &4603557531527605648 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 8e08d2ad901a8b24f92b219b627789e6, type: 3}
