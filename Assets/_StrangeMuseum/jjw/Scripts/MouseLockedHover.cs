@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class MouseLockedHover : MonoBehaviour
 {
-    [SerializeField] private LayerMask interactableLayer; // 감지할 물리 레이어 (Raycast)
-    [SerializeField] private uint outlineRenderingLayer = 1u; // 적용할 렌더링 레이어 (예: Layer 3)
+    public LayerMask interactableLayer; // 감지할 물리 레이어 (Raycast)
+    public uint outlineRenderingLayer = 1u; // 적용할 렌더링 레이어 (예: Layer 3)
 
     private GameObject lastHoveredObject;
     private Renderer[] lastHoveredRenderers; //  자식 오브젝트 렌더러 저장
