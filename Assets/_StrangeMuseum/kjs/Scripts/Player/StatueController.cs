@@ -57,7 +57,7 @@ public class StatueController : PlayerController
     {
         // For Network Play
         if (!isLocalPlayer) return;
-        if (GameResultManager.Instance.IsGamePaused.Value == true) return;
+        if (GameResultManager.Instance.IsGamePaused == true) return;
         if (playerState == PlayerState.Idle || playerState == PlayerState.Run || playerState == PlayerState.Jump)
         {
             PlayerMovement();

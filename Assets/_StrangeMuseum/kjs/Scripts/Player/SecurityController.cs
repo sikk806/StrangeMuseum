@@ -23,7 +23,7 @@ public class SecurityController : PlayerController
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    public GameObject GetPlayerCamera()
+    public Camera GetPlayerCamera()
     {
         return cam;
     }
@@ -31,7 +31,7 @@ public class SecurityController : PlayerController
     [SerializeField]
     GameObject SeucrityCamera; //플레이어 전용 카메라 프리펩
 
-    private GameObject cam;
+    private Camera cam;
 
     private GameObject MainCam;
 
@@ -53,9 +53,9 @@ public class SecurityController : PlayerController
     {
         if (!isOwned) return;
 
-        //MainCam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
+        MainCam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
 
-        cam = GameObject.FindWithTag("MainCamera");
+        //cam = GameObject.FindWithTag("MainCamera");
 
         Debug.Log("캠 생성");
 
@@ -70,7 +70,7 @@ public class SecurityController : PlayerController
     {
         // For Network Play
         if (!isLocalPlayer) return;
-        if (GameResultManager.Instance.IsGamePaused.Value == true) return;
+        if (GameResultManager.Instance.IsGamePaused == true) return;
 
         base.Update();
 
