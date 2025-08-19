@@ -7,7 +7,7 @@ using Unity.Netcode;
 public class GameResultManager : Mirror.NetworkBehaviour
 {
     public static GameResultManager Instance;
-    public NetworkVariable<bool> IsGamePaused = new NetworkVariable<bool>(false);
+    public bool IsGamePaused = false;
 
     public int SecurityCount = 0;
     public int StatueCount = 0;
@@ -49,7 +49,7 @@ public class GameResultManager : Mirror.NetworkBehaviour
 
     IEnumerator GameResult()
     {
-        IsGamePaused.Value = true;
+        IsGamePaused = true;
         yield return null;
     }
 
