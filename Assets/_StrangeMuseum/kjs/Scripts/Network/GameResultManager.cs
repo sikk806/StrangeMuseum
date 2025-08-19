@@ -45,6 +45,7 @@ public class GameResultManager : Mirror.NetworkBehaviour
             gameEnd = false;
             StartCoroutine("GameResult");
         }
+        Debug.Log(SecurityCount);
     }
 
     IEnumerator GameResult()

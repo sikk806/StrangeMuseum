@@ -69,9 +69,14 @@ public class SecurityController : PlayerController
     {
         // For Network Play
         if (!isLocalPlayer) return;
-        if (GameResultManager.Instance.IsGamePaused.Value == true) return;
+        if (GameResultManager.Instance.IsGamePaused == true) return;
 
         base.Update();
+        if (playerState == PlayerState.Faint)
+        {
+
+            return;
+        }
 
         if (playerState == PlayerState.Idle || playerState == PlayerState.Run || playerState == PlayerState.Jump)
         {
@@ -80,7 +85,7 @@ public class SecurityController : PlayerController
         else if (playerState == PlayerState.Attack)
         {
 
-        }  
+        }
     }
 
 
