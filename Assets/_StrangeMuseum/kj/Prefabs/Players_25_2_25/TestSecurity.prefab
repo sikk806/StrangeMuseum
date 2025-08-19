@@ -730,7 +730,6 @@ MonoBehaviour:
   SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
   CharacterMesh: {fileID: 8281391656334309473}
   SeucrityCamera: {fileID: 2506118257369708674, guid: 4007f8f61393e9e4780fe2bf1795dbcb, type: 3}
-  FingerFlashLight: {fileID: 4308694720123876521}
   LayDistance: 1.5
   LightLayDistance: 30
   pickUpSound: {fileID: 8300000, guid: 23a7f6dc317754d41bf076e4c5114f70, type: 3}
@@ -773,8 +772,7 @@ MonoBehaviour:
   MouseSensitivity: 2
   SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
   CharacterMesh: {fileID: 8281391656334309473}
-  SeucrityCamera: {fileID: 2506118257369708674, guid: 4007f8f61393e9e4780fe2bf1795dbcb, type: 3}
-  FingerFlashLight: {fileID: 0}
+  SeucrityCamera: {fileID: 0}
 --- !u!114 &-5139576709211526103
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1344,11 +1342,6 @@ PrefabInstance:
 --- !u!4 &3494898487678856723 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2758681351239529569, guid: 1a8b7b8e41476c445b2fccd1a93645eb, type: 3}
-  m_PrefabInstance: {fileID: 1641722295464860274}
-  m_PrefabAsset: {fileID: 0}
---- !u!1 &4308694720123876521 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 3243469959095922395, guid: 1a8b7b8e41476c445b2fccd1a93645eb, type: 3}
   m_PrefabInstance: {fileID: 1641722295464860274}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &3347682588963646197
