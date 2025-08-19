@@ -729,8 +729,9 @@ MonoBehaviour:
   MouseSensitivity: 2
   SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
   CharacterMesh: {fileID: 8281391656334309473}
-  SeucrityCamera: {fileID: 2506118257369708674, guid: 4007f8f61393e9e4780fe2bf1795dbcb, type: 3}
-  FingerLight: {fileID: 0}
+  FingerLight: {fileID: 4308694720123876521}
+  MiraCameraShakeDuration: 0
+  MiraCameraShakeMagnitude: 0
   LayDistance: 1.5
   LightLayDistance: 30
   pickUpSound: {fileID: 8300000, guid: 23a7f6dc317754d41bf076e4c5114f70, type: 3}
@@ -773,8 +774,9 @@ MonoBehaviour:
   MouseSensitivity: 2
   SecurityCameraPosition: {x: 0, y: 1.36, z: 0.15}
   CharacterMesh: {fileID: 8281391656334309473}
-  SeucrityCamera: {fileID: 2506118257369708674, guid: 4007f8f61393e9e4780fe2bf1795dbcb, type: 3}
   FingerLight: {fileID: 4308694720123876521}
+  MiraCameraShakeDuration: 0
+  MiraCameraShakeMagnitude: 0
 --- !u!114 &-5139576709211526103
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using Mirror;
 using Unity.Services.Matchmaker.Models;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 using static MiraController;
 
@@ -23,16 +24,6 @@ public class SecurityController : PlayerController
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
 
-    public Camera GetPlayerCamera()
-    {
-        return cam;
-    }
-
-    [SerializeField]
-    GameObject SeucrityCamera; //플레이어 전용 카메라 프리펩
-
-    private Camera cam;
-
     private GameObject MainCam;
 
     protected override void Awake()
@@ -53,10 +44,17 @@ public class SecurityController : PlayerController
     {
         if (!isOwned) return;
 
-        MainCam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
+        MainCam = GameObject.FindWithTag("MainCamera");
 
-        cam = MainCam.GetComponent<Camera>();
+        MouseLockedHover mousehover = MainCam.AddComponent<MouseLockedHover>();
+        mousehover.interactableLayer = (1 << 6) | (1 << 26);
 
+        PhysicsRaycaster physicsRaycaster = MainCam.AddComponent<PhysicsRaycaster>();
+        physicsRaycaster.eventMask = (1 << 3) | (1 << 6) | (1 << 26);
+        foreach (Transform child in MainCam.transform)
+        {
+            child.gameObject.SetActive(true);
+        }
         Debug.Log("캠 생성");
 
 
@@ -80,7 +78,7 @@ public class SecurityController : PlayerController
         else if (playerState == PlayerState.Attack)
         {
 
-        }
+        }  
     }
 
 
@@ -88,6 +86,11 @@ public class SecurityController : PlayerController
     {
         base.PlayerMovement();
 
+        if (playerState == PlayerState.Faint)
+        {
+            // 기절 상태일 땐 카메라를 움직이지 않음
+            return;
+        }
         // View
         mouseX = Input.GetAxis("Mouse X") * MouseSensitivity;
         mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
@@ -131,12 +134,13 @@ public class SecurityController : PlayerController
 
         Debug.Log("카메라 흔들림");
 
+
         while (elapsed < duration)
         {
             float offsetX = Random.Range(-1f, 1f) * magnitude;
             float offsetY = Random.Range(-1f, 1f) * magnitude;
 
-            MainCam.transform.position = camPos + new Vector3(offsetX, offsetY, 0f);
+            MainCam.transform.localPosition = camPos + new Vector3(offsetX, offsetY, 0f);
 
             elapsed += Time.deltaTime;
             yield return null;
@@ -162,31 +166,42 @@ public class SecurityController : PlayerController
 
     bool isMiraCollider;
 
+    [SerializeField]
+    float MiraCameraShakeDuration; //카메라 흔들리는 강도
 
+    [SerializeField]
+    float MiraCameraShakeMagnitude; //카메라 흔들리는 힘
     private void OnTriggerEnter(Collider other)
     {
         if (other.gameObject.CompareTag("Mira") && !isMiraCollider)
         {
             if (!isOwned) { return; }
 
-            Debug.LogWarning("미라와 충돌 (경비원 스크립트) ");
+            Debug.LogWarning("미라와 충돌 - isOwned = true (경비원 스크립트) ");
 
-            SetPlayerState(PlayerState.Faint); //1. 기절 상태 변경
+            Debug.Log("충돌 발생!");
+            Debug.Log("현재 상태: " + GetPlayerState());
+
+            SetPlayerState(PlayerState.Faint);
+
+            Debug.Log("변경된 상태: " + GetPlayerState());
+
 
             MiraController miraController = other.GetComponent<MiraController>();
 
-           
-
-            if (MainCam == null)
-            {
-                MainCam = FindFirstObjectByType<Camera>().gameObject;
-            }
-
             Debug.Log(MainCam != null);
 
+           if(MainCam == null)
+            {
+                MainCam = GameObject.FindWithTag("MainCamera");
+            }
+            Debug.Log(originalPos != null);
             originalPos = MainCam.transform.localPosition;
 
             Transform mirahead = miraController.transform.GetChild(1);
+            Debug.Log("카메라 변경 전 위치: " + MainCam.transform.position);
+
+            Debug.Log("사용 중인 카메라: " + MainCam.name);
 
             if (mirahead != null)
             {
@@ -195,21 +210,22 @@ public class SecurityController : PlayerController
                 // 카메라를 머리 기준으로 살짝 앞쪽에 배치 (예: 0.2m 앞, 0.1m 아래)
                 Vector3 offset = mirahead.forward * 1.5f + Vector3.down * 0.1f;
 
-                MainCam.transform.position = mirahead.transform.position + offset; //카메라 위치 = 미라 머리 + 미라 머리 앞쪽 및 아래 배치
+                MainCam.transform.position = mirahead.transform.localPosition + offset; //카메라 위치 = 미라 머리 + 미라 머리 앞쪽 및 아래 배치
 
-                camPos = MainCam.transform.position; //campos에 설정한 카메라 위치로 저장
+                camPos = MainCam.transform.localPosition; //campos에 설정한 카메라 위치로 저장
 
                 MainCam.transform.LookAt(mirahead); //카메라를 미라 머리를 바라보게.
+
+                Debug.Log("카메라 변경 후 위치: " + MainCam.transform.position);
+                Debug.Log("카메라 바라보는 방향: " + MainCam.transform.forward);
             }
             else
             {
                 Debug.Log("mirahead null");
             }
 
-            StartCoroutine(ShakeCoroutine(0.8f, 0.25f, miraController));
+            StartCoroutine(ShakeCoroutine(MiraCameraShakeDuration, MiraCameraShakeMagnitude, miraController));
 
         }
     }
-
-
 }
