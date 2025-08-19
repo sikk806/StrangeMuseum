@@ -1,3 +1,4 @@
+using DG.Tweening;
 using Mirror;
 using System.Collections;
 using System.Collections.Generic;
@@ -30,6 +31,7 @@ public class MiraController : NetworkBehaviour
 
     public bool isDie;
 
+    [SyncVar]
     [SerializeField]
     CopyState copystate;
 
@@ -73,14 +75,12 @@ public class MiraController : NetworkBehaviour
                     agent.ResetPath();
                     agent.isStopped = true;
                     agent.enabled = false;
-
                     OutlineRemoveMaterial(targetSecurity);
                     break;
 
             }
         }
     }
-
     void Start()
     {
       
@@ -207,7 +207,7 @@ public class MiraController : NetworkBehaviour
 
                 if(isServer)
                 {
-                    AttackSetClientRpc();
+                    //AttackSetClientRpc();
 
                 }
 
@@ -224,12 +224,12 @@ public class MiraController : NetworkBehaviour
 
     }
 
-    [ClientRpc]
-    private void AttackSetClientRpc()
-    {
-        Debug.Log(" ClientRpc 미라 컨트롤러 활성화");
-        AttackCollier.gameObject.SetActive(true); //공격 콜라이더 On
-    }
+    //[ClientRpc]
+    //private void AttackSetClientRpc()
+    //{
+    //    Debug.Log(" ClientRpc 미라 컨트롤러 활성화");
+    //    AttackCollier.gameObject.SetActive(true); //공격 콜라이더 On
+    //}
 
     [SerializeField]
     GameObject AttackCollier;
@@ -237,13 +237,14 @@ public class MiraController : NetworkBehaviour
     {
         if (copystate == CopyState.Die)
         {
-            agent.ResetPath();         // 목적지 제거
-            agent.isStopped = true;    // 이동 중단
             return;
         }
 
-        agent.speed = 6f; // 추격 속도
-        agent.SetDestination(targetSecurity.transform.position);
+        if(targetSecurity != null)
+        {
+            agent.speed = 6f; // 추격 속도
+            agent.SetDestination(targetSecurity.transform.position);
+        }
     }
 
 
@@ -320,7 +321,7 @@ public class MiraController : NetworkBehaviour
 
     }
 
-    private void OutlineRemoveMaterial(GameObject security)
+    public void OutlineRemoveMaterial(GameObject security)
     {
         if (security == null)
         {
@@ -353,6 +354,32 @@ public class MiraController : NetworkBehaviour
         }
     }
 
+    bool isCollider;
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Bouncer") && !isCollider)
+        {
+            if(isOwned) //미라를 스폰한 조각상 시점
+            {
+                transform.LookAt(other.transform.position);
+
+                State = CopyState.Die;
+
+                Debug.LogWarning("경비원과 충돌 - isOwned = true (미라 스크립트) ");
+
+                isCollider = true;
+
+            }
+            //else //조각상이 아닌 시점
+            //{
+            //    Transform mirahead = transform.GetChild(1);
+            //    other.GetComponent<SecurityController>().TestMira(this, mirahead);
+            //    Debug.LogWarning("경비원과 충돌 - isOwned = false (미라 스크립트) ");
+            //}
+                          
+
+        }
+    }
 
     private void OnDrawGizmos()
     {

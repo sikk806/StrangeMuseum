@@ -1,19 +1,18 @@
+using Mirror;
 using UnityEngine;
-using static MiraController;
 
-public class MiraAttackCollider : MonoBehaviour
+public class MiraAttackCollider : NetworkBehaviour
 {
-    bool isCollider;
-
     private void OnTriggerEnter(Collider other)
     {
-        if(other.gameObject.CompareTag("Bouncer") && !isCollider)
-        {
-            Debug.LogWarning("경비원과 충돌 (미라 공격 콜라이더 스크립트) ");
-
-            GetComponentInParent<MiraController>().State = CopyState.Die;  
-
-            isCollider = true;
-        }
+        //if (other.gameObject.CompareTag("Bouncer"))
+        //{
+        //    if(isOwned == false)
+        //    {
+        //        Transform mirahead = transform.GetChild(1);
+        //        other.GetComponent<SecurityController>().TestMira(this, mirahead);
+        //        Debug.LogWarning("경비원과 충돌 - isOwned = false (미라 공격 콜라이더 스크립트) ");
+        //    }
+        //}
     }
 }
