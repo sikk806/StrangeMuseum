@@ -135,6 +135,8 @@ public class SecurityController : PlayerController
         {
             if (!isOwned) { return; }
 
+            other.GetComponent<MiraController>().agent.isStopped = true;
+
             Debug.LogWarning("미라와 충돌 - isOwned = true (경비원 스크립트) ");
 
             CmdSetPlayerState(PlayerState.Faint);

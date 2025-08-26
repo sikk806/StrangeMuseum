@@ -37,6 +37,7 @@ public class MiraCameraShake : NetworkBehaviour
     float MiraCameraShakeMagnitude; //Ä«¸Þ¶ó Èçµé¸®´Â Èû
     private IEnumerator ShakeCoroutine(float duration, float magnitude)
     {
+      
         miraController.State = MiraController.CopyState.Die;
 
         Vector3 originalPos = cam.transform.localPosition;

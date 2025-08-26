@@ -133,13 +133,16 @@ public class MiraController : NetworkBehaviour
                     StartCoroutine(UpdateIdle());
                 break;
             case CopyState.Walk:
-                UpdateWalk();
+                if (copystate == CopyState.Walk) // 자기 상태일 때만 실행
+                    UpdateWalk();
+
                 break;
             case CopyState.Stop:
                 agent.isStopped = true;
                 break;
             case CopyState.Follow:
-                    UpdateFollow();
+                if (agent.hasPath) agent.ResetPath(); // 이전 Walk 경로 완전 제거
+                UpdateFollow();
                 break;
             //case CopyState.Die:         
             //    if(isDie == false)
@@ -156,11 +159,17 @@ public class MiraController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdRequestDestroy()
     {
-
-        var player = targetSecurity.GetComponent<SecurityController>();
-
-
         CmdRequestOutlineRemove();
+
+        //NetworkServer.Destroy(this.gameObject);
+       StartCoroutine(DelayDestroy());
+    }
+
+    IEnumerator DelayDestroy()
+    {
+        yield return new WaitForSeconds(1.0f); // 다음 프레임까지 기다림
+        Debug.Log("미라 Net 사라짐");
+        var player = targetSecurity.GetComponent<SecurityController>();
 
 
         if (isServer)
@@ -173,14 +182,7 @@ public class MiraController : NetworkBehaviour
         }
 
 
-        //NetworkServer.Destroy(this.gameObject);
-       StartCoroutine(DelayDestroy());
-    }
 
-    IEnumerator DelayDestroy()
-    {
-        yield return new WaitForSeconds(1.0f); // 다음 프레임까지 기다림
-        Debug.Log("미라 Net 사라짐");
         NetworkServer.Destroy(this.gameObject);
         yield return null; // 다음 프레임까지 기다림
         Debug.Log("미라 Scene 사라짐");
@@ -254,7 +256,11 @@ public class MiraController : NetworkBehaviour
                 StopAllCoroutines(); // Idle 중단
                 agent.isStopped = false;
 
+                agent.ResetPath();   //  Walk 경로 완전 제거
+
                 targetSecurity = hit.gameObject;
+
+
                 State = CopyState.Follow;
 
                 Debug.Log($"감지됨: {hit.name}");
@@ -287,10 +293,13 @@ public class MiraController : NetworkBehaviour
         if (targetSecurity != null)
         {
             Debug.Log("경비원 쫒아가는 중 + Follow상태");
+            agent.ResetPath();
 
             agent.isStopped = false;
+
             agent.speed = 6f; // 추격 속도
             agent.SetDestination(targetSecurity.transform.position);
+      
         }
     }
 
