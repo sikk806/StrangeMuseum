@@ -2,10 +2,12 @@ using System;
 using UnityEngine;
 using Mirror;
 using System.Collections;
+using Unity.Netcode;
 
-public class GameResultManager : NetworkBehaviour
+public class GameResultManager : Mirror.NetworkBehaviour
 {
     public static GameResultManager Instance;
+    public bool IsGamePaused = false;
 
     public int SecurityCount = 0;
     public int StatueCount = 0;
@@ -43,12 +45,12 @@ public class GameResultManager : NetworkBehaviour
             gameEnd = false;
             StartCoroutine("GameResult");
         }
-        Debug.Log("SecurityCount : " + SecurityCount + " StatueCount : " + StatueCount);
+        Debug.Log(SecurityCount);
     }
 
     IEnumerator GameResult()
     {
-        Debug.Log("Game Finish");
+        IsGamePaused = true;
         yield return null;
     }
 

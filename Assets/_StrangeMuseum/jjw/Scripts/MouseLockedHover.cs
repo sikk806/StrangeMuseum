@@ -2,16 +2,24 @@ using UnityEngine;
 
 public class MouseLockedHover : MonoBehaviour
 {
-    [SerializeField] private LayerMask interactableLayer; // 감지할 물리 레이어 (Raycast)
-    [SerializeField] private uint outlineRenderingLayer = 1u; // 적용할 렌더링 레이어 (예: Layer 3)
+    public LayerMask interactableLayer; // 감지할 물리 레이어 (Raycast)
+    public uint outlineRenderingLayer = 2u; // 적용할 렌더링 레이어 (예: Layer 3)
 
     private GameObject lastHoveredObject;
     private Renderer[] lastHoveredRenderers; //  자식 오브젝트 렌더러 저장
     private uint[] originalLayerMasks; //  원래의 렌더링 레이어 저장
 
+    Camera MainCam;
+    private void Start()
+    {
+        MainCam = GetComponent<Camera>();
+    }
     void Update()
     {
         if (gameObject.CompareTag("Statue")) return;
+
+        if(MainCam.enabled == false) { return; } //경비원 미라 충돌 시, 메인 캠 비활성화 로직 있으므로 비활성화 되었을 때 null 오류 방지
+
         Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
         RaycastHit hit;
 

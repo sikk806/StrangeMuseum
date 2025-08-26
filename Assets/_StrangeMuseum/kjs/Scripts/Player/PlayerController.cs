@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Mirror;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -32,7 +33,17 @@ public class PlayerController : NetworkBehaviour
     public float JumpForce = 3f;
     public float Gravity = 9.8f;
 
-    public void SetPlayerState(PlayerState state) { playerState = state; }
+    [Server]
+    public void SetPlayerStateServer(PlayerState newState)
+    {
+        playerState = newState; // SyncVar이므로 자동 동기화
+    }
+
+    [Command(requiresAuthority = false)]
+    public void CmdSetPlayerState(PlayerState state) 
+    {       
+        playerState = state;
+    }
     public PlayerState GetPlayerState() { return playerState; }
 
 
@@ -51,6 +62,7 @@ public class PlayerController : NetworkBehaviour
 
     // 상속을 위한 변수들
 
+    [SyncVar]
     [SerializeField]
     protected PlayerState playerState;
 
@@ -70,13 +82,12 @@ public class PlayerController : NetworkBehaviour
 
         if (!isOwned) return;
 
-        Debug.Log("SetDelegate");
+
         // Player 기본 상태 세팅
         playerState = PlayerState.Idle;
         transform.Rotate(Vector3.zero);
         
 
-        Debug.Log("커서 ");
         Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
     }
 
@@ -88,6 +99,12 @@ public class PlayerController : NetworkBehaviour
 
     protected virtual void PlayerMovement()
     {
+        if (playerState == PlayerState.Faint || playerState == PlayerState.Die)
+        {
+            return;
+        }
+
+
         // 카메라는 경비원과 석상이 다르기 때문에 자식 클래스에서 진행
         // Move (키보드)
         moveX = Input.GetAxis("Horizontal");

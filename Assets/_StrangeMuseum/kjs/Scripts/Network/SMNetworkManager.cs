@@ -3,8 +3,6 @@ using Mirror;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using Steamworks;
-using Unity.VisualScripting;
-using System.Collections;
 
 public class SMNetworkManager : NetworkManager
 {
