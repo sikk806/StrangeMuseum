@@ -14,7 +14,7 @@ using UnityEngine.UIElements;
 
 //네트워크 관련 아이템 변수들은 각 아이템 스크립트에서 관리 -> 시도 해보기
 
-public class SecurityInteraction : SecurityController
+public class SecurityInteraction : PlayerController
 {
     public float LayDistance; //상호작용 레이
 
@@ -95,7 +95,7 @@ public class SecurityInteraction : SecurityController
     }
 
 
-    void Start()
+    protected override void Start()
     {
        
         if (isOwned == false)
@@ -103,19 +103,22 @@ public class SecurityInteraction : SecurityController
             return;
         }
 
+        mainCam = Camera.main;
+
         UnityEngine.Cursor.lockState = CursorLockMode.Locked; // 커서 숨기기
 
 
         progressBarUI = SecurityInGameUI.Instance.GetComponent<MissionProgressBarUI>();
     }
 
-    void Update()
+    protected override void Update()
     {
         if (isOwned == false)
         {
             return;
         }
 
+        if(mainCam.enabled == false) { return;  } 
         Debug.Log("isOwned - true");
 
         SecurityInteractionRay();
@@ -188,7 +191,10 @@ public class SecurityInteraction : SecurityController
 
     private void SecurityInteractionRay() //아이템 및 오브젝트 상호작용 여부
     {
-         Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+        if (mainCam.enabled == false) { return; }
+
+
+        Ray ray = mainCam.ScreenPointToRay(Input.mousePosition);
 
    
 
