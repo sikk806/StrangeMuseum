@@ -3,6 +3,8 @@ using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.AI.Navigation;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.AI;
 using static MiraController;
@@ -45,7 +47,7 @@ public class MiraController : NetworkBehaviour
 
 
     [SerializeField]
-    Material outLine;
+    Material SecurityOutLine;
 
 
     public CopyState State
@@ -72,21 +74,27 @@ public class MiraController : NetworkBehaviour
                 case CopyState.Follow:
                     break;
                 case CopyState.Die:
-                    agent.ResetPath();
-                    agent.isStopped = true;
-                    agent.enabled = false;
-                    OutlineRemoveMaterial(targetSecurity);
                     break;
 
             }
         }
     }
+
+    [SyncVar]
+    private NetworkIdentity statueOwner;
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+        statueOwner = connectionToClient.identity;
+    }
     void Start()
     {
-      
+
         agent = GetComponent<NavMeshAgent>();
         agent.autoBraking = false; //균일한 속도로 이동
         
+
 
         var group = GameObject.Find("AIPatrolPoint");
 
@@ -102,6 +110,21 @@ public class MiraController : NetworkBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (copystate == CopyState.Die)
+        {
+            if (agent.enabled && agent.isOnNavMesh)
+            {
+              
+                Debug.Log("Update - Die");
+
+                agent.ResetPath();
+                agent.isStopped = true;
+
+                agent.velocity = Vector3.zero; // 남은 속도 제거
+                agent.enabled = false; // 완전 차단
+            }
+            return; 
+        }
 
         switch (copystate)
         {
@@ -116,7 +139,6 @@ public class MiraController : NetworkBehaviour
                 agent.isStopped = true;
                 break;
             case CopyState.Follow:
-                if (copystate != CopyState.Die) // Die 상태일 경우 실행하지 않음
                     UpdateFollow();
                 break;
             //case CopyState.Die:         
@@ -134,15 +156,37 @@ public class MiraController : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdRequestDestroy()
     {
-        NetworkServer.Destroy(this.gameObject);
-        StartCoroutine(DelayDestroy());
-    }
-    IEnumerator DelayDestroy()
-    {
-        yield return null; // 다음 프레임까지 기다림
-        ResourceManager.Instance.Destroy(this.gameObject);
+
+        var player = targetSecurity.GetComponent<SecurityController>();
+
+
+        CmdRequestOutlineRemove();
+
+
+        if (isServer)
+        {
+            player.SetPlayerStateServer(PlayerState.Idle); // 서버 직접 변경
+        }
+        else if (isOwned)
+        {
+            player.CmdSetPlayerState(PlayerState.Idle); // 클라이언트 → 서버
+        }
+
+
+        //NetworkServer.Destroy(this.gameObject);
+       StartCoroutine(DelayDestroy());
     }
 
+    IEnumerator DelayDestroy()
+    {
+        yield return new WaitForSeconds(1.0f); // 다음 프레임까지 기다림
+        Debug.Log("미라 Net 사라짐");
+        NetworkServer.Destroy(this.gameObject);
+        yield return null; // 다음 프레임까지 기다림
+        Debug.Log("미라 Scene 사라짐");
+        ResourceManager.Instance.Destroy(this.gameObject);
+    }
+ 
     private bool isIdleRunning = false;
     IEnumerator UpdateIdle()
     {
@@ -181,58 +225,51 @@ public class MiraController : NetworkBehaviour
         agent.destination = WayPoint[nextIndex].position;
         agent.isStopped = false;
 
-        RaySecurity(10f);
+        RaySecurity();
     }
 
+    [SerializeField]
+    float RayWidth = 5f;
+    [SerializeField]
+    float RayHeight = 3f;
+    [SerializeField]
+    float RayDistance = 3f;
 
-    private void RaySecurity(float rayDistance)
+    private void RaySecurity()
     {
-        Vector3 origin = transform.position + Vector3.up * 1.0f;
-        Vector3 direction = transform.forward;
+        if (!isServer) return;
 
-        Ray ray = new Ray(origin, direction);
-        RaycastHit hit;
+        Vector3 center = transform.position + transform.forward * RayDistance * 0.5f + Vector3.up * 1.0f;
+        Vector3 halfExtents = new Vector3(RayWidth * 0.5f, RayHeight * 0.5f, RayDistance * 0.5f);
 
-        if (Physics.SphereCast(ray, sphereRadius, out hit, rayDistance, securityLayer))
+        // forward 방향을 반영
+        Quaternion orientation = Quaternion.LookRotation(transform.forward, Vector3.up);
+
+        Collider[] hits = Physics.OverlapBox(center, halfExtents, orientation, securityLayer);
+
+        foreach (var hit in hits)
         {
-            if (hit.collider.CompareTag("Bouncer"))
+            if (hit.CompareTag("Bouncer"))
             {
-                StopAllCoroutines(); // Idle 대기 중이면 중단
-
-                //@@@@@@@@@@@@@@ 소리 지르는 사운드 추가 @@@@@@@@@@@@@@@@
-
+                StopAllCoroutines(); // Idle 중단
                 agent.isStopped = false;
 
-                targetSecurity = hit.collider.gameObject;
-
-                if(isServer)
-                {
-                    //AttackSetClientRpc();
-
-                }
-
-                OutlineAddMaterial(targetSecurity);
-
+                targetSecurity = hit.gameObject;
                 State = CopyState.Follow;
 
-                // 기타 로직
-
-
+                Debug.Log($"감지됨: {hit.name}");
+                break;
             }
-
         }
 
     }
 
-    //[ClientRpc]
-    //private void AttackSetClientRpc()
-    //{
-    //    Debug.Log(" ClientRpc 미라 컨트롤러 활성화");
-    //    AttackCollier.gameObject.SetActive(true); //공격 콜라이더 On
-    //}
 
     [SerializeField]
-    GameObject AttackCollier;
+    float alertDistance = 3f; // 원하는 범위
+
+    bool isFollow;
+
     private void UpdateFollow()
     {
         if (copystate == CopyState.Die)
@@ -240,13 +277,22 @@ public class MiraController : NetworkBehaviour
             return;
         }
 
-        if(targetSecurity != null)
+        if(isServer && isFollow == false)
         {
+            CmdRequestOutlineAdd();
+            isFollow = true;
+        }
+
+
+        if (targetSecurity != null)
+        {
+            Debug.Log("경비원 쫒아가는 중 + Follow상태");
+
+            agent.isStopped = false;
             agent.speed = 6f; // 추격 속도
             agent.SetDestination(targetSecurity.transform.position);
         }
     }
-
 
     #region 죽은 뒤 이펙트 생성 - 보류 (주석 처리)
     //[SerializeField]
@@ -291,114 +337,81 @@ public class MiraController : NetworkBehaviour
     #endregion
 
 
-    private void OutlineAddMaterial(GameObject security)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestOutlineAdd()
     {
-        if(security == null) 
-        {
-            return;
-        }
+        if (targetSecurity == null) return;
 
-        Transform securityMesh = security.transform.GetChild(1);
-        SkinnedMeshRenderer smr = securityMesh.GetComponent<SkinnedMeshRenderer>();
-
-        if (smr != null)
-        {
-            Material[] mats = smr.materials; //1. 복사본을 생성하였지만
-
-            if (!mats.Contains(outLine))
-            {
-                Material[] newMats = new Material[mats.Length + 1];
-
-                for (int i = 0; i < mats.Length; i++)
-                {
-                    newMats[i] = mats[i];
-                }
-                newMats[mats.Length] = outLine;
-
-                smr.materials = newMats; //2. 새 배열을 원본에 명시적으로 할당했기 때문에 가능
-            }
-        }
-
+        if (connectionToClient != null)
+            TargetOutlineAdd(statueOwner.connectionToClient, targetSecurity);
+    
     }
 
-    public void OutlineRemoveMaterial(GameObject security)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestOutlineRemove()
     {
-        if (security == null)
-        {
-            Debug.Log("Security는 null");
-            return;
-        }
+        if (targetSecurity == null) return;
 
-        Transform child = security.transform.GetChild(1); // 두 번째 자식
-        SkinnedMeshRenderer smr = child.GetComponent<SkinnedMeshRenderer>();
+        if (connectionToClient != null)
+            TargetOutlineRemove(statueOwner.connectionToClient, targetSecurity);
+    }
 
+    private Material outlineInstance;
+
+    // 실제로 경비원 소유 클라이언트에서만 실행됨
+    [TargetRpc]
+    private void TargetOutlineAdd(NetworkConnection target, GameObject securityObj)
+    {
+
+        SkinnedMeshRenderer smr = securityObj.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
         if (smr != null)
         {
-           // Material[] mats = smr.materials; //원본을 수정해야 되는데 이것은 복사본이므로 원본에 영향을 가지 않아 제거 못함
-            Material[] mats = smr.sharedMaterials;
+            // 한 번만 인스턴스화
+            outlineInstance ??= Instantiate(SecurityOutLine);
 
-            Debug.Log("마테리얼 제거 준비");
+            List<Material> matList = new List<Material>(smr.sharedMaterials);
 
-            // outLine 마테리얼이 포함되어 있다면 제거
-            if (mats.Contains(outLine))
+            if (!matList.Contains(outlineInstance))
             {
-                Debug.Log("마테리얼 제거");
-                List<Material> matList = new List<Material>(mats);
-                matList.Remove(outLine);
+                Debug.Log("TargetOutlineAdd");
+                matList.Add(outlineInstance);
                 smr.materials = matList.ToArray();
             }
         }
-        foreach (var mat in smr.materials)
-        {
-            Debug.Log($"머티리얼 이름: {mat.name}");
-        }
     }
 
-    bool isCollider;
-    private void OnTriggerEnter(Collider other)
+    [TargetRpc]
+    private void TargetOutlineRemove(NetworkConnection target, GameObject securityObj)
     {
-        if (other.gameObject.CompareTag("Bouncer") && !isCollider)
+        
+
+        SkinnedMeshRenderer smr = securityObj.transform.GetChild(1).GetComponent<SkinnedMeshRenderer>();
+        if (smr != null && outlineInstance != null)
         {
-            if(isOwned) //미라를 스폰한 조각상 시점
+            List<Material> matList = new List<Material>(smr.sharedMaterials);
+
+            // 중복된 인스턴스 모두 제거
+            int removedCount = matList.RemoveAll(m => m == outlineInstance);
+            if (removedCount > 0)
             {
-                transform.LookAt(other.transform.position);
-
-                State = CopyState.Die;
-
-                Debug.LogWarning("경비원과 충돌 - isOwned = true (미라 스크립트) ");
-
-                isCollider = true;
-
+                Debug.Log("TargetOutlineRemove - Removed " + removedCount);
+                smr.materials = matList.ToArray();
             }
-            //else //조각상이 아닌 시점
-            //{
-            //    Transform mirahead = transform.GetChild(1);
-            //    other.GetComponent<SecurityController>().TestMira(this, mirahead);
-            //    Debug.LogWarning("경비원과 충돌 - isOwned = false (미라 스크립트) ");
-            //}
-                          
-
         }
     }
 
-    private void OnDrawGizmos()
+
+    private void OnDrawGizmosSelected()
     {
+      
 
+        Vector3 center = transform.position + transform.forward * RayDistance * 0.5f + Vector3.up;
+        Vector3 halfExtents = new Vector3(RayWidth * 0.5f, RayHeight * 0.5f, RayDistance * 0.5f);
 
-        Vector3 origin = transform.position + Vector3.up * 1.0f;
-        Vector3 direction = transform.forward;
+        Quaternion orientation = Quaternion.LookRotation(transform.forward, Vector3.up);
 
-        // 감지 범위 시각화: 전방 구체 캐스트
-        Gizmos.color = Color.cyan;
-
-        // 방향 벡터 끝점 계산
-        Vector3 endPoint = origin + direction.normalized * 10f;
-
-        // 선 그리기 (방향 표시)
-        Gizmos.DrawLine(origin, endPoint);
-
-        // 구체 감지 범위 시각화 (시작점 + 끝점에 구 그리기)
-        Gizmos.DrawWireSphere(origin, sphereRadius);
-        Gizmos.DrawWireSphere(endPoint, sphereRadius);
+        Gizmos.color = Color.yellow;
+        Gizmos.matrix = Matrix4x4.TRS(center, orientation, Vector3.one);
+        Gizmos.DrawWireCube(Vector3.zero, halfExtents * 2);
     }
 }

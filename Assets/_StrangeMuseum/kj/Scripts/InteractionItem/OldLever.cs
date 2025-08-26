@@ -248,7 +248,7 @@ public class OldLever : NetworkBehaviour , IHoldInteractable
 
             if(statueController != null)
             {
-                statueController.SetPlayerState(state);
+                statueController.CmdSetPlayerState(state);
             }
         }
     }
