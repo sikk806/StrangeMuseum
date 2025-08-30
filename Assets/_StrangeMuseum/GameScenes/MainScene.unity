@@ -2680,7 +2680,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1443950042}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SteamLobby, Assembly-CSharp
         m_MethodName: ConnectAsClient
         m_Mode: 1
@@ -4997,10 +4997,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1443950045}
-  - component: {fileID: 1443950044}
   - component: {fileID: 1443950043}
-  - component: {fileID: 1443950042}
-  - component: {fileID: 1443950041}
   - component: {fileID: 1443950047}
   m_Layer: 0
   m_Name: NetworkManager
@@ -5009,102 +5006,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1443950041
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443950039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ae7a6435fca389945967a1adc3fde581, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  dontDestroyOnLoad: 1
-  runInBackground: 1
-  headlessStartMode: 1
-  editorAutoStart: 0
-  sendRate: 60
-  offlineScene: Assets/_StrangeMuseum/kjs/Scene/SteamNetworkTestScene.unity
-  onlineScene: Assets/_StrangeMuseum/kjs/Scene/NetworkTest.unity
-  offlineSceneLoadDelay: 0
-  transport: {fileID: 1443950043}
-  networkAddress: localhost
-  maxConnections: 6
-  disconnectInactiveConnections: 0
-  disconnectInactiveTimeout: 60
-  authenticator: {fileID: 0}
-  playerPrefab: {fileID: 7885857035676406302, guid: 257b5243f1cbeb84ba206b0fda4e5f32, type: 3}
-  autoCreatePlayer: 1
-  playerSpawnMethod: 0
-  spawnPrefabs:
-  - {fileID: 6773915570499476573, guid: 3e0a63c7a79f71d4c91b3b84b425f00a, type: 3}
-  - {fileID: 8022513274167853266, guid: 173fd9777cd281e4b8dfc3c91d1abbd3, type: 3}
-  - {fileID: 5527360832863044529, guid: 500323bccd493e245b4849779f9e4d64, type: 3}
-  - {fileID: 7102671137916637423, guid: 38eb59ff3938cc742af7f0e5dd48798b, type: 3}
-  - {fileID: 4460425605253287126, guid: 8c6e35c8a52af524eabab5ee2b115ff8, type: 3}
-  - {fileID: 1414292103272000, guid: 46acc2e8b243bdc47bb1184ba8b1091b, type: 3}
-  - {fileID: 8841285224984753386, guid: df76124540240ee42b6350361d6c04e0, type: 3}
-  - {fileID: 5576034455405927074, guid: 23cf6ab6179f89d41bfc97c65e601320, type: 3}
-  - {fileID: 1718526350573821503, guid: e3bf8bd1c81649d4ba84360ac8d5b8e3, type: 3}
-  - {fileID: 1869673327727865973, guid: 283123eb4434e11489dc6aafde9b9602, type: 3}
-  - {fileID: 4316314992766219179, guid: d5bc758d6de495e4299a66d99cab9a84, type: 3}
-  - {fileID: 6773915570499476573, guid: 634db976b1bbc604cae99d3e5e97f4ed, type: 3}
-  - {fileID: 388506773989603176, guid: 3d7f17c302e2f6a43b360dfb27b56f9e, type: 3}
-  - {fileID: 3700023745771866719, guid: 3ee7994b8ffe34648be10d3a7b3ee87d, type: 3}
-  - {fileID: 6042096211448569219, guid: 4498b11b8407c3c4a9981da127b9e220, type: 3}
-  - {fileID: 8793510976239746625, guid: 8fa5143051527e949b0ae174c8430414, type: 3}
-  - {fileID: 4503612902121041701, guid: 5a936c83b1746f14f9100db745e94f04, type: 3}
-  - {fileID: 6149772865670933327, guid: 1c5c238d836f1f34d87e92fb074aabd7, type: 3}
-  - {fileID: 100000, guid: 735e8fb306bbd5f4dbbe850d4799c075, type: 3}
-  - {fileID: 2118553550903347206, guid: a34581171627c214287f36e747dc42a3, type: 3}
-  - {fileID: 275219252555841642, guid: 39c6d87d013f2fd4fb2687d91d8897db, type: 3}
-  - {fileID: 8980452312396880376, guid: 834201b556d02ea48ac2df00365cc1fa, type: 3}
-  - {fileID: 6602946325242862002, guid: 7096a06c929111342a94af444101b3d4, type: 3}
-  - {fileID: 6241395249922770310, guid: dc0e108815ad8344788ca1dc2ba09236, type: 3}
-  - {fileID: 9100657107869444683, guid: 92f968d8c316a894696fedd87be47ef2, type: 3}
-  exceptionsDisconnect: 1
-  snapshotSettings:
-    bufferTimeMultiplier: 2
-    bufferLimit: 32
-    catchupNegativeThreshold: -1
-    catchupPositiveThreshold: 1
-    catchupSpeed: 0.019999999552965164
-    slowdownSpeed: 0.03999999910593033
-    driftEmaDuration: 1
-    dynamicAdjustment: 1
-    dynamicAdjustmentTolerance: 1
-    deliveryTimeEmaDuration: 2
-  evaluationMethod: 0
-  evaluationInterval: 3
-  timeInterpolationGui: 0
-  GamePlayerPrefab: {fileID: 2029663946312191239, guid: e3bf8bd1c81649d4ba84360ac8d5b8e3, type: 3}
-  securityPrefab: {fileID: 6042096211448569219, guid: 4498b11b8407c3c4a9981da127b9e220, type: 3}
-  statuePrefab: {fileID: 3700023745771866719, guid: 3ee7994b8ffe34648be10d3a7b3ee87d, type: 3}
-  SecurityPos:
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  StatuePos:
-  - {x: 1, y: 1, z: 1}
-  - {x: 1, y: 1, z: 1}
-  forceLocalMode: 1
---- !u!114 &1443950042
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443950039}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab1d46e2668eec24a934257c6db9b871, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  HostButton: {fileID: 0}
-  CurrentLobbyID: 0
-  forceLocalMode: 1
-  isSteamAvailable: 0
 --- !u!114 &1443950043
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5112,7 +5013,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1443950039}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e6e55fca1f4e4844593a3dd65a3ecb39, type: 3}
   m_Name: 
@@ -5121,18 +5022,6 @@ MonoBehaviour:
   Timeout: 25
   AllowSteamRelay: 1
   UseNextGenSteamNetworking: 1
---- !u!114 &1443950044
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1443950039}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef4bffeda13d7a748973ff9204401c07, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1443950045
 Transform:
   m_ObjectHideFlags: 0
@@ -6115,7 +6004,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1443950042}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: SteamLobby, Assembly-CSharp
         m_MethodName: HostLobby
         m_Mode: 1

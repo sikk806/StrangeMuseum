@@ -1,6 +1,7 @@
 using System.Collections;
 using Mirror;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
 [RequireComponent(typeof(NetworkAnimator))]
@@ -24,23 +25,40 @@ public class SecurityController : PlayerController
     [SerializeField]
     GameObject SeucrityCamera;
 
-    public GameObject cam;
+    private GameObject MainCam;
 
-    protected override void Start()
+    protected override void Awake()
     {
-        if(!isOwned) return;
-        DontDestroyOnLoad(gameObject);
 
-        Debug.Log("Start()");
+        base.Awake();
 
-        base.Start();
+        if (!isOwned) return;
 
-        cam = Instantiate(SeucrityCamera, transform.position, Quaternion.identity);
 
         SceneManager.sceneLoaded += InitPlayerPosition;
 
-        
-        Debug.Log("SetDelegate");
+        DontDestroyOnLoad(gameObject);
+
+
+
+    }
+
+    protected override void Start()
+    {
+        if (!isOwned) return;
+
+        MainCam = GameObject.FindWithTag("MainCamera");
+
+        MouseLockedHover mousehover = MainCam.AddComponent<MouseLockedHover>();
+        mousehover.interactableLayer = (1 << 6) | (1 << 26);
+
+        PhysicsRaycaster physicsRaycaster = MainCam.AddComponent<PhysicsRaycaster>();
+        physicsRaycaster.eventMask = (1 << 3) | (1 << 6) | (1 << 26);
+
+        foreach (Transform child in MainCam.transform)
+        {
+            child.gameObject.SetActive(true);
+        }
 
         // 자신의 스킨은 볼 수 없도록. (그림자만 존재하도록)
         skinnedMeshRenderer = CharacterMesh.GetComponent<SkinnedMeshRenderer>();
@@ -52,8 +70,14 @@ public class SecurityController : PlayerController
     {
         // For Network Play
         if (!isLocalPlayer) return;
+        if (GameResultManager.Instance.IsGamePaused == true) return;
 
         base.Update();
+
+        if (playerState == PlayerState.Faint)
+        {
+            return;
+        }
 
         if (playerState == PlayerState.Idle || playerState == PlayerState.Run || playerState == PlayerState.Jump)
         {
@@ -75,19 +99,19 @@ public class SecurityController : PlayerController
         mouseY = Input.GetAxis("Mouse Y") * MouseSensitivity;
 
         transform.Rotate(Vector3.up * mouseX);
-        cam.transform.Rotate(Vector3.up * mouseX);
+        MainCam.transform.Rotate(Vector3.up * mouseX);
 
         yaw += mouseX;
         pitch -= mouseY;
         pitch = Mathf.Clamp(pitch, -30f, 30f);
 
-        cam.transform.localRotation = Quaternion.Euler(pitch, yaw, 0f);
-        cam.transform.position = transform.position + transform.rotation * SecurityCameraPosition;
+        MainCam.transform.localRotation = Quaternion.Euler(pitch, yaw, 0f);
+        MainCam.transform.position = transform.position + transform.rotation * SecurityCameraPosition;
     }
 
     protected void InitPlayerPosition(Scene scene, LoadSceneMode mode)
     {
-        if(scene.name == "PlayScene")
+        if (scene.name == "PlayScene")
         {
             StartCoroutine("SetPlayerPosition");
         }
@@ -101,9 +125,37 @@ public class SecurityController : PlayerController
     }
 
 
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Mira"))
+        {
+            if (!isOwned) { return; }
+
+            other.GetComponent<MiraController>().agent.isStopped = true;
+
+            Debug.LogWarning("미라와 충돌 - isOwned = true (경비원 스크립트) ");
+
+            CmdSetPlayerState(PlayerState.Faint);
+
+            Camera miraHeadCam = other.GetComponentInChildren<Camera>();
+
+            if (miraHeadCam != null)
+            {
+                miraHeadCam.enabled = true;
+
+            }
+
+            if (MainCam == null)
+            {
+                MainCam = GameObject.FindWithTag("MainCamera");
+            }
+
+            MainCam.GetComponent<Camera>().enabled = false;
+
+        }
 
 
 
-   
 
+    }
 }
