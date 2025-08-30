@@ -1,8 +1,7 @@
-using System;
 using System.Collections;
-using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
+using Mirror;
 
 public class UIManager : MonoBehaviour
 {
@@ -39,8 +38,8 @@ public class UIManager : MonoBehaviour
     [SerializeField]
     private Image flashImage; // 조각상이 플래시에 노출되었을때 피드백을 화면에 나타내기 위한 이미지
 
-    [SerializeField]
-    private AudioClip audioClip;
+    //[SerializeField]
+    //private AudioClip audioClip;
 
     private Coroutine runningCoroutine;
 
@@ -61,10 +60,14 @@ public class UIManager : MonoBehaviour
 
     public void BlackOutEffect(ulong clientId) // 화면이 잠깐 꺼지는 효과를 주는 함수
     {
-        if (NetworkManager.Singleton.LocalClientId != clientId) return;
+        var local = NetworkClient.localPlayer;
+        if (local == null) return;
+
+        // 이 클라가 해당 ID일 때만 블랙아웃 실행
+        if (local.netId != clientId) return;
 
         StartCoroutine(ShowUIForSeconds(0.2f)); // 입력값만큼 꺼짐
-        SoundManager.Instance.PlaySfx(audioClip);
+        //SoundManager.Instance.PlaySfx(audioClip);
     }
 
     IEnumerator ShowUIForSeconds(float sec)

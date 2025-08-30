@@ -15,5 +15,5 @@ MonoBehaviour:
   objectName: "\uBAA8\uC544\uC774 \uC11D\uC0C1"
   taskDetail: "\uBAA8\uC544\uC774 \uC11D\uC0C1\uC5D0 \uC190\uC0C1\uC774 \uC788\uB294\uC9C0
     \uC810\uAC80"
-  inspectionTimeRequired: 10
+  inspectionTimeRequired: 3
   spawnDatas: []

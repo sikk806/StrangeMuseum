@@ -43,6 +43,7 @@ GameObject:
   - component: {fileID: 3862532171289386587}
   - component: {fileID: -7545194378892077840}
   - component: {fileID: 9198539300243914109}
+  - component: {fileID: 9122431098223727806}
   m_Layer: 0
   m_Name: WaterDispenser
   m_TagString: InspectableObject
@@ -129,6 +130,23 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: 9cb581cdb7ae4f747970991846dedbbc, type: 2}
   audioClip: {fileID: 0}
+--- !u!114 &9122431098223727806
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2041122558709161551}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3373148485
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &2285459419482257015
 GameObject:
   m_ObjectHideFlags: 0

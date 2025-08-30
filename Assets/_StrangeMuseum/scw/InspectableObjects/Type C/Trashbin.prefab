@@ -218,6 +218,7 @@ GameObject:
   - component: {fileID: 5515846260666699800}
   - component: {fileID: -3664869579766102255}
   - component: {fileID: 4792914615492075486}
+  - component: {fileID: -6370715729378855475}
   m_Layer: 0
   m_Name: Trashbin
   m_TagString: InspectableObject
@@ -357,6 +358,23 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: b90120531c8342147811d80415c459e2, type: 2}
   audioClip: {fileID: 8300000, guid: c0fcf5675038bf44c913649ae9f420f8, type: 3}
+--- !u!114 &-6370715729378855475
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7939629358683932846}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1042251169
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &7955833166356442849
 GameObject:
   m_ObjectHideFlags: 0

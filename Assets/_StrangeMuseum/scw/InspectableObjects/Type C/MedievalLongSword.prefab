@@ -81,6 +81,7 @@ GameObject:
   - component: {fileID: 1980712870290343853}
   - component: {fileID: -6359469947410883277}
   - component: {fileID: 4966290867246495593}
+  - component: {fileID: -7896175871415731142}
   m_Layer: 0
   m_Name: MedievalLongSword
   m_TagString: InspectableObject
@@ -220,6 +221,23 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: 647903e853be8f642b181c78648acf70, type: 2}
   audioClip: {fileID: 0}
+--- !u!114 &-7896175871415731142
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7114762779150636490}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3544267915
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &8410038556339907234
 GameObject:
   m_ObjectHideFlags: 0

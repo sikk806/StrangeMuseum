@@ -497,6 +497,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 6fdace5d5efbad6468f33d3ba1bcc423, type: 3}
       insertIndex: -1
       addedObject: {fileID: 7615712454459795804}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 6fdace5d5efbad6468f33d3ba1bcc423, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8759318080468796030}
   m_SourcePrefab: {fileID: 100100000, guid: 6fdace5d5efbad6468f33d3ba1bcc423, type: 3}
 --- !u!1 &3307181684439919871 stripped
 GameObject:
@@ -564,6 +567,23 @@ MonoBehaviour:
   ShowTopMostFoldoutHeaderGroup: 1
   inspectableObjectData: {fileID: 11400000, guid: 84795fa50789e284e964766679bcb9dc, type: 2}
   audioClip: {fileID: 8300000, guid: d43443a124bc33b4fa618ff7878562ab, type: 3}
+--- !u!114 &8759318080468796030
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3307181684439919871}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2354846818
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!4 &3307181684440412383 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 400000, guid: 6fdace5d5efbad6468f33d3ba1bcc423, type: 3}

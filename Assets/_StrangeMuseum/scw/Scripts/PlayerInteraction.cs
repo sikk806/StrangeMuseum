@@ -1,6 +1,5 @@
 using Mirror;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class PlayerInteraction : NetworkBehaviour
 {
@@ -10,14 +9,12 @@ public class PlayerInteraction : NetworkBehaviour
 
     [SyncVar]
     public bool isMissionProgress = false;
-    
-
-    private SecurityController playerController;
+    private SecurityController securityController;
     private float interactionDistance = 1.5f; // 플레이어 눈(카메라)으로부터 상호작용이 가능한 거리
 
-    void Awake()
+    void Start()
     {
-        playerController = GetComponent<SecurityController>();
+        securityController = GetComponent<SecurityController>();
     }
 
     [Command(requiresAuthority = false)] // 클라이언트도 요청할 수 있도록 설정
@@ -28,33 +25,27 @@ public class PlayerInteraction : NetworkBehaviour
 
     void Update()
     {
-        if(!isOwned) return;
-        //if(!playerController.playerCamera) return;
+        if (!isOwned) return;
+        if (!securityController.cam) return;
 
-        // RaycastHit hit;
-        // if (Physics.Raycast(playerController.playerCamera.position, playerController.playerCamera.forward, out hit, interactionDistance))
-        // {
-        //     if (hit.collider.CompareTag("InspectableObject"))
-        //     {
-        //         HandleInspectableObject(hit.collider.gameObject);
-
-        //         SetIsProgressServerRpc(true); // 미션 진행중
-
-        //     }
-        //     else
-        //     {
-
-        //         UIManager.Instance.CloseInspectionObjectUI();
-
-
-        //     }
-        // }
-        // else
-        // {
-        //     UIManager.Instance.CloseInspectionObjectUI();
-
-        //     SetIsProgressServerRpc(false); // 미션 진행 X
-        // }
+        RaycastHit hit;
+        if (Physics.Raycast(securityController.cam.transform.position, securityController.cam.transform.forward, out hit, interactionDistance))
+        {
+            if (hit.collider.CompareTag("InspectableObject"))
+            {
+                HandleInspectableObject(hit.collider.gameObject);
+                SetIsProgressServerRpc(true); // 미션 진행중
+            }
+            else
+            {
+                UIManager.Instance.CloseInspectionObjectUI();
+            }
+        }
+        else
+        {
+            UIManager.Instance.CloseInspectionObjectUI();
+            SetIsProgressServerRpc(false); // 미션 진행 X
+        }
     }
 
     private void HandleInspectableObject(GameObject obj) // 공통 임무를 진행하면서 상호작용하는 오브젝트(ex. 정수기, 장식품 등)와의 기능을 담은 함수
@@ -63,25 +54,14 @@ public class PlayerInteraction : NetworkBehaviour
 
         inspectableObject.RedrawGaugeUI(); // 진행률 UI 그리기
 
-
         if (inspectableObject.GetIsInspectionComplete()) return; // 점검이 이미 완료되었다면 return
-
-        if (Input.GetMouseButtonDown(0))
-        {
-            //GameManager.Instance.SetCanPlayerMove(false); // 플레이어 움직임 lock
-        }
 
         if (Input.GetMouseButton(0)) // 유지
         {
             Vector3 playerPosition = transform.position;
-            
-            //ulong myId = NetworkManager.Singleton.LocalClientId;  //미러 방식으로 변경 필요
-            //inspectableObject.ProceedInspectedTime(myId, playerPosition);
-        }
+            uint myId = netIdentity.netId;
 
-        if (Input.GetMouseButtonUp(0))
-        {
-            //GameManager.Instance.SetCanPlayerMove(true); // 플레이어 움직임 lock 해제
+            inspectableObject.ProceedInspectedTime(myId, playerPosition);
         }
     }
 }
