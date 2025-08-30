@@ -335,7 +335,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 64c0b7ad84e002c488513b181372ad38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   inspectableObjectData: {fileID: 11400000, guid: 1444d2622470a74459568e62d1aaf2c6, type: 2}
   audioClip: {fileID: 8300000, guid: cf870f80b519ea74d85716f7471e8b3e, type: 3}
 --- !u!114 &5072441311480043628

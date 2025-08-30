@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   objectName: "\uB9E8\uD640"
   taskDetail: "\uC6A9\uB3C4\uB97C \uC54C \uC218 \uC5C6\uB294 \uB9E8\uD640 \uAC80\uC0AC"
-  inspectionTimeRequired: 10
+  inspectionTimeRequired: 3
   spawnDatas:
   - spawnData:
     - -43.097

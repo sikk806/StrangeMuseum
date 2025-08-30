@@ -1,8 +1,6 @@
-using NUnit.Framework;
 using System.Collections;
-using System.Drawing;
-using Unity.Netcode;
 using UnityEngine;
+using Mirror;
 
 public class InspectableObject : NetworkBehaviour
 {
@@ -22,7 +20,7 @@ public class InspectableObject : NetworkBehaviour
     Vector3 direction;
 
 
-    public void ProceedInspectedTime(ulong playerId, Vector3 playerPosition) // 점검 진행도를 증가시키는 함수
+    public void ProceedInspectedTime(uint playerId, Vector3 playerPosition) // 점검 진행도를 증가시키는 함수
     {
         inspectedTime += Time.deltaTime;
 
@@ -32,7 +30,7 @@ public class InspectableObject : NetworkBehaviour
         {
             // 다회 수행되는 것을 방지하기 위한 bool형 변수
             isExecutedOneTime = true;
-            RequestCompleteInspectionServerRpc(playerId, playerPosition);
+            CmdRequestCompleteInspection(playerId, playerPosition);
         }
     }
 
@@ -47,25 +45,30 @@ public class InspectableObject : NetworkBehaviour
     }
 
     // 클라이언트가 서버에게 임무 완료 Feedback을 요청하는 ServerRpc
-    [ServerRpc(RequireOwnership = false)]
-    public void RequestCompleteInspectionServerRpc(ulong playerId, Vector3 playerPosition, ServerRpcParams rpcParams = default)
+    [Command(requiresAuthority = false)]
+    public void CmdRequestCompleteInspection(uint playerId, Vector3 playerPosition)
     {
         Debug.Log("ID: " + playerId + " 클라이언트가 서버에게 임무 완료 Feedback 요청");
-        CompleteInspectionServerRpc(playerId, playerPosition);
+        ServerCompleteInspection(playerId, playerPosition);
     }
 
-    [ServerRpc]
-    public void CompleteInspectionServerRpc(ulong playerId, Vector3 targetPos)
+    [Server]
+    public void ServerCompleteInspection(uint playerId, Vector3 targetPos)
     {
-        CompleteInspectionClientRpc(playerId, inspectableObjectData.inspectionTimeRequired, targetPos);
-        GameManager.Instance.UpdateTaskListServerRpc(); // 점검표에서 해당 임무 지워질 수 있도록 수정하는 코드
+        // 서버 오브젝트 상태 먼저 반영
+        isInspectionComplete = true;
+        inspectedTime = inspectableObjectData.inspectionTimeRequired;
 
+        RpcCompleteInspection(playerId, inspectableObjectData.inspectionTimeRequired, targetPos);
+      
+        GameManager.Instance.UpdateTaskList(); // 점검표에서 해당 임무 지워질 수 있도록 수정하는 코드
+        
         // 모든 임무가 완료되었는지 체크하는 기능 추가 필요
         GameManager.Instance.CheckAllTaskFinish();
     }
 
     [ClientRpc]
-    public void CompleteInspectionClientRpc(ulong playerId, float inspectionTimeRequired, Vector3 targetPos) 
+    public void RpcCompleteInspection(ulong playerId, float inspectionTimeRequired, Vector3 targetPos) 
     {
         Debug.Log(inspectableObjectData.objectName + "의 점검이 완료되었습니다.");
         isInspectionComplete = true;
@@ -87,7 +90,7 @@ public class InspectableObject : NetworkBehaviour
                 transform.rotation = Quaternion.LookRotation(direction);
                 break;
             case "???":
-                transform.GetChild(0).GetChild(1).GetComponent<Renderer>().material.EnableKeyword("_EMISSION");
+                transform.GetChild(0).GetChild(0).GetChild(1).GetComponent<Renderer>().material.EnableKeyword("_EMISSION");
                 break;
             case "우편물":
                 direction = targetPos - this.transform.GetChild(2).GetChild(0).transform.position;
@@ -112,10 +115,10 @@ public class InspectableObject : NetworkBehaviour
 
     private IEnumerator PlayHorrorSound(float delay, ulong playerId)
     {
-        if (NetworkManager.Singleton.LocalClientId == playerId)
+        if (NetworkClient.localPlayer != null && NetworkClient.localPlayer.netId == playerId)
         {
             yield return new WaitForSeconds(delay);
-            SoundManager.Instance.PlaySfx(audioClip);
+            //SoundManager.Instance.PlaySfx(audioClip);
         }
     }
 

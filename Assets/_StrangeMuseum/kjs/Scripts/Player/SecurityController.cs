@@ -24,7 +24,7 @@ public class SecurityController : PlayerController
     [SerializeField]
     GameObject SeucrityCamera;
 
-    GameObject cam;
+    public GameObject cam;
 
     protected override void Start()
     {

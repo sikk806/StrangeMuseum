@@ -95,6 +95,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 310623631286524911}
+  - component: {fileID: -497912680332968188}
   m_Layer: 0
   m_Name: Exit_B
   m_TagString: Untagged
@@ -119,6 +120,23 @@ Transform:
   - {fileID: 1392479441755596406}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &-497912680332968188
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1007471575720076892}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3530906550
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &4498356716102522434
 GameObject:
   m_ObjectHideFlags: 0
