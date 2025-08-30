@@ -26,6 +26,8 @@ public class PlayerInteraction : NetworkBehaviour
     void Update()
     {
         if (!isOwned) return;
+        /*
+        if (!isOwned) return;
         if (!securityController.cam) return;
 
         RaycastHit hit;
@@ -46,6 +48,7 @@ public class PlayerInteraction : NetworkBehaviour
             UIManager.Instance.CloseInspectionObjectUI();
             SetIsProgressServerRpc(false); // 미션 진행 X
         }
+         */
     }
 
     private void HandleInspectableObject(GameObject obj) // 공통 임무를 진행하면서 상호작용하는 오브젝트(ex. 정수기, 장식품 등)와의 기능을 담은 함수
