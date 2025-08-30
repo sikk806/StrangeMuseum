@@ -1,57 +1,44 @@
 using System.Collections;
-using Unity.Netcode;
+using Mirror;
+using TMPro;
 using UnityEngine;
 
 public class TaskList : MonoBehaviour
 {
     /*
-        * 이 스크립트는 Tab키를 통해 업무 일지를  펼칠 수 있는 기능을 담은 스크립트입니다.
-        */
+    * 이 스크립트는 Tab키를 통해 업무 일지를  펼칠 수 있는 기능을 담은 스크립트입니다.
+    */
 
     private Animator taskListAnimator;
-    private bool isSecurity = false;
     private bool prevTabPressed = false;
-    private ulong clientId;
+    private uint clientId;
 
     [SerializeField]
     private AudioClip audioClip;
 
+    [SerializeField]
+    private TextMeshPro text;
+
     void Start()
     {
         taskListAnimator = GetComponent<Animator>();
-        clientId = NetworkManager.Singleton.LocalClientId;
+        clientId = NetworkClient.localPlayer.netId;
+
+        GameManager.Instance.taskList = text;
 
         StartCoroutine(WaitForPlayerStat());
     }
 
     void Update()
     {
-        if (GameManager.Instance.PlayerStat.Value.ContainsKey(clientId))
-        {
-            string role = GameManager.Instance.PlayerStat.Value[clientId].ToString();
-
-            if (role == "Security")
-            {
-                isSecurity = true;
-            }
-            else
-            {
-                isSecurity = false;
-            }
-        }
-        else
-        {
-            isSecurity = false;
-        }
-
-        if (!isSecurity) return;
-
         bool isTabPressed = Input.GetKey(KeyCode.Tab);
 
         if (isTabPressed != prevTabPressed)
         {
+            Debug.Log("탭키 누름");
+
             // 상태 변경 시 사운드 출력
-            SoundManager.Instance.PlaySfx(audioClip);
+            //SoundManager.Instance.PlaySfx(audioClip);
 
             // 이전 상태 변경
             prevTabPressed = isTabPressed;
@@ -63,7 +50,7 @@ public class TaskList : MonoBehaviour
 
     IEnumerator WaitForPlayerStat()
     {
-        while (!GameManager.Instance.PlayerStat.Value.ContainsKey(clientId))
+        while (!GameManager.Instance.PlayerStat.ContainsKey(clientId))
         {
             Debug.Log("PlayerStat에 clientId가 추가될 때까지 대기 중");
             yield return new WaitForSeconds(0.5f);

@@ -10,7 +10,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 100000, guid: a0316404b482b484abdddefa4565d414, type: 3}
       propertyPath: m_Name
-      value: EasterIslandStatue (1)
+      value: Moai
       objectReference: {fileID: 0}
     - target: {fileID: 100000, guid: a0316404b482b484abdddefa4565d414, type: 3}
       propertyPath: m_StaticEditorFlags
@@ -75,6 +75,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: a0316404b482b484abdddefa4565d414, type: 3}
       insertIndex: -1
       addedObject: {fileID: 8573233291244030225}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: a0316404b482b484abdddefa4565d414, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6424087242273279656}
     - targetCorrespondingSourceObject: {fileID: 100004, guid: a0316404b482b484abdddefa4565d414, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5027844157929128642}
@@ -96,7 +99,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 2929225847
+  GlobalObjectIdHash: 476007138
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -109,6 +112,23 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &6424087242273279656
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4769410888825640146}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 2881365759
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &4769410888825640150 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 100004, guid: a0316404b482b484abdddefa4565d414, type: 3}

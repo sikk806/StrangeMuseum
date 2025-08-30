@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 100000, guid: 8889a2acc31555a4c9c605140316ecae, type: 3}
+      propertyPath: m_Name
+      value: GiantBeetle
+      objectReference: {fileID: 0}
+    - target: {fileID: 100000, guid: 8889a2acc31555a4c9c605140316ecae, type: 3}
       propertyPath: m_StaticEditorFlags
       value: 4294967295
       objectReference: {fileID: 0}
@@ -78,6 +82,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 100000, guid: 8889a2acc31555a4c9c605140316ecae, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2165918229322288872}
+    - targetCorrespondingSourceObject: {fileID: 100000, guid: 8889a2acc31555a4c9c605140316ecae, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: -8707436402836386348}
   m_SourcePrefab: {fileID: 100100000, guid: 8889a2acc31555a4c9c605140316ecae, type: 3}
 --- !u!1 &8351228636875247590 stripped
 GameObject:
@@ -117,7 +124,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 3018234628
+  GlobalObjectIdHash: 3236232595
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -130,3 +137,20 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &-8707436402836386348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8351228636875247590}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 1829574027
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0

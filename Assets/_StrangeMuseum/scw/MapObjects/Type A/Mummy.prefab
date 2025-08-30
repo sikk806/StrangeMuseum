@@ -134,6 +134,7 @@ GameObject:
   - component: {fileID: 749185550214710708}
   - component: {fileID: 6149108064117780966}
   - component: {fileID: 5826062132205445614}
+  - component: {fileID: -5405243526073541394}
   m_Layer: 0
   m_Name: Mummy
   m_TagString: wall_wood
@@ -244,7 +245,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 1823582600
+  GlobalObjectIdHash: 818882645
   InScenePlacedSourceGlobalObjectIdHash: 0
   DeferredDespawnTick: 0
   Ownership: 1
@@ -257,6 +258,23 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &-5405243526073541394
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7513809295527400073}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 472108445
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1001 &3299827621109160042
 PrefabInstance:
   m_ObjectHideFlags: 0

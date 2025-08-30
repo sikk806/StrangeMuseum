@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7252849816253202234}
   - component: {fileID: -2570946491039423256}
+  - component: {fileID: 5438735462031064756}
   m_Layer: 0
   m_Name: Exhibits_Statue
   m_TagString: Untagged
@@ -63,6 +64,23 @@ MonoBehaviour:
   AutoObjectParentSync: 1
   SyncOwnerTransformWhenParented: 1
   AllowOwnerToParent: 0
+--- !u!114 &5438735462031064756
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 25443831838382151}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sceneId: 0
+  _assetId: 3272762883
+  serverOnly: 0
+  visibility: 0
+  hasSpawned: 0
 --- !u!1 &119905984624716379
 GameObject:
   m_ObjectHideFlags: 0

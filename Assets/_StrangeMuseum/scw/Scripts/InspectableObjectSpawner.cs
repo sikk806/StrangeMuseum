@@ -1,10 +1,7 @@
-using NUnit.Framework;
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.Netcode;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class InspectableObjectSpawner : NetworkBehaviour
 {
@@ -13,50 +10,59 @@ public class InspectableObjectSpawner : NetworkBehaviour
      */
 
     // A형 임무를 위해 맵에 배치된 오브젝트 리스트
-    [SerializeField] 
+    [SerializeField]
     private List<GameObject> mapObjectsForTaskTypeA = new List<GameObject>();
 
     // A형 임무를 위해 생성되는 오브젝트 리스트
-    [SerializeField] 
+    [SerializeField]
     private List<GameObject> replacementObjectsForTaskTypeA = new List<GameObject>();
 
     // B형 임무를 위해 맵에 배치된 오브젝트 리스트
-    [SerializeField] 
+    [SerializeField]
     private List<GameObject> mapObjectsForTaskTypeB = new List<GameObject>();
 
     // B형 임무를 위해 생성되는 오브젝트 리스트
-    [SerializeField] 
+    [SerializeField]
     private List<GameObject> replacementObjectsForTaskTypeB = new List<GameObject>();
 
     // C형 임무를 위해 생성되는 오브젝트 리스트
-    [SerializeField] 
+    [SerializeField]
     private List<GameObject> newObjectsForTaskTypeC = new List<GameObject>();
 
-    private List<ulong> objIdList = new List<ulong>();
-    private List<int> indexList = new List<int>();
+    private List<(uint netId, int childIndex)> disableList = new List<(uint, int)>();
 
-    void Start()
+    public override void OnStartServer()
     {
-        if (IsServer)
-        {
-            Debug.Log("이 플레이어가 Host(서버)입니다.");
-            GenerateTaskServerRpc();
-        }
-        else
+        base.OnStartServer();
+        //GenerateTask();
+        StartCoroutine(GenerateTask());
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+
+        if (!isServer)
         {
             Debug.Log("이 플레이어는 클라이언트입니다.");
-            GameManager.Instance.RequestTaskListServerRpc();
-            RequestDisableObjectServerRpc();
+            CmdRequestDisableData();
         }
     }
 
-    [ServerRpc]
-    private void GenerateTaskServerRpc()
+    [Server]
+    private IEnumerator GenerateTask()
     {
         SpawnObjectForTaskTypeA();
         SpawnObjectForTaskTypeB();
         SpawnObjectForTaskTypeC();
-        GameManager.Instance.UpdateTaskListServerRpc();
+
+        yield return null;
+        yield return new WaitForSeconds(1.0f);
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.UpdateTaskList();
+        }
     }
 
     void SpawnObjectForTaskTypeA() // A형 임무를 생성하는 함수
@@ -112,7 +118,7 @@ public class InspectableObjectSpawner : NetworkBehaviour
 
             // 새로운 인스턴스 생성
             GameObject spawnObj = Instantiate(obj, obj.transform.position, obj.transform.rotation);
-            SpawnObjectToNetwork(spawnObj);
+            NetworkServer.Spawn(spawnObj);
 
             if (i == firstIndex || i == secondIndex)
             {
@@ -148,13 +154,14 @@ public class InspectableObjectSpawner : NetworkBehaviour
 
                 // 오브젝트를 먼저 생성
                 GameObject obj = Instantiate(mapObjectsForTaskTypeB[i]);
+                NetworkServer.Spawn(obj);
 
                 Transform objTransform = obj.transform.GetChild(randomNumber);
+                objTransform.gameObject.SetActive(false);
 
-                SpawnObjectToNetwork(obj);
-
-                objIdList.Add(obj.GetComponent<NetworkObject>().NetworkObjectId);
-                indexList.Add(randomNumber);
+                // 클라이언트에도 반영
+                uint id = obj.GetComponent<NetworkIdentity>().netId;
+                disableList.Add((id, randomNumber));
 
                 // 프리팹을 먼저 생성 (부모 포함)
                 GameObject spawnObj = Instantiate(replacementObjectsForTaskTypeB[i], objTransform.position, objTransform.rotation);
@@ -167,44 +174,34 @@ public class InspectableObjectSpawner : NetworkBehaviour
                     spawnObj.transform.rotation = Quaternion.Euler(newRotation);
                 }
 
-                SpawnObjectToNetwork(spawnObj);
-
+                NetworkServer.Spawn(spawnObj);
                 GameManager.Instance.inspectableObjectList.Add(spawnObj);
             }
             else
             {
                 // 오브젝트를 먼저 생성
                 GameObject obj = Instantiate(mapObjectsForTaskTypeB[i]);
-                SpawnObjectToNetwork(obj);
+                NetworkServer.Spawn(obj);
             }
         }
-
-        DisableObjectServerRpc();
     }
 
-    // 클라이언트가 서버에게 비활성화한 오브젝트 동기화를 요청하는 ServerRpc
-    [ServerRpc(RequireOwnership = false)]
-    public void RequestDisableObjectServerRpc(ServerRpcParams rpcParams = default)
+    [Command(requiresAuthority = false)]
+    void CmdRequestDisableData(NetworkConnectionToClient sender = null)
     {
-        Debug.Log("클라이언트가 서버에게 비활성화한 오브젝트 동기화 요청");
-        DisableObjectServerRpc();
-    }
-
-    [ServerRpc]
-    public void DisableObjectServerRpc()
-    {
-        for (int i = 0; i< objIdList.Count; i++)
+        foreach (var data in disableList)
         {
-            DisableObjectClientRpc(objIdList[i], indexList[i]);
+            TargetDisableChild(sender, data.netId, data.childIndex);
         }
     }
 
-    [ClientRpc]
-    public void DisableObjectClientRpc(ulong objId, int index)
+    [TargetRpc]
+    void TargetDisableChild(NetworkConnection target, uint netId, int childIndex)
     {
-        GameObject obj = NetworkManager.Singleton.SpawnManager.SpawnedObjects[objId].gameObject;
-        Transform childTransform = obj.transform.GetChild(index);
-        childTransform.gameObject.SetActive(false);
+        if (NetworkClient.spawned.TryGetValue(netId, out var identity))
+        {
+            identity.transform.GetChild(childIndex).gameObject.SetActive(false);
+        }
     }
 
     void SpawnObjectForTaskTypeC() // C형 임무를 생성하는 함수
@@ -227,24 +224,10 @@ public class InspectableObjectSpawner : NetworkBehaviour
             float rotationZ = newObjectsForTaskTypeC[dice1].GetComponent<InspectableObject>().inspectableObjectData.spawnDatas[dice2].spawnData[5];
 
             GameObject obj = Instantiate(newObjectsForTaskTypeC[dice1], new Vector3(positionX, positionY, positionZ), Quaternion.Euler(rotationX, rotationY, rotationZ));
-            SpawnObjectToNetwork(obj);
+            NetworkServer.Spawn(obj);
 
             GameManager.Instance.inspectableObjectList.Add(obj);
-
             newObjectsForTaskTypeC.RemoveAt(dice1);
-        }
-    }
-
-    private void SpawnObjectToNetwork(GameObject obj)
-    {
-        // 네트워크 오브젝트 생성 후 Spawn()
-        if (obj.TryGetComponent(out NetworkObject netObj))
-        {
-            // 서버에서만 Spawn() 호출
-            if (NetworkManager.Singleton.IsServer && !netObj.IsSpawned)
-            {
-                netObj.Spawn();
-            }
         }
     }
 }
