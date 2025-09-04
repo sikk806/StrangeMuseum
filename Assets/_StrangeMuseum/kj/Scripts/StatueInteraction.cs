@@ -34,21 +34,6 @@ public class StatueInteraction : PlayerController
         statueController = GetComponent<StatueController>();
     }
 
-    [SerializeField]
-    GameObject InGameUIPrefab;
-
-
-    public override void OnStartLocalPlayer() //조각상 네트워크 생성 전까지 호출 안됨
-    {
-        base.OnStartLocalPlayer();
-
-        if (isOwned)  // 내가 소유한 클라이언트라면
-        {
-           Instantiate(InGameUIPrefab);
-            Debug.Log("조각상 UI 호출");
-
-        }
-    }
 
 
     // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@  1. 구속구 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@.
