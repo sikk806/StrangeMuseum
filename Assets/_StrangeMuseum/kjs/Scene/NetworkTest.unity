@@ -49659,7 +49659,7 @@ MonoBehaviour:
   SecurityCount: 0
   StatueCount: 0
   IsAllConnected: 0
-  taskList: {fileID: 0}
+  taskList: {fileID: 912298613}
   inspectableObjectList: []
   exitPrefab: {fileID: 5332235930373663830, guid: 77d7f570bbc272945a18c9671ce24797, type: 3}
   doorClip: {fileID: 8300000, guid: fbe6b76f82ca9fe4c94a7920b508beec, type: 3}

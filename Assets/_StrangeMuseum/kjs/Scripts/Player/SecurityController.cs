@@ -25,7 +25,7 @@ public class SecurityController : PlayerController
     [SerializeField]
     GameObject SeucrityCamera;
 
-    private GameObject MainCam;
+    public GameObject MainCam;
 
     protected override void Awake()
     {

@@ -34,8 +34,9 @@ public class InspectableObjectSpawner : NetworkBehaviour
     public override void OnStartServer()
     {
         base.OnStartServer();
-        //GenerateTask();
         StartCoroutine(GenerateTask());
+        Debug.Log("ssesae");
+        Debug.Log(GameManager.Instance.inspectableObjectList);
     }
 
     public override void OnStartClient()
