@@ -311,8 +311,6 @@ public class SecurityInGameUI : NetworkBehaviour
     public void OnObjectInteractionUnview()
     {
 
-        Debug.Log("오브젝트 UI 가리기");
-
         OnInteractionUI(InteractionType.None);
 
         OnObjectNameUI(ObjectData.ObjectList.None);

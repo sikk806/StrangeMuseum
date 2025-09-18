@@ -50,6 +50,26 @@ public class MiraController : NetworkBehaviour
     Material SecurityOutLine;
 
 
+    [SyncVar]
+    private NetworkIdentity statueOwner;
+    [SerializeField]
+    float maxLifeTime = 5;
+    private bool isIdleRunning = false;
+
+    [SerializeField]
+    float RayWidth = 5f;
+    [SerializeField]
+    float RayHeight = 3f;
+    [SerializeField]
+    float RayDistance = 3f;
+
+    [SerializeField]
+    float alertDistance = 3f; // 원하는 범위
+
+    bool isFollow;
+
+    private Material outlineInstance;
+
     public CopyState State
     {
         get
@@ -80,9 +100,6 @@ public class MiraController : NetworkBehaviour
         }
     }
 
-    [SyncVar]
-    private NetworkIdentity statueOwner;
-
     public override void OnStartServer()
     {
         base.OnStartServer();
@@ -94,8 +111,6 @@ public class MiraController : NetworkBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.autoBraking = false; //균일한 속도로 이동
         
-
-
         var group = GameObject.Find("AIPatrolPoint");
 
         if (group != null)
@@ -105,23 +120,26 @@ public class MiraController : NetworkBehaviour
 
             copystate = CopyState.Idle;
         }
+
+        StartCoroutine(MiraLife());
+
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (copystate == CopyState.Die)
         {
             if (agent.enabled && agent.isOnNavMesh)
             {
-              
-                Debug.Log("Update - Die");
+                Collider mirCollider = GetComponent<Collider>();
+                mirCollider.enabled = false; //충돌 x
 
-                agent.ResetPath();
-                agent.isStopped = true;
+                agent.ResetPath(); //경로 초기화
+                agent.isStopped = true; //이동 정지
 
                 agent.velocity = Vector3.zero; // 남은 속도 제거
                 agent.enabled = false; // 완전 차단
+                                       
             }
             return; 
         }
@@ -135,7 +153,6 @@ public class MiraController : NetworkBehaviour
             case CopyState.Walk:
                 if (copystate == CopyState.Walk) // 자기 상태일 때만 실행
                     UpdateWalk();
-
                 break;
             case CopyState.Stop:
                 agent.isStopped = true;
@@ -144,30 +161,40 @@ public class MiraController : NetworkBehaviour
                 if (agent.hasPath) agent.ResetPath(); // 이전 Walk 경로 완전 제거
                 UpdateFollow();
                 break;
-            //case CopyState.Die:         
-            //    if(isDie == false)
-            //    {
-            //        Debug.Log(" 마테리얼 제거 ");
-            //        OutlineRemoveMaterial(targetSecurity);
-            //        isDie = true;
-            //        //StartCoroutine(DelayDestroy());
-            //    }
-            //    break;
         }
     }
+
+    IEnumerator MiraLife()
+    {
+        float currentLifeTime = 0;
+
+        while (currentLifeTime < maxLifeTime)
+        {
+            currentLifeTime += Time.deltaTime;
+            yield return null;
+        }
+
+        State = CopyState.Die;
+
+        yield return new WaitForSeconds(2.0f); //Die 상태 변환 후 기다리는 시간
+
+        StartCoroutine(MiraDie());
+    }
+
+
 
     [Command(requiresAuthority = false)]
     public void CmdRequestDestroy()
     {
         CmdRequestOutlineRemove();
 
-        //NetworkServer.Destroy(this.gameObject);
-       StartCoroutine(DelayDestroy());
+        StartCoroutine(ProcessSecurityImpact());
     }
 
-    IEnumerator DelayDestroy()
+    IEnumerator ProcessSecurityImpact()
     {
         yield return new WaitForSeconds(1.0f); // 다음 프레임까지 기다림
+
         Debug.Log("미라 Net 사라짐");
         var player = targetSecurity.GetComponent<SecurityController>();
 
@@ -178,18 +205,22 @@ public class MiraController : NetworkBehaviour
         }
         else if (isOwned)
         {
-            player.CmdSetPlayerState(PlayerState.Idle); // 클라이언트 → 서버
+            player.CmdSetPlayerState(PlayerState.Idle); // 클라이언트 -> 서버
         }
 
+        StartCoroutine(MiraDie());
+    }
 
-
+    IEnumerator MiraDie()
+    {
+        yield return null; // 다음 프레임까지 기다림
         NetworkServer.Destroy(this.gameObject);
         yield return null; // 다음 프레임까지 기다림
         Debug.Log("미라 Scene 사라짐");
         ResourceManager.Instance.Destroy(this.gameObject);
     }
  
-    private bool isIdleRunning = false;
+
     IEnumerator UpdateIdle()
     {
         if (isIdleRunning) yield break; // 중복 실행 방지
@@ -230,12 +261,6 @@ public class MiraController : NetworkBehaviour
         RaySecurity();
     }
 
-    [SerializeField]
-    float RayWidth = 5f;
-    [SerializeField]
-    float RayHeight = 3f;
-    [SerializeField]
-    float RayDistance = 3f;
 
     private void RaySecurity()
     {
@@ -269,13 +294,6 @@ public class MiraController : NetworkBehaviour
         }
 
     }
-
-
-    [SerializeField]
-    float alertDistance = 3f; // 원하는 범위
-
-    bool isFollow;
-
     private void UpdateFollow()
     {
         if (copystate == CopyState.Die)
@@ -365,7 +383,7 @@ public class MiraController : NetworkBehaviour
             TargetOutlineRemove(statueOwner.connectionToClient, targetSecurity);
     }
 
-    private Material outlineInstance;
+
 
     // 실제로 경비원 소유 클라이언트에서만 실행됨
     [TargetRpc]
