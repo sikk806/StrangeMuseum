@@ -131,6 +131,10 @@ public class SMNetworkManager : NetworkManager
                 playerController.PlayerIdNumber = GamePlayerInstance.PlayerIdNumber;
                 playerController.PlayerSteamId = GamePlayerInstance.PlayerSteamId;
                 playerController.PlayerName = GamePlayerInstance.PlayerName;
+
+                // 진영 정보 등록
+                string role = playerObj.CompareTag("Bouncer") ? "Security" : "Statue";
+                GameManager.Instance.PlayerStat[playerController.netId] = role;
             }
 
             //GamePlayers.Add(GamePlayerInstance);

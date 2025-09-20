@@ -39,6 +39,10 @@ public class GameManager : NetworkBehaviour
     private string ServerTaskList = "";
     private bool isFirstTaskListUpdate = true;
 
+    [SerializeField] private float triggerDistance = 10f;
+    [SerializeField] private float checkCoolTime = 3f;
+    private float checkTimer = 0f;
+
     private void Awake()
     {
         if (instance == null)
@@ -70,6 +74,27 @@ public class GameManager : NetworkBehaviour
         //    SettingManager.Instance.gameObject.SetActive(
         //        !SettingManager.Instance.gameObject.activeSelf);
         //}
+
+        if (isServer)
+        {
+            /*
+            foreach (var kvp in PlayerStat)
+            {
+                uint playerId = kvp.Key;
+                string role = kvp.Value;
+                Debug.Log($"플레이어 {playerId} 는 {role} 진영");
+            }
+             */
+
+            // 일정 주기마다 거리 체크
+            checkTimer += Time.deltaTime;
+
+            if (checkTimer >= checkCoolTime)
+            {
+                checkTimer = 0f;
+                CheckProximity();
+            }
+        }
     }
 
     [Server]
@@ -195,5 +220,54 @@ public class GameManager : NetworkBehaviour
     {
         if (isSecurity) SecurityCount += value;
         else StatueCount += value;
+    }
+
+    private void CheckProximity()
+    {
+        List<NetworkIdentity> securities = new List<NetworkIdentity>();
+        List<NetworkIdentity> statues = new List<NetworkIdentity>();
+
+        // PlayerStat에 기록된 모든 플레이어를 Security / Statue로 분류
+        foreach (var kvp in PlayerStat)
+        {
+            uint playerId = kvp.Key;
+            string role = kvp.Value;
+
+            if (NetworkServer.spawned.TryGetValue(playerId, out NetworkIdentity identity))
+            {
+                if (role == "Security") securities.Add(identity);
+                else if (role == "Statue") statues.Add(identity);
+            }
+        }
+
+        // Security ↔ Statue 거리 계산
+        foreach (var sec in securities)
+        {
+            SecurityController secController = sec.GetComponent<SecurityController>();
+            if (secController == null) continue;
+
+            bool foundNearby = false;
+
+            foreach (var sta in statues)
+            {
+                float dist = Vector3.Distance(sec.transform.position, sta.transform.position);
+
+                if (dist <= triggerDistance)
+                {
+                    //string secName = sec.GetComponent<PlayerController>()?.PlayerName ?? sec.netId.ToString();
+                    //string staName = sta.GetComponent<PlayerController>()?.PlayerName ?? sta.netId.ToString();
+                    //Debug.Log($"[근접] Security({secName}) 와 Statue({staName}) 거리가 {dist:F2}m 입니다.");
+
+                    secController.isNearby = true; // 서버에서 갱신
+                    foundNearby = true;
+                    break;
+                }
+            }
+
+            if (!foundNearby)
+            {
+                secController.isNearby = false;
+            }
+        }
     }
 }

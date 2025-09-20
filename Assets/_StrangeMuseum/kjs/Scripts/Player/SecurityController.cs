@@ -27,6 +27,9 @@ public class SecurityController : PlayerController
 
     public GameObject MainCam;
 
+    // Security 주변에 Statue가 있는지 체크
+    [SyncVar] public bool isNearby = false;
+
     protected override void Awake()
     {
 
