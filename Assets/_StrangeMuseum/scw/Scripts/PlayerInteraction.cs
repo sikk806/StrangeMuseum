@@ -26,12 +26,10 @@ public class PlayerInteraction : NetworkBehaviour
     void Update()
     {
         if (!isOwned) return;
-        /*
-        if (!isOwned) return;
-        if (!securityController.cam) return;
+        if (!securityController.MainCam) return;
 
         RaycastHit hit;
-        if (Physics.Raycast(securityController.cam.transform.position, securityController.cam.transform.forward, out hit, interactionDistance))
+        if (Physics.Raycast(securityController.MainCam.transform.position, securityController.MainCam.transform.forward, out hit, interactionDistance))
         {
             if (hit.collider.CompareTag("InspectableObject"))
             {
@@ -48,7 +46,6 @@ public class PlayerInteraction : NetworkBehaviour
             UIManager.Instance.CloseInspectionObjectUI();
             SetIsProgressServerRpc(false); // 미션 진행 X
         }
-         */
     }
 
     private void HandleInspectableObject(GameObject obj) // 공통 임무를 진행하면서 상호작용하는 오브젝트(ex. 정수기, 장식품 등)와의 기능을 담은 함수

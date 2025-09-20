@@ -4,6 +4,22 @@ using UnityEngine;
 
 public class StatueController : PlayerController
 {
+    private SMNetworkManager manager;
+
+    private SMNetworkManager Manager
+    {
+        get
+        {
+            if (manager)
+            {
+                return manager;
+            }
+            return manager = SMNetworkManager.singleton as SMNetworkManager;
+        }
+    }
+
+
+
     // Rush Speed 적용시키는 버전으로 업데이트 예정
     [SyncVar]
     public float RushSpeed = 5f;
@@ -112,4 +128,41 @@ public class StatueController : PlayerController
         cam.transform.position = transform.position + transform.rotation * StatueCameraPosition;
     }
 
+
+    [Command]
+    protected void CmdRequestReplace(NetworkIdentity target)
+    {
+        NetworkConnectionToClient conn = target.connectionToClient;
+
+        // 현재 PlayerController
+        PlayerController playerController = target.GetComponent<PlayerController>();
+
+        // 바뀔 PlayerController
+        GameObject playerObj = null;
+        playerObj = Instantiate(Manager.GetStatuePrefab());
+        PlayerController newPlayerController = playerObj.GetComponent<PlayerController>();
+
+        NetworkServer.ReplacePlayerForConnection(conn, playerObj, ReplacePlayerOptions.KeepAuthority);
+
+        newPlayerController.ConnectionID = playerController.ConnectionID;
+        newPlayerController.PlayerIdNumber = playerController.PlayerIdNumber;
+        newPlayerController.PlayerSteamId = playerController.PlayerSteamId;
+        newPlayerController.PlayerName = playerController.PlayerName;
+
+        NetworkServer.Destroy(playerController.gameObject);
+        GameResultManager.Instance.SetCharacterCount(-1, 1);
+    }
+
+
+
+    private void OnTriggerEnter(Collider other) //조각상 경비원 충돌처리
+    {
+        if (!isOwned) return;
+        if (other.GetComponent<SecurityController>() != null)
+        {
+            NetworkIdentity networkIdentity = other.GetComponent<NetworkIdentity>();
+            CmdRequestReplace(networkIdentity);
+            Debug.Log("HIT!!!!!!!");
+        }
+    }
 }

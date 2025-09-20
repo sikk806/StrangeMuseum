@@ -1,19 +1,36 @@
-using System.Collections;
+using Mirror;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
 
-public class PostProcessController : MonoBehaviour
+public class PostProcessController : NetworkBehaviour
 {
-    public Transform playerTr;
-    public Transform statueTr;
-    private bool isNearby = false;
+    private static PostProcessController instance;
+    public static PostProcessController Instance
+    {
+        get
+        {
+            return instance;
+        }
+    }
+    private void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this; // instance 초기화
+        }
+        else
+        {
+            Destroy(gameObject); // 중복 방지
+        }
+    }
+
+    public bool isNearby = false;
 
     public Volume globalVolume;
 
     private ChromaticAberration chromaticAberration;
     private LensDistortion lensDistortion;
-
     private ColorAdjustments colorAdjustments;
     private Vignette vignette;
 
@@ -44,29 +61,16 @@ public class PostProcessController : MonoBehaviour
         {
             vignette.active = true;
         }
-
-        StartCoroutine("CheckDistanceStatue");
-    }
-
-    IEnumerator CheckDistanceStatue()
-    {
-        while (true)
-        {
-            if (Vector3.Distance(playerTr.position, statueTr.position) < 10.0f)
-            {
-                isNearby = true;
-            }
-            else
-            {
-                isNearby = false;
-            }
-            yield return new WaitForSeconds(3.0f);
-        }
     }
 
     void Update()
     {
-        if(isNearby)
+        if (NetworkClient.localPlayer == null) return;
+
+        SecurityController localPc = NetworkClient.localPlayer.GetComponent<SecurityController>();
+        if (localPc == null) return;
+
+        if (localPc.isNearby)
         {
             // 크로마틱 어베레이션 세기 조절 (0~1)
             if (chromaticAberration != null)

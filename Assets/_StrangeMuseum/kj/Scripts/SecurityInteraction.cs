@@ -109,7 +109,11 @@ public class SecurityInteraction : PlayerController
 
 
         progressBarUI = SecurityInGameUI.Instance.GetComponent<MissionProgressBarUI>();
+
+        heartBeatClip = Resources.Load<AudioClip>("SFX/HeartBeat");
     }
+    private AudioClip heartBeatClip;
+    private Transform soundStatuePos;
 
     protected override void Update()
     {
@@ -121,14 +125,67 @@ public class SecurityInteraction : PlayerController
         if(mainCam.enabled == false) { return;  } 
         Debug.Log("isOwned - true");
 
+        
         SecurityInteractionRay();
 
         SecurityItemInteraction();
 
         SercurityObjectInteraction();
 
+        if (!isHeartBeatRunning && TryGetClosestStatue(out soundStatuePos))
+        {
+            StartCoroutine(HeartBeatLoop());
+            isHeartBeatRunning = true;
+        }
+    }
+    [SerializeField]
+    bool isHeartBeatRunning;
+    private bool TryGetClosestStatue(out Transform closest)
+    {
+        Collider[] colliders = Physics.OverlapSphere(transform.position, radius, LayerMask.GetMask("Statue"));
+        closest = null;
+
+        if (colliders.Length == 0) return false;
+
+        float minDistance = float.MaxValue;
+        foreach (var col in colliders)
+        {
+            float dist = Vector3.Distance(transform.position, col.transform.position);
+            if (dist < minDistance)
+            {
+                minDistance = dist;
+                closest = col.transform;
+            }
+        }
+        return true;
     }
 
+    private IEnumerator HeartBeatLoop()
+    {
+        while (soundStatuePos != null)
+        {
+            float distance = Vector3.Distance(transform.position, soundStatuePos.position);
+
+            // 거리 기반 간격 계산
+            float minInterval = 0.5f;
+            float maxInterval = 2f;
+            float interval = Mathf.Lerp(minInterval, maxInterval, distance / radius);
+
+            // 기존 HeartBeat 호출
+            AudioSource.PlayClipAtPoint(heartBeatClip, transform.position);
+
+            yield return new WaitForSeconds(interval);
+
+            // 조각상이 사라지면 종료
+            if (!TryGetClosestStatue(out soundStatuePos))
+            {
+                break;
+            }
+               
+        }
+
+        isHeartBeatRunning = false;
+    }
     private void SercurityObjectInteraction() //1. 오래된 레버 ( 아이템 x , 일반적인 상호작용 오브젝트 ) 상호작용 후  기능 호출 부분
     {
 
@@ -231,8 +288,6 @@ public class SecurityInteraction : PlayerController
                 || hit.collider.CompareTag("Box") || hit.collider.CompareTag("Cover")
                 || hit.collider.CompareTag("Pen"))
             {
-                Debug.Log("Item 중");
-
                 interactableItem = hit.collider.GetComponent<IInteractable>();
                 iusableItem = hit.collider.GetComponent<IUsableItem>();
 
@@ -522,19 +577,20 @@ public class SecurityInteraction : PlayerController
 
     #endregion
 
-    bool RayStatue()
-    {
-        if(IsStatue && SaveRayStaute != null)
-        {
-            return true;
-        }
-
-        return false;
-    }
     public void PlayFearSound(AudioClip audio)
     {
         SoundManager.Instance.PlaySfx(audio);
         // audioSource.PlayOneShot(audio);
     }
 
+    [SerializeField]
+    float radius = 5f;
+
+    void OnDrawGizmosSelected()
+    {
+        // Gizmo 색깔 설정 (반투명 빨간색)
+        Gizmos.color = new Color(1, 0, 0, 0.5f);
+        // 현재 오브젝트 위치를 중심으로 반경 radius 만큼 와이어 구 그리기
+        Gizmos.DrawWireSphere(transform.position, radius);
+    }
 }

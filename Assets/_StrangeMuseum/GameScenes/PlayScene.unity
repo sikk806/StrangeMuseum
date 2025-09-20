@@ -24758,7 +24758,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 781f1478c8a92f5489ccbf12d4e09a91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
   mapObjectsForTaskTypeA:
   - {fileID: 4603557531527246256, guid: acd7434f139b7084bb1c929415cb2023, type: 3}
   - {fileID: 8351228636875247590, guid: 11588ed7bd80b604fa62d32c264482e6, type: 3}
@@ -27583,7 +27585,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 1051026285}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9541d86e2fd84c1d9990edf0852d74ab, type: 3}
   m_Name: 
@@ -35192,19 +35194,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44fb4737db364ed4b8f1ba042f0fbebc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ShowTopMostFoldoutHeaderGroup: 1
-  SecurityCount:
-    m_InternalValue: 0
-  StatueCount:
-    m_InternalValue: 0
-  IsAllConnected:
-    m_InternalValue: 0
-  GameResult: {fileID: 21119133}
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  SecurityCount: 0
+  StatueCount: 0
+  IsAllConnected: 0
   taskList: {fileID: 1051026286}
   inspectableObjectList: []
   exitPrefab: {fileID: 5332235930373663830, guid: 77d7f570bbc272945a18c9671ce24797, type: 3}
   doorClip: {fileID: 8300000, guid: fbe6b76f82ca9fe4c94a7920b508beec, type: 3}
   taskListCheckClip: {fileID: 8300000, guid: a1ee49e25ecbc0e4d8a8435edb878dac, type: 3}
+  triggerDistance: 10
+  checkCoolTime: 3
 --- !u!4 &1274635813
 Transform:
   m_ObjectHideFlags: 0
@@ -54468,7 +54470,6 @@ MonoBehaviour:
   inspectionGaugeUI: {fileID: 493604935}
   blackPanel: {fileID: 1811415226}
   flashImage: {fileID: 410311201}
-  audioClip: {fileID: 8300000, guid: d7940a9c107367f4b8aa78b44eedfa24, type: 3}
 --- !u!4 &1879857939
 Transform:
   m_ObjectHideFlags: 0

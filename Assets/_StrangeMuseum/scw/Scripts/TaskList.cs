@@ -22,11 +22,24 @@ public class TaskList : MonoBehaviour
     void Start()
     {
         taskListAnimator = GetComponent<Animator>();
+
+        if (NetworkClient.localPlayer != null)
+        {
+            clientId = NetworkClient.localPlayer.netId;
+        }
+        else
+        {
+            Debug.LogWarning("localPlayer 아직 없음, 나중에 다시 시도");
+            StartCoroutine(WaitForLocalPlayer());
+        }
+    }
+
+    IEnumerator WaitForLocalPlayer()
+    {
+        while (NetworkClient.localPlayer == null)
+            yield return null;
+
         clientId = NetworkClient.localPlayer.netId;
-
-        GameManager.Instance.taskList = text;
-
-        StartCoroutine(WaitForPlayerStat());
     }
 
     void Update()
