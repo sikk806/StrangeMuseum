@@ -130,26 +130,30 @@ public class StatueController : PlayerController
 
 
     [Command]
-    protected void CmdRequestReplace(NetworkIdentity target)
+    private void CmdRequestReplace(NetworkIdentity target)
     {
         NetworkConnectionToClient conn = target.connectionToClient;
+        if (conn == null) return;
 
         // 현재 PlayerController
-        PlayerController playerController = target.GetComponent<PlayerController>();
+        GameObject oldPlayerObject = target.gameObject;
+        PlayerController oldPlayerController = oldPlayerObject.GetComponent<PlayerController>();
 
-        // 바뀔 PlayerController
-        GameObject playerObj = null;
-        playerObj = Instantiate(Manager.GetStatuePrefab());
-        PlayerController newPlayerController = playerObj.GetComponent<PlayerController>();
+        Vector3 spawnPosition = oldPlayerObject.transform.position;
+        Quaternion spawnRotation = oldPlayerObject.transform.rotation;
 
-        NetworkServer.ReplacePlayerForConnection(conn, playerObj, ReplacePlayerOptions.KeepAuthority);
+        // New StatueController
+        GameObject newPlayerObject = Instantiate(Manager.GetStatuePrefab(), spawnPosition, spawnRotation);
+        PlayerController newPlayerController = newPlayerObject.GetComponent<PlayerController>();
 
-        newPlayerController.ConnectionID = playerController.ConnectionID;
-        newPlayerController.PlayerIdNumber = playerController.PlayerIdNumber;
-        newPlayerController.PlayerSteamId = playerController.PlayerSteamId;
-        newPlayerController.PlayerName = playerController.PlayerName;
+        newPlayerController.ConnectionID = oldPlayerController.ConnectionID;
+        newPlayerController.PlayerIdNumber = oldPlayerController.PlayerIdNumber;
+        newPlayerController.PlayerSteamId = oldPlayerController.PlayerSteamId;
+        newPlayerController.PlayerName = oldPlayerController.PlayerName;
 
-        NetworkServer.Destroy(playerController.gameObject);
+        NetworkServer.ReplacePlayerForConnection(conn, newPlayerObject, true);
+
+        ///NetworkServer.Destroy(oldPlayerController.gameObject);
         GameResultManager.Instance.SetCharacterCount(-1, 1);
     }
 
