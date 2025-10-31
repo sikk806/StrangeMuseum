@@ -97,12 +97,13 @@ MonoBehaviour:
   isPath: 0
   isDie: 0
   copystate: 0
+  targetSecurity: {fileID: 0}
   securityLayer:
     serializedVersion: 2
     m_Bits: 8
   sphereRadius: 1.5
   SecurityOutLine: {fileID: 2100000, guid: 526ded9ca46f24042aa4461623306ff7, type: 2}
-  maxLifeTime: 10
+  maxLifeTime: 3
   RayWidth: 2.48
   RayHeight: 2
   RayDistance: 7.91
